@@ -324,8 +324,9 @@
     "alt": "Yogurt parfait with blueberries and berries"
   },
   "salada-de-frutas-tropical": {
-    "slug": null,
-    "reason": "Candidate fruit platter includes mango and watermelon, which the guide lists as AVOID."
+    "file": "assets/owner-photos/salada-de-frutas-tropical.png",
+    "match": "representative",
+    "alt": "Bowl of tropical fruit salad with pineapple, papaya, orange, strawberries, kiwi and red grapes, topped with mint and lime zest"
   },
   "bolo-de-fuba": {
     "slug": null,

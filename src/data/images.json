@@ -831,8 +831,12 @@
     "retrieved": "2026-11-21"
   },
   "salada-de-frutas-tropical": {
-    "match": "placeholder",
-    "reason": "Candidate fruit platter includes mango and watermelon, which the guide lists as AVOID."
+    "match": "representative",
+    "alt": "Bowl of tropical fruit salad with pineapple, papaya, orange, strawberries, kiwi and red grapes, topped with mint and lime zest",
+    "src480": "/images/recipes/salada-de-frutas-tropical-480.webp",
+    "src960": "/images/recipes/salada-de-frutas-tropical-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "bolo-de-fuba": {
     "match": "placeholder",
