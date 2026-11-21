@@ -235,20 +235,36 @@
     "retrieved": "2026-11-21"
   },
   "galinhada-acafrao": {
-    "match": "placeholder",
-    "reason": "Candidate photo did not show galinhada."
+    "match": "exact",
+    "alt": "Bowl of turmeric-yellow rice with chicken drumsticks, diced red pepper and parsley",
+    "src480": "/images/recipes/galinhada-acafrao-480.webp",
+    "src960": "/images/recipes/galinhada-acafrao-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "strogonoff-frango-sem-lactose": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "representative",
+    "alt": "Creamy chicken stroganoff with mushrooms, served with white rice and crispy potato sticks",
+    "src480": "/images/recipes/strogonoff-frango-sem-lactose-480.webp",
+    "src960": "/images/recipes/strogonoff-frango-sem-lactose-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "moqueca-de-peixe-leve": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "representative",
+    "alt": "Bowl of fish moqueca: white fish chunks in a coconut and tomato broth with red and yellow peppers, onion and cilantro",
+    "src480": "/images/recipes/moqueca-de-peixe-leve-480.webp",
+    "src960": "/images/recipes/moqueca-de-peixe-leve-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "arroz-carreteiro": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Bowl of cowboy rice: tomato-tinted rice with browned beef chunks, diced tomato and parsley",
+    "src480": "/images/recipes/arroz-carreteiro-480.webp",
+    "src960": "/images/recipes/arroz-carreteiro-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "salada-bife-batata-doce": {
     "match": "exact",
@@ -281,12 +297,20 @@
     "retrieved": "2026-11-21"
   },
   "salpicao-de-frango": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "representative",
+    "alt": "Bowl of creamy shredded chicken salad with carrot, corn and peas, topped with crispy potato sticks and parsley",
+    "src480": "/images/recipes/salpicao-de-frango-480.webp",
+    "src960": "/images/recipes/salpicao-de-frango-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "escondidinho-carne-moida": {
-    "match": "placeholder",
-    "reason": "Candidate casserole photo includes jalapeños and is not escondidinho."
+    "match": "exact",
+    "alt": "Glass baking dish of potato-topped ground beef bake with a golden crust, one portion being lifted out",
+    "src480": "/images/recipes/escondidinho-carne-moida-480.webp",
+    "src960": "/images/recipes/escondidinho-carne-moida-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "salada-quinoa-frango": {
     "match": "representative",
@@ -304,8 +328,12 @@
     "retrieved": "2026-11-21"
   },
   "caldo-verde-sem-cebola": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Bowl of caldo verde: creamy potato soup with shredded kale and slices of sausage, bread on the side",
+    "src480": "/images/recipes/caldo-verde-sem-cebola-480.webp",
+    "src960": "/images/recipes/caldo-verde-sem-cebola-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "frango-xadrez": {
     "match": "representative",
@@ -443,8 +471,12 @@
     "retrieved": "2026-11-21"
   },
   "arroz-com-lentilha": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "representative",
+    "alt": "Bowl of rice with lentils and diced carrot, topped with fried onion and chopped parsley",
+    "src480": "/images/recipes/arroz-com-lentilha-480.webp",
+    "src960": "/images/recipes/arroz-com-lentilha-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "peixe-grelhado-batata-salada": {
     "match": "exact",
@@ -507,8 +539,12 @@
     "retrieved": "2026-11-21"
   },
   "espetinho-de-carne": {
-    "match": "placeholder",
-    "reason": "Candidate photo showed people at a barbecue rather than beef skewers."
+    "match": "representative",
+    "alt": "Grilled beef skewers with red and yellow pepper pieces, parsley and lime wedges on a stoneware plate",
+    "src480": "/images/recipes/espetinho-de-carne-480.webp",
+    "src960": "/images/recipes/espetinho-de-carne-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "camarao-molho-tomate": {
     "match": "exact",
@@ -541,8 +577,12 @@
     "retrieved": "2026-11-21"
   },
   "costelinha-assada-batatas": {
-    "match": "placeholder",
-    "reason": "Candidate photo did not clearly show pork ribs."
+    "match": "exact",
+    "alt": "Oven-roasted pork ribs with rosemary-flecked roast potato wedges and a green salad on a white plate",
+    "src480": "/images/recipes/costelinha-assada-batatas-480.webp",
+    "src960": "/images/recipes/costelinha-assada-batatas-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "frango-assado-limao-alecrim": {
     "match": "exact",
@@ -650,8 +690,12 @@
     "retrieved": "2026-11-21"
   },
   "tacos-carne-tortilha-milho": {
-    "match": "placeholder",
-    "reason": "Candidate taco photo shows red onion, which the guide lists as AVOID."
+    "match": "exact",
+    "alt": "Three crisp corn tortilla tacos filled with seasoned ground beef, shredded lettuce, cheese and diced tomato",
+    "src480": "/images/recipes/tacos-carne-tortilha-milho-480.webp",
+    "src960": "/images/recipes/tacos-carne-tortilha-milho-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "salmao-quinoa-legumes": {
     "match": "exact",
@@ -813,8 +857,12 @@
     "license": "Provided by the app owner for use in this app"
   },
   "cocada-de-forno": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "A golden baked coconut square on a small plate, with the baking dish, a halved coconut and grated coconut behind",
+    "src480": "/images/recipes/cocada-de-forno-480.webp",
+    "src960": "/images/recipes/cocada-de-forno-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "morango-chocolate-amargo": {
     "match": "placeholder",

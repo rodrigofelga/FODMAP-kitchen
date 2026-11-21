@@ -99,20 +99,24 @@
     "alt": "Meal-prep container of chicken and rice on a work desk"
   },
   "galinhada-acafrao": {
-    "slug": null,
-    "reason": "Candidate photo did not show galinhada."
+    "file": "assets/owner-photos/galinhada-acafrao.png",
+    "match": "exact",
+    "alt": "Bowl of turmeric-yellow rice with chicken drumsticks, diced red pepper and parsley"
   },
   "strogonoff-frango-sem-lactose": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/strogonoff-frango-sem-lactose.png",
+    "match": "representative",
+    "alt": "Creamy chicken stroganoff with mushrooms, served with white rice and crispy potato sticks"
   },
   "moqueca-de-peixe-leve": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/moqueca-de-peixe-leve.png",
+    "match": "representative",
+    "alt": "Bowl of fish moqueca: white fish chunks in a coconut and tomato broth with red and yellow peppers, onion and cilantro"
   },
   "arroz-carreteiro": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/arroz-carreteiro.png",
+    "match": "exact",
+    "alt": "Bowl of cowboy rice: tomato-tinted rice with browned beef chunks, diced tomato and parsley"
   },
   "salada-bife-batata-doce": {
     "slug": "grilled-steak-salad-with-sweet-potatoes-and-greens",
@@ -125,12 +129,14 @@
     "alt": "Bowl of beef stew with potatoes and carrots"
   },
   "salpicao-de-frango": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/salpicao-de-frango.png",
+    "match": "representative",
+    "alt": "Bowl of creamy shredded chicken salad with carrot, corn and peas, topped with crispy potato sticks and parsley"
   },
   "escondidinho-carne-moida": {
-    "slug": null,
-    "reason": "Candidate casserole photo includes jalapeños and is not escondidinho."
+    "file": "assets/owner-photos/escondidinho-carne-moida.png",
+    "match": "exact",
+    "alt": "Glass baking dish of potato-topped ground beef bake with a golden crust, one portion being lifted out"
   },
   "salada-quinoa-frango": {
     "slug": "grilled-chicken-salad-with-fresh-vegetables",
@@ -138,8 +144,9 @@
     "alt": "Grilled chicken salad with tomatoes, olives and cucumber"
   },
   "caldo-verde-sem-cebola": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/caldo-verde-sem-cebola.png",
+    "match": "exact",
+    "alt": "Bowl of caldo verde: creamy potato soup with shredded kale and slices of sausage, bread on the side"
   },
   "frango-xadrez": {
     "slug": "stir-fry-chicken-and-vegetables-in-skillet",
@@ -187,8 +194,9 @@
     "alt": "Chicken curry served with white rice"
   },
   "arroz-com-lentilha": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/arroz-com-lentilha.png",
+    "match": "representative",
+    "alt": "Bowl of rice with lentils and diced carrot, topped with fried onion and chopped parsley"
   },
   "peixe-grelhado-batata-salada": {
     "slug": "grilled-fish-with-potatoes-and-salad",
@@ -211,8 +219,9 @@
     "alt": "AI-generated image of grilled chicken pieces with lemon"
   },
   "espetinho-de-carne": {
-    "slug": null,
-    "reason": "Candidate photo showed people at a barbecue rather than beef skewers."
+    "file": "assets/owner-photos/espetinho-de-carne.png",
+    "match": "representative",
+    "alt": "Grilled beef skewers with red and yellow pepper pieces, parsley and lime wedges on a stoneware plate"
   },
   "camarao-molho-tomate": {
     "slug": "creamy-shrimp-and-tomato-skillet-delight",
@@ -225,8 +234,9 @@
     "alt": "Pan-seared pork chop on roasted vegetables"
   },
   "costelinha-assada-batatas": {
-    "slug": null,
-    "reason": "Candidate photo did not clearly show pork ribs."
+    "file": "assets/owner-photos/costelinha-assada-batatas.png",
+    "match": "exact",
+    "alt": "Oven-roasted pork ribs with rosemary-flecked roast potato wedges and a green salad on a white plate"
   },
   "frango-assado-limao-alecrim": {
     "slug": "herb-roasted-chicken-and-potatoes",
@@ -264,8 +274,9 @@
     "alt": "Salmon sushi pieces on a dark plate"
   },
   "tacos-carne-tortilha-milho": {
-    "slug": null,
-    "reason": "Candidate taco photo shows red onion, which the guide lists as AVOID."
+    "file": "assets/owner-photos/tacos-carne-tortilha-milho.png",
+    "match": "exact",
+    "alt": "Three crisp corn tortilla tacos filled with seasoned ground beef, shredded lettuce, cheese and diced tomato"
   },
   "salmao-quinoa-legumes": {
     "slug": "grilled-salmon-bowl-with-quinoa-and-colorful-veggies",
@@ -334,8 +345,9 @@
     "alt": "Slices of guava paste (goiabada) on rounds of fresh mozzarella with a sprig of mint"
   },
   "cocada-de-forno": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/cocada-de-forno.png",
+    "match": "exact",
+    "alt": "A golden baked coconut square on a small plate, with the baking dish, a halved coconut and grated coconut behind"
   },
   "morango-chocolate-amargo": {
     "slug": null,
