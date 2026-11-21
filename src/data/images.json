@@ -137,8 +137,12 @@
     "reason": "No Foodiesfeed photo of overnight oats with kiwi was found."
   },
   "mingau-de-fuba": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Bowl of creamy yellow cornmeal porridge dusted with ground cinnamon, with cinnamon sticks and a dish of cornmeal beside it",
+    "src480": "/images/recipes/mingau-de-fuba-480.webp",
+    "src960": "/images/recipes/mingau-de-fuba-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "ovos-bacon-queijo": {
     "match": "exact",
