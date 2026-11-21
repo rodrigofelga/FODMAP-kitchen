@@ -85,6 +85,27 @@ async function main() {
   const manifest = {};
   const tiles = [];
   for (const [recipeId, entry] of Object.entries(map)) {
+    if (entry.file) {
+      // Photo supplied by the app owner (stored in assets/owner-photos/).
+      const src = join(root, entry.file);
+      for (const w of [480, 960]) {
+        await sharp(src)
+          .resize(w, Math.round((w * 3) / 4), { fit: 'cover', position: sharp.strategy.attention })
+          .webp({ quality: w === 480 ? 70 : 74, effort: 5 })
+          .toFile(join(outDir, `${recipeId}-${w}.webp`));
+      }
+      manifest[recipeId] = {
+        match: entry.match,
+        alt: entry.alt,
+        src480: `/images/recipes/${recipeId}-480.webp`,
+        src960: `/images/recipes/${recipeId}-960.webp`,
+        source: 'Owner-supplied',
+        license: 'Provided by the app owner for use in this app',
+      };
+      tiles.push({ recipeId, file: join(outDir, `${recipeId}-480.webp`), label: `${recipeId} [owner]` });
+      console.log(`owner   ${recipeId} <- ${entry.file}`);
+      continue;
+    }
     if (!entry.slug) {
       manifest[recipeId] = { match: 'placeholder', reason: entry.reason ?? 'No accurately matching licensed Foodiesfeed photograph was found.' };
       continue;

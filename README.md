@@ -26,9 +26,9 @@ Photos come from [Foodiesfeed](https://www.foodiesfeed.com/) under its [licence]
 
 Every candidate photo was reviewed by eye. Of the 81 recipes:
 
-- **31** have a photo of the actual dish;
+- **33** have a photo of the actual dish (2 of them — guava paste with mozzarella and the egg-and-tapioca crepe with tomato — were supplied by the app owner; originals in `assets/owner-photos/`);
 - **23** have a photo of a similar dish, labelled "Representative photo";
-- **27** show a placeholder, because no accurate licensed photo was found. Candidates were also rejected when they showed high-FODMAP foods such as honey, mango, watermelon, apple or red onion.
+- **25** show a placeholder, because no accurate licensed photo was found. Candidates were also rejected when they showed high-FODMAP foods such as honey, mango, watermelon, apple or red onion.
 
 Rebuild the photos with `npm run images` (cached in `.image-cache/`).
 

@@ -142,6 +142,12 @@ describe('recipe images', () => {
         expect(readFileSync(p).subarray(8, 12).toString()).toBe('WEBP');
       }
       expect(m.alt.length, id).toBeGreaterThan(10);
+      expect(['exact', 'representative']).toContain(m.match);
+      if (m.source === 'Owner-supplied') {
+        expect(existsSync(join(root, 'assets', 'owner-photos', `${id}.png`)), id).toBe(true);
+        continue;
+      }
+      expect(m.source).toBe('Foodiesfeed');
       expect(m.photoPage).toMatch(/^https:\/\/www\.foodiesfeed\.com\/free-food-photo\//);
       expect(m.assetUrl).toMatch(/^https:\/\/pub-[a-z0-9]+\.r2\.dev\//);
       expect(m.license).toMatch(/Foodiesfeed/);
@@ -150,7 +156,7 @@ describe('recipe images', () => {
   });
 
   it('uses each Foodiesfeed photo for only one recipe', () => {
-    const pages = Object.values(IMAGES).flatMap((m) => (m.match === 'placeholder' ? [] : [m.photoPage]));
+    const pages = Object.values(IMAGES).flatMap((m) => (m.match === 'placeholder' || m.source !== 'Foodiesfeed' ? [] : [m.photoPage]));
     expect(new Set(pages).size).toBe(pages.length);
   });
 });

@@ -93,7 +93,7 @@ export function SettingsPage() {
 
   const photoStats = useMemo(() => {
     const v = Object.values(IMAGES);
-    return { exact: v.filter((x) => x.match === 'exact').length, rep: v.filter((x) => x.match === 'representative').length, ph: v.filter((x) => x.match === 'placeholder').length };
+    return { owner: v.filter((x) => x.match !== 'placeholder' && x.source === 'Owner-supplied').length, exact: v.filter((x) => x.match === 'exact').length, rep: v.filter((x) => x.match === 'representative').length, ph: v.filter((x) => x.match === 'placeholder').length };
   }, []);
 
   const exportData = () => {
@@ -327,13 +327,13 @@ export function SettingsPage() {
       <section className="card section">
         <h2>Photo credits</h2>
         <p className="small">
-          Recipe photos come from <a href="https://www.foodiesfeed.com/" target="_blank" rel="noopener noreferrer">Foodiesfeed</a> under the{' '}
+          Most recipe photos come from <a href="https://www.foodiesfeed.com/" target="_blank" rel="noopener noreferrer">Foodiesfeed</a> under the{' '}
           <a href="https://www.foodiesfeed.com/license" target="_blank" rel="noopener noreferrer">
             Foodiesfeed licence
           </a>{' '}
           (CC0-equivalent; free for commercial use, no attribution required). Sponsored third-party stock images shown on Foodiesfeed were not used. {photoStats.exact} photos show the
           actual dish, {photoStats.rep} are labelled “Representative photo”, and {photoStats.ph} recipes use a placeholder because no accurate licensed photo was found. Each recipe page links
-          to its photo source.
+          to its photo source. {photoStats.owner} of the dish photos were supplied by the app owner rather than Foodiesfeed.
         </p>
       </section>
 

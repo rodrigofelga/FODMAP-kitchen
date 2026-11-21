@@ -34,7 +34,11 @@ export function RecipeDetailPage() {
             <RecipeImage recipe={recipe} sizes="(min-width: 900px) 520px, 100vw" eager />
             <FavButton id={recipe.id} title={recipe.title} />
           </div>
-          {img.match !== 'placeholder' ? (
+          {img.match !== 'placeholder' && img.source === 'Owner-supplied' ? (
+            <p className="small muted" style={{ marginTop: 6 }}>
+              {img.match === 'exact' ? 'Photo of this dish' : 'Representative photo — a similar dish, not this exact recipe'}. Supplied by the app owner.
+            </p>
+          ) : img.match !== 'placeholder' ? (
             <p className="small muted" style={{ marginTop: 6 }}>
               {img.match === 'exact' ? 'Photo of this dish' : 'Representative photo — a similar dish, not this exact recipe'}
               {img.aiGenerated ? ' (AI-generated image)' : ''}. Source:{' '}

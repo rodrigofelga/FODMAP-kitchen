@@ -1,20 +1,30 @@
 import raw from '../data/images.json';
 
-export interface PhotoMeta {
+interface PhotoBase {
   match: 'exact' | 'representative';
   alt: string;
   src480: string;
   src960: string;
-  source: string;
+  license: string;
+}
+
+export interface FoodiesfeedPhoto extends PhotoBase {
+  source: 'Foodiesfeed';
   photoPage: string;
   assetUrl: string;
   title: string | null;
   author: string | null;
   aiGenerated: boolean;
-  license: string;
   licenseUrl: string;
   retrieved: string;
 }
+
+/** A photo supplied by the app owner (source file in assets/owner-photos/). */
+export interface OwnerPhoto extends PhotoBase {
+  source: 'Owner-supplied';
+}
+
+export type PhotoMeta = FoodiesfeedPhoto | OwnerPhoto;
 
 export interface PlaceholderMeta {
   match: 'placeholder';

@@ -106,8 +106,12 @@
     "reason": "Candidate photo did not clearly show chia pudding."
   },
   "crepioca-mussarela-tomate": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Folded tapioca crepe filled with scrambled egg and melted cheese, served with sliced tomatoes",
+    "src480": "/images/recipes/crepioca-mussarela-tomate-480.webp",
+    "src960": "/images/recipes/crepioca-mussarela-tomate-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "burrito-cafe-tortilha-milho": {
     "match": "placeholder",
@@ -797,8 +801,12 @@
     "retrieved": "2026-11-21"
   },
   "romeu-e-julieta": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Slices of guava paste (goiabada) on rounds of fresh mozzarella with a sprig of mint",
+    "src480": "/images/recipes/romeu-e-julieta-480.webp",
+    "src960": "/images/recipes/romeu-e-julieta-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "cocada-de-forno": {
     "match": "placeholder",
