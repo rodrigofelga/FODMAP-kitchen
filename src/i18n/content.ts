@@ -61,11 +61,6 @@ export function recipeTitle(r: Recipe, l: Lang = getLang()): string {
   return ptText(r, l)?.title ?? r.title;
 }
 
-/** Secondary title: the original Brazilian name in English mode; none in Portuguese (it is the title). */
-export function recipeSubtitle(r: Recipe, l: Lang = getLang()): string | undefined {
-  return isPt(l) ? undefined : r.titlePt;
-}
-
 export function recipeDescription(r: Recipe, l: Lang = getLang()): string {
   return ptText(r, l)?.description ?? r.description;
 }

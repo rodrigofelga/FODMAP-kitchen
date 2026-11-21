@@ -5,7 +5,7 @@ import type { IngredientStatus } from '../lib/ingredients';
 import { imageFor } from '../lib/images';
 import { useStore } from '../lib/store';
 import { useI18n } from '../i18n/context';
-import { photoAlt, recipeSubtitle, recipeTitle } from '../i18n/content';
+import { photoAlt, recipeTitle } from '../i18n/content';
 import { IconClock, IconHeart, IconPlate } from './Icons';
 
 export function StatusBadge({ status }: { status: IngredientStatus }) {
@@ -68,14 +68,12 @@ export function FavButton({ id, title }: { id: string; title: string }) {
 export function RecipeCard({ recipe, verdict, note }: { recipe: Recipe; verdict?: Verdict; note?: string }) {
   const { m } = useI18n();
   const title = recipeTitle(recipe);
-  const subtitle = recipeSubtitle(recipe);
   return (
     <article className="rcard">
       <Link to={`/recipes/${recipe.id}`} className="cover">
         <RecipeImage recipe={recipe} sizes="(min-width: 900px) 260px, (min-width: 600px) 45vw, 92vw" />
         <div className="rbody">
           <h3>{title}</h3>
-          {subtitle && <span className="pt" lang="pt-BR">{subtitle}</span>}
           {note && <span className="small muted">{note}</span>}
           <div className="rmeta">
             <span className="row" style={{ gap: 4 }}>

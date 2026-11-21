@@ -8,7 +8,7 @@ import { useStore } from '../lib/store';
 import { FavButton, RecipeImage, StatusBadge, VerdictBadge } from '../components/RecipeBits';
 import { NotFoundPage } from './NotFoundPage';
 import { useI18n } from '../i18n/context';
-import { ingredientNote, recipeDescription, recipeSteps, recipeSubstitutions, recipeSubtitle, recipeTips, recipeTitle } from '../i18n/content';
+import { ingredientNote, recipeDescription, recipeSteps, recipeSubstitutions, recipeTips, recipeTitle } from '../i18n/content';
 
 export function RecipeDetailPage() {
   const { id } = useParams();
@@ -26,7 +26,6 @@ export function RecipeDetailPage() {
   const diets = dietLabels(recipe);
   const excluded = new Set(profile.prefs.excluded);
   const title = recipeTitle(recipe);
-  const subtitle = recipeSubtitle(recipe);
   const tips = recipeTips(recipe);
 
   return (
@@ -69,11 +68,6 @@ export function RecipeDetailPage() {
             {recipe.brazilian ? d.brazilianStyle : ''}
           </span>
           <h1>{title}</h1>
-          {subtitle && (
-            <p className="muted" lang="pt-BR" style={{ fontStyle: 'italic' }}>
-              {subtitle}
-            </p>
-          )}
           <p>{recipeDescription(recipe)}</p>
           <div className="row">
             <VerdictBadge verdict={ev.verdict} />

@@ -24,7 +24,6 @@ import {
   recipeDescription,
   recipeSteps,
   recipeSubstitutions,
-  recipeSubtitle,
   recipeTips,
   recipeTitle,
 } from '../../src/i18n/content';
@@ -171,7 +170,6 @@ describe('recipe translations', () => {
   it('content accessors fall back to the shared English record in English', () => {
     const r = RECIPE_BY_ID.get('galinhada-acafrao')!;
     expect(recipeTitle(r)).toBe(r.title);
-    expect(recipeSubtitle(r)).toBe(r.titlePt);
     expect(recipeDescription(r)).toBe(r.description);
     expect(recipeSteps(r)).toBe(r.steps);
     expect(recipeSubstitutions(r)).toBe(r.substitutions);
@@ -179,7 +177,6 @@ describe('recipe translations', () => {
     expect(ingredientNote(r, r.ingredients.find((i) => i.note)!)).toBe(r.ingredients.find((i) => i.note)!.note);
     setLang('pt-BR');
     expect(recipeTitle(r)).toBe('Galinhada');
-    expect(recipeSubtitle(r)).toBeUndefined();
     expect(recipeSteps(r)).toBe(RECIPE_TEXT_PT[r.id].steps);
   });
 });

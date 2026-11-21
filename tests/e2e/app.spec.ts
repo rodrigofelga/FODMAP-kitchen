@@ -313,3 +313,14 @@ test('recipes can be filtered to elimination-friendly only', async ({ page }) =>
   await expect(page.getByRole('button', { name: 'Só adequadas à eliminação' })).toHaveAttribute('aria-pressed', 'true');
   await page.evaluate(() => localStorage.removeItem('fodmap-kitchen:lang'));
 });
+
+test('English pages show no Portuguese recipe names (one language at a time)', async ({ page }) => {
+  const { RECIPES } = await import('../../src/data/recipes');
+  const ptOnly = RECIPES.filter((r) => r.titlePt && r.titlePt.toLowerCase() !== r.title.toLowerCase()).map((r) => r.titlePt!);
+  for (const path of ['/', '/recipes', '/recipes/batata-frita-airfryer', '/recipes/galinhada-acafrao', '/matcher']) {
+    await page.goto(path);
+    await expect(page.locator('main h1').first()).toBeVisible();
+    const text = await page.locator('main').innerText();
+    for (const name of ptOnly) expect(text, `${path} shows "${name}"`).not.toContain(name);
+  }
+});
