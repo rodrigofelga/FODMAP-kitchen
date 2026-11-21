@@ -21,6 +21,8 @@ export function RecipesPage() {
   const brazilian = params.get('brazilian') === '1';
   const favOnly = params.get('fav') === '1';
   const showExcluded = params.get('all') === '1';
+  /** Only recipes rated Elimination-friendly for these settings (no AVOID foods, no portion checks). */
+  const eliminationOnly = params.get('elim') === '1';
 
   const set = (k: string, v: string | null) => {
     const next = new URLSearchParams(params);
@@ -34,9 +36,10 @@ export function RecipesPage() {
     const base = searchRecipes(RECIPES, q).filter((r) => (!meal || r.meal === meal) && (!brazilian || r.brazilian) && (!favOnly || favs.has(r.id)));
     const withEval = base.map((r) => ({ r, e: evaluateRecipe(r, profile.prefs) }));
     const hidden = withEval.filter((x) => x.e.verdict === 'excluded');
-    const visible = (showExcluded ? withEval : withEval.filter((x) => x.e.verdict !== 'excluded')).sort((a, b) => compareText(recipeTitle(a.r), recipeTitle(b.r)));
+    const shown = eliminationOnly ? withEval.filter((x) => x.e.verdict === 'suitable') : showExcluded ? withEval : withEval.filter((x) => x.e.verdict !== 'excluded');
+    const visible = shown.sort((a, b) => compareText(recipeTitle(a.r), recipeTitle(b.r)));
     return { visible, hidden };
-  }, [q, meal, brazilian, favOnly, showExcluded, profile]);
+  }, [q, meal, brazilian, favOnly, showExcluded, eliminationOnly, profile]);
 
   return (
     <>
@@ -63,6 +66,9 @@ export function RecipesPage() {
             {msg.meals[m]}
           </button>
         ))}
+        <button className="chip" aria-pressed={eliminationOnly} onClick={() => set('elim', eliminationOnly ? null : '1')}>
+          {t.eliminationOnly}
+        </button>
       </div>
       <div className="chips" role="group" aria-label={t.moreFilters}>
         <button className="chip" aria-pressed={brazilian} onClick={() => set('brazilian', brazilian ? null : '1')}>
@@ -78,7 +84,7 @@ export function RecipesPage() {
 
       <p className="small muted" aria-live="polite">
         {t.count(visible.length)}
-        {!showExcluded && hidden.length > 0 && t.hiddenCount(hidden.length)}
+        {!showExcluded && !eliminationOnly && hidden.length > 0 && t.hiddenCount(hidden.length)}
       </p>
 
       {visible.length ? (

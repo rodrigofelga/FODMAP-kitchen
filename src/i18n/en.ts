@@ -187,6 +187,7 @@ export const en = {
     moreFilters: 'More filters',
     brazilianOnly: 'Brazilian only',
     favouritesOnly: 'Favourites only',
+    eliminationOnly: 'Elimination-friendly only',
     showHidden: 'Show recipes hidden by settings',
     count: (n: number) => `${n} ${plural(n, 'recipe', 'recipes')}`,
     hiddenCount: (n: number) => ` · ${n} hidden by your settings`,

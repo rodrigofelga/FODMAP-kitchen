@@ -290,3 +290,26 @@ test('Portuguese works offline', async ({ page, context }) => {
   await expect(page.locator('main h1')).toHaveText('Omelete de tomate e espinafre');
   await context.setOffline(false);
 });
+
+test('recipes can be filtered to elimination-friendly only', async ({ page }) => {
+  await page.goto('/recipes');
+  const cards = page.locator('.grid > *');
+  await expect(page.getByText('81 recipes')).toBeVisible();
+  const all = await cards.count();
+  const chip = page.getByRole('button', { name: 'Elimination-friendly only' });
+  await chip.click();
+  await expect(chip).toHaveAttribute('aria-pressed', 'true');
+  await expect(page).toHaveURL(/elim=1/);
+  const n = await cards.count();
+  expect(n).toBeGreaterThan(0);
+  expect(n).toBeLessThan(all);
+  await expect(page.locator('.grid').getByText('Portion check')).toHaveCount(0);
+  await expect(page.locator('main p.small.muted').first()).toHaveText(`${n} ${n === 1 ? 'recipe' : 'recipes'}`);
+  // Works together with the meal filter, and in Portuguese.
+  await page.getByRole('button', { name: 'Lunch' }).click();
+  expect(await cards.count()).toBeLessThanOrEqual(n);
+  await page.evaluate(() => localStorage.setItem('fodmap-kitchen:lang', 'pt-BR'));
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Só adequadas à eliminação' })).toHaveAttribute('aria-pressed', 'true');
+  await page.evaluate(() => localStorage.removeItem('fodmap-kitchen:lang'));
+});

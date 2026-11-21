@@ -181,6 +181,7 @@ export const ptBR: Messages = {
     moreFilters: 'Mais filtros',
     brazilianOnly: 'Só brasileiras',
     favouritesOnly: 'Só favoritas',
+    eliminationOnly: 'Só adequadas à eliminação',
     showHidden: 'Mostrar receitas ocultas pelos ajustes',
     count: (n: number) => `${n} ${plural(n, 'receita', 'receitas')}`,
     hiddenCount: (n: number) => ` · ${n} ${plural(n, 'oculta', 'ocultas')} pelos seus ajustes`,
