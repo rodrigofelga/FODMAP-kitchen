@@ -1,0 +1,380 @@
+{
+  "ovos-mexidos-espinafre-tomate": {
+    "slug": "colorful-scrambled-eggs-with-spinach-and-cherry-tomatoes",
+    "match": "exact",
+    "alt": "Plate of soft scrambled eggs with wilted spinach and cherry tomatoes"
+  },
+  "mingau-de-aveia-morango": {
+    "slug": "cup-of-oatmeal-with-berries-and-coconut",
+    "match": "representative",
+    "alt": "White cup of oatmeal topped with fresh strawberries and blueberries"
+  },
+  "tapioca-ovo-mussarela": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "pao-de-queijo-caseiro": {
+    "slug": null,
+    "reason": "Closest Foodiesfeed photo shows toasted cheese-topped bread slices, not pão de queijo."
+  },
+  "vitamina-banana-amendoim": {
+    "slug": "peanut-butter-and-banana-smoothie",
+    "match": "exact",
+    "alt": "Two glasses of creamy banana and peanut butter smoothie beside a spoon of peanut butter"
+  },
+  "omelete-tomate-folhas": {
+    "slug": "delicious-omelette-with-fresh-tomatoes-and-greens",
+    "match": "exact",
+    "alt": "Folded omelette with cherry tomatoes and fresh greens"
+  },
+  "cuscuz-nordestino-ovo": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "panquecas-aveia-banana": {
+    "slug": "heavenly-good-pancakes-with-banana-and-roasted-oats",
+    "match": "representative",
+    "alt": "Pancakes with banana slices and roasted oats on a plate"
+  },
+  "parfait-chia-framboesa": {
+    "slug": "creamy-chia-seed-parfait-with-raspberries",
+    "match": "exact",
+    "alt": "Glass jars of layered chia pudding and yogurt topped with raspberries"
+  },
+  "pudim-chia-coco": {
+    "slug": null,
+    "reason": "Candidate photo did not clearly show chia pudding."
+  },
+  "crepioca-mussarela-tomate": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "burrito-cafe-tortilha-milho": {
+    "slug": null,
+    "reason": "Candidate photo showed a salad, not a burrito."
+  },
+  "torrada-fermentacao-natural-ovo": {
+    "slug": "perfectly-fried-egg-on-whole-grain-toast",
+    "match": "representative",
+    "alt": "Fried egg on a slice of toasted wholegrain bread"
+  },
+  "aveia-dormida-kiwi": {
+    "slug": null,
+    "reason": "No Foodiesfeed photo of overnight oats with kiwi was found."
+  },
+  "mingau-de-fuba": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "ovos-bacon-queijo": {
+    "slug": "cheesy-scrambled-eggs-with-crispy-bacon-breakfast",
+    "match": "exact",
+    "alt": "Cheesy scrambled eggs with crispy bacon and toast"
+  },
+  "smoothie-morango": {
+    "slug": "delicious-strawberry-smoothie-in-a-glass",
+    "match": "exact",
+    "alt": "Glass of pink strawberry smoothie with fresh strawberries"
+  },
+  "smoothie-verde-kiwi": {
+    "slug": "healthy-green-smoothie-with-spinach-and-kiwi",
+    "match": "exact",
+    "alt": "Green spinach and kiwi smoothie in a glass with kiwi halves"
+  },
+  "batata-rosti-ovo": {
+    "slug": "eating-hash-browns-with-eggs-for-breakfast",
+    "match": "representative",
+    "alt": "Crispy potato cakes topped with eggs on a white plate"
+  },
+  "bowl-iogurte-frutas-vermelhas": {
+    "slug": "yogurt-with-strawberries",
+    "match": "representative",
+    "alt": "Bowl of yogurt with fresh strawberries"
+  },
+  "prato-feito-frango-grelhado": {
+    "slug": "delicious-chicken-and-rice-meal-prep",
+    "match": "representative",
+    "alt": "Meal-prep container of chicken and rice on a work desk"
+  },
+  "galinhada-acafrao": {
+    "slug": null,
+    "reason": "Candidate photo did not show galinhada."
+  },
+  "strogonoff-frango-sem-lactose": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "moqueca-de-peixe-leve": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "arroz-carreteiro": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "salada-bife-batata-doce": {
+    "slug": "grilled-steak-salad-with-sweet-potatoes-and-greens",
+    "match": "exact",
+    "alt": "Sliced grilled steak over greens with roasted sweet potato cubes"
+  },
+  "picadinho-de-carne": {
+    "slug": "hearty-beef-stew-with-vegetables",
+    "match": "exact",
+    "alt": "Bowl of beef stew with potatoes and carrots"
+  },
+  "salpicao-de-frango": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "escondidinho-carne-moida": {
+    "slug": null,
+    "reason": "Candidate casserole photo includes jalapeños and is not escondidinho."
+  },
+  "salada-quinoa-frango": {
+    "slug": "grilled-chicken-salad-with-fresh-vegetables",
+    "match": "representative",
+    "alt": "Grilled chicken salad with tomatoes, olives and cucumber"
+  },
+  "caldo-verde-sem-cebola": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "frango-xadrez": {
+    "slug": "stir-fry-chicken-and-vegetables-in-skillet",
+    "match": "representative",
+    "alt": "Chicken and vegetable stir-fry in a skillet"
+  },
+  "tilapia-grelhada-vinagrete": {
+    "slug": "delicious-grilled-fish-with-rice-and-fresh-salad",
+    "match": "exact",
+    "alt": "Grilled fish fillet with white rice and fresh salad"
+  },
+  "polenta-ragu-carne": {
+    "slug": "italian-corn-polenta-with-cheese-and-basil",
+    "match": "representative",
+    "alt": "Creamy polenta with cheese and a basil leaf"
+  },
+  "arroz-ovo-couve": {
+    "slug": "flavorful-rice-bowl-with-eggs-and-fresh-veggies",
+    "match": "representative",
+    "alt": "Rice with fried eggs and fresh vegetables"
+  },
+  "salmao-batata-verdes": {
+    "slug": "delicious-grilled-salmon-with-potatoes-and-greens",
+    "match": "exact",
+    "alt": "Grilled salmon fillet with baby potatoes and green beans"
+  },
+  "wrap-frango-tortilha-milho": {
+    "slug": "grilled-chicken-wrap-with-fresh-vegetables",
+    "match": "representative",
+    "alt": "Grilled chicken wrap on a table"
+  },
+  "bowl-carne-moida-arroz": {
+    "slug": "ground-beef-rice-bowl",
+    "match": "exact",
+    "alt": "Bowls of seasoned ground beef and white rice"
+  },
+  "macarrao-arroz-camarao": {
+    "slug": "shrimps-pad-thai",
+    "match": "exact",
+    "alt": "Shrimp pad thai rice noodles with lime"
+  },
+  "frango-curry-basmati": {
+    "slug": "delicious-chicken-curry-with-rice",
+    "match": "exact",
+    "alt": "Chicken curry served with white rice"
+  },
+  "arroz-com-lentilha": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "peixe-grelhado-batata-salada": {
+    "slug": "grilled-fish-with-potatoes-and-salad",
+    "match": "exact",
+    "alt": "Grilled fish with boiled potatoes and a green salad"
+  },
+  "bife-grelhado-arroz-salada": {
+    "slug": "rice-with-steak",
+    "match": "exact",
+    "alt": "Sliced grilled steak served with rice"
+  },
+  "canja-de-galinha": {
+    "slug": "hearty-chicken-vegetable-soup-recipe",
+    "match": "representative",
+    "alt": "Bowl of chicken and vegetable soup"
+  },
+  "espetinho-de-frango": {
+    "slug": "grilled-chicken-skewers",
+    "match": "representative",
+    "alt": "AI-generated image of grilled chicken pieces with lemon"
+  },
+  "espetinho-de-carne": {
+    "slug": null,
+    "reason": "Candidate photo showed people at a barbecue rather than beef skewers."
+  },
+  "camarao-molho-tomate": {
+    "slug": "creamy-shrimp-and-tomato-skillet-delight",
+    "match": "exact",
+    "alt": "Skillet of shrimp in a creamy tomato sauce"
+  },
+  "bisteca-porco-legumes": {
+    "slug": "pan-seared-pork-chop-with-roasted-vegetables",
+    "match": "exact",
+    "alt": "Pan-seared pork chop on roasted vegetables"
+  },
+  "costelinha-assada-batatas": {
+    "slug": null,
+    "reason": "Candidate photo did not clearly show pork ribs."
+  },
+  "frango-assado-limao-alecrim": {
+    "slug": "herb-roasted-chicken-and-potatoes",
+    "match": "exact",
+    "alt": "Herb-roasted chicken with rosemary and lemon"
+  },
+  "berinjela-recheada-carne": {
+    "slug": "stuffed-eggplant-with-lentils-and-herbs-recipe",
+    "match": "representative",
+    "alt": "Stuffed roasted eggplant topped with herbs"
+  },
+  "sopa-de-abobora": {
+    "slug": "autumn-pumpkin-soup",
+    "match": "exact",
+    "alt": "Bowl of smooth orange squash soup with a swirl of cream"
+  },
+  "hamburguer-caseiro-batata": {
+    "slug": "beef-burger-with-homemade-baked-potatoes",
+    "match": "representative",
+    "alt": "Beef burger in a bun (this recipe uses a plain patty)"
+  },
+  "tofu-salteado-legumes": {
+    "slug": "delicious-soft-tofu-on-a-plate",
+    "match": "representative",
+    "alt": "Cubes of plain tofu on a plate"
+  },
+  "risoto-abobrinha": {
+    "slug": "cook-scoops-risotto",
+    "match": "representative",
+    "alt": "Creamy risotto served from a cheese wheel"
+  },
+  "sushi-caseiro-salmao": {
+    "slug": "salmon-sushi-maki",
+    "match": "exact",
+    "alt": "Salmon sushi pieces on a dark plate"
+  },
+  "tacos-carne-tortilha-milho": {
+    "slug": null,
+    "reason": "Candidate taco photo shows red onion, which the guide lists as AVOID."
+  },
+  "salmao-quinoa-legumes": {
+    "slug": "grilled-salmon-bowl-with-quinoa-and-colorful-veggies",
+    "match": "exact",
+    "alt": "Salmon quinoa bowl with cucumber and tomatoes"
+  },
+  "sopa-de-carne-legumes": {
+    "slug": "beef-potato-stew",
+    "match": "representative",
+    "alt": "Beef and potato stew with bread"
+  },
+  "arroz-frito-ovo": {
+    "slug": "fried-rice-with-egg-and-spring-onion",
+    "match": "exact",
+    "alt": "Fried rice topped with fried eggs and spring onion"
+  },
+  "macarrao-sem-gluten-almondegas": {
+    "slug": "delicious-homemade-meatballs-in-marinara-sauce",
+    "match": "representative",
+    "alt": "Meatballs in tomato sauce with basil"
+  },
+  "pipoca-de-panela": {
+    "slug": "fresh-popcorn-detail",
+    "match": "exact",
+    "alt": "Close-up of fresh popcorn"
+  },
+  "nachos-caseiros-mussarela": {
+    "slug": "nachos-close-up",
+    "match": "representative",
+    "alt": "Plain corn tortilla chips"
+  },
+  "biscoito-arroz-amendoim-banana": {
+    "slug": null,
+    "reason": "Candidate photo includes apple, which the guide lists as AVOID."
+  },
+  "iogurte-mirtilo": {
+    "slug": "delicious-yogurt-parfait-with-fresh-berries",
+    "match": "representative",
+    "alt": "Yogurt parfait with blueberries and berries"
+  },
+  "salada-de-frutas-tropical": {
+    "slug": null,
+    "reason": "Candidate fruit platter includes mango and watermelon, which the guide lists as AVOID."
+  },
+  "bolo-de-fuba": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "pudim-de-leite-sem-lactose": {
+    "slug": "brazilian-style-caramel-pudding-dessert",
+    "match": "exact",
+    "alt": "Brazilian caramel milk pudding (pudim) on a plate"
+  },
+  "arroz-doce-sem-lactose": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "pacoca-caseira": {
+    "slug": "brazilian-homemade-peanut-candies",
+    "match": "exact",
+    "alt": "Brazilian paçoca peanut candies with roasted peanuts"
+  },
+  "romeu-e-julieta": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "cocada-de-forno": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  },
+  "morango-chocolate-amargo": {
+    "slug": null,
+    "reason": "Candidate photo shows other fruit dipped in chocolate, not strawberries."
+  },
+  "chips-batata-doce": {
+    "slug": "sweet-potato-fries",
+    "match": "exact",
+    "alt": "Baked sweet potato fries with herbs"
+  },
+  "batata-frita-airfryer": {
+    "slug": "french-fries-detail",
+    "match": "exact",
+    "alt": "Golden French fries on a board"
+  },
+  "kiwi-laranja": {
+    "slug": "vibrant-fruit-platter-with-kiwi-and-berries",
+    "match": "representative",
+    "alt": "Platter of sliced kiwi, oranges and other fruit"
+  },
+  "cookies-pasta-amendoim": {
+    "slug": "freshly-baked-peanut-butter-cookies-with-milk",
+    "match": "exact",
+    "alt": "Peanut butter cookies with fork marks on a cooling rack"
+  },
+  "muffin-mirtilo-sem-gluten": {
+    "slug": "white-muffin-with-blueberries-on-a-white-background",
+    "match": "exact",
+    "alt": "Blueberry muffin on a white background"
+  },
+  "picole-morango-banana": {
+    "slug": "creamy-strawberry-popsicle",
+    "match": "representative",
+    "alt": "Hand holding a strawberry ice pop"
+  },
+  "bolo-de-banana-low-fodmap": {
+    "slug": "banana-bread-with-butter-and-milk",
+    "match": "exact",
+    "alt": "Slices of banana bread with butter"
+  },
+  "quindim": {
+    "slug": null,
+    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+  }
+}

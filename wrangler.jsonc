@@ -1,0 +1,15 @@
+{
+  // Cloudflare Worker "fodmap-kitchen" serving the Vite build as static assets.
+  // Works both for Workers Builds (Git integration on `main`) and `npx wrangler deploy`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fodmap-kitchen",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

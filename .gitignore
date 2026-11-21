@@ -1,0 +1,11 @@
+node_modules
+dist
+dev-dist
+.wrangler
+test-results
+playwright-report
+.image-cache
+*.log
+.env*
+.dev.vars*
+.DS_Store
