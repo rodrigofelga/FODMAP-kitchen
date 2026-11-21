@@ -152,3 +152,141 @@ test('works offline after the first visit', async ({ page, context }) => {
   await expect.poll(() => card.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
   await context.setOffline(false);
 });
+
+// ---------- Brazilian Portuguese (pt-BR) ----------
+
+const PT_NAV = ['Início', 'Guia de Alimentos', 'Receitas', 'Planejador', 'Ajustes'];
+
+/** Opens the app with Portuguese already chosen on this device. */
+async function usePortuguese(page: Page) {
+  await page.addInitScript(() => localStorage.setItem('fodmap-kitchen:lang', 'pt-BR'));
+}
+
+test('language switch is immediate, saved per device, and English stays the default', async ({ page }) => {
+  await page.goto('/settings');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  await expect(page.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true');
+  const navigations: string[] = [];
+  page.on('framenavigated', (f) => {
+    if (f === page.mainFrame()) navigations.push(f.url());
+  });
+  await page.getByRole('button', { name: 'Português (Brasil)' }).click();
+  await expect(page.locator('main h1').first()).toHaveText('Ajustes');
+  // No reload: the page switched in place.
+  expect(navigations).toEqual([]);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
+  const nav = page.getByRole('navigation', { name: 'Principal' });
+  for (const label of PT_NAV) await expect(nav.getByRole('link', { name: label })).toBeVisible();
+  await page.reload();
+  await expect(page.locator('main h1').first()).toHaveText('Ajustes');
+  await expect(page.getByRole('button', { name: 'Português (Brasil)' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'English' }).click();
+  await expect(page.locator('main h1').first()).toHaveText('Settings');
+  await page.reload();
+  await expect(page.locator('main h1').first()).toHaveText('Settings');
+});
+
+test('switching language keeps favourites, plans and dietary settings', async ({ page }) => {
+  await page.goto('/recipes/quindim');
+  await page.getByRole('button', { name: /Add Coconut egg custards to favourites/ }).click();
+  await page.goto('/planner');
+  await page.getByRole('button', { name: 'Generate a week' }).click();
+  await expect(page.getByText('28 of 28 meals planned')).toBeVisible();
+  await page.goto('/settings');
+  await page.getByRole('button', { name: 'Hide recipes using them' }).click();
+  await page.waitForTimeout(400);
+  await page.getByRole('button', { name: 'Português (Brasil)' }).click();
+  await expect(page.getByRole('button', { name: 'Ocultar receitas que os usam' })).toHaveAttribute('aria-pressed', 'true');
+  await page.goto('/recipes?fav=1&all=1');
+  await expect(page.getByRole('heading', { name: 'Quindim' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Remover Quindim dos favoritos/ })).toBeVisible();
+  await page.goto('/planner');
+  await expect(page.getByText('28 de 28 refeições planejadas')).toBeVisible();
+  await page.goto('/settings');
+  await page.getByRole('button', { name: 'English' }).click();
+  await page.goto('/recipes?fav=1&all=1');
+  await expect(page.getByRole('heading', { name: 'Coconut egg custards' })).toBeVisible();
+  await page.goto('/settings');
+  await expect(page.getByRole('button', { name: 'Hide recipes using them' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('every page renders in Portuguese without errors, English leftovers or horizontal overflow', async ({ page }) => {
+  await usePortuguese(page);
+  const errors = trackErrors(page);
+  const englishUi =
+    /\b(Home|Food Guide|Meal Planner|Settings|Ingredients|Method|Substitutions|Grocery list|Breakfast|Lunch|Dinner|Snack|servings?|minutes|AVOID FOR NOW|LIMIT \/ CHECK|EAT|Representative photo|Not in guide)\b/;
+  for (const path of PAGES) {
+    await page.goto(path);
+    await expect(page.locator('main h1').first()).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await noHorizontalOverflow(page);
+    // The brand name and the photo source are the only English allowed.
+    const text = (await page.locator('body').innerText()).replaceAll('My FODMAP Kitchen', '').replaceAll('Foodiesfeed', '');
+    expect(text, path).not.toMatch(englishUi);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('Portuguese food guide, recipe page, planner and matcher', async ({ page }) => {
+  await usePortuguese(page);
+  await page.goto('/guide');
+  await expect(page.getByText('Mostrando 251 de 251 alimentos')).toBeVisible();
+  await expect(page.locator('.food-col.avoid li[data-food="garlic"]')).toContainText('Alho');
+  await expect(page.locator('.food-col.avoid header').first()).toHaveText('EVITAR POR ENQUANTO');
+  await expect(page.locator('.food-col.eat header').first()).toHaveText('PODE COMER');
+  await expect(page.locator('.food-col.limit header').first()).toHaveText('LIMITAR / VERIFICAR');
+
+  await page.goto('/recipes/arroz-com-lentilha');
+  await expect(page.locator('main h1')).toHaveText('Arroz com lentilha');
+  await expect(page.getByText('Adequação à dieta')).toBeVisible();
+  await expect(page.getByText(/LIMITAR \/ VERIFICAR: 40 g por porção/)).toBeVisible();
+
+  await page.goto('/planner');
+  await page.getByRole('button', { name: 'Gerar uma semana' }).click();
+  await expect(page.getByText('28 de 28 refeições planejadas')).toBeVisible();
+  await page.getByRole('button', { name: 'Lista de compras' }).click();
+  await expect(page.getByRole('heading', { name: 'Lista de compras' })).toBeVisible();
+
+  await page.goto('/matcher');
+  for (const name of ['Ovos', 'Manteiga', 'Espinafre', 'Tomate']) await page.locator('.pick', { hasText: new RegExp(`^${name}$`) }).click();
+  await expect(page.getByRole('heading', { name: /Prontas para cozinhar/ })).toBeVisible();
+});
+
+test('Portuguese search works with and without accents', async ({ page }) => {
+  await usePortuguese(page);
+  await page.goto('/guide');
+  const search = page.getByPlaceholder(/Busque em português ou inglês/);
+  await search.fill('feijão');
+  const accented = await page.locator('li[data-food]').count();
+  expect(accented).toBeGreaterThan(0);
+  await search.fill('feijao');
+  await expect(page.locator('li[data-food]')).toHaveCount(accented);
+  await search.fill('berinjela');
+  await expect(page.locator('li[data-food="eggplant"]')).toBeVisible();
+
+  await page.goto('/recipes?q=salm%C3%A3o');
+  await expect(page.locator('.rcard').first()).toBeVisible();
+  const withAccent = await page.locator('.rcard').count();
+  await page.goto('/recipes?q=salmao');
+  await expect(page.locator('.rcard')).toHaveCount(withAccent);
+  await expect(page.getByRole('heading', { name: 'Sushi caseiro de salmão' })).toBeVisible();
+});
+
+test('Portuguese works offline', async ({ page, context }) => {
+  await usePortuguese(page);
+  await page.goto('/');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await expect
+    .poll(async () => page.evaluate(async () => (await Promise.all((await caches.keys()).map(async (k) => (await (await caches.open(k)).keys()).length))).reduce((a, b) => a + b, 0)), { timeout: 30_000 })
+    .toBeGreaterThan(60);
+  await context.setOffline(true);
+  await page.goto('/guide');
+  await expect(page.getByText('Mostrando 251 de 251 alimentos')).toBeVisible();
+  await page.goto('/recipes/omelete-tomate-folhas');
+  await expect(page.locator('main h1')).toHaveText('Omelete de tomate e espinafre');
+  await context.setOffline(false);
+});

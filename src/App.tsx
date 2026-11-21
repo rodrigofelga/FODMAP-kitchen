@@ -10,13 +10,16 @@ import { MatcherPage } from './pages/MatcherPage';
 import { PlannerPage } from './pages/PlannerPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { LanguageProvider } from './i18n/LanguageProvider';
+import { useI18n } from './i18n/context';
 
 function Gate() {
   const { loaded } = useStore();
+  const { m } = useI18n();
   if (!loaded) {
     return (
       <div className="empty" role="status" style={{ paddingTop: '30vh' }}>
-        Loading your kitchen…
+        {m.common.loading}
       </div>
     );
   }
@@ -38,10 +41,12 @@ function Gate() {
 
 export function App() {
   return (
-    <AppProvider>
-      <BrowserRouter>
-        <Gate />
-      </BrowserRouter>
-    </AppProvider>
+    <LanguageProvider>
+      <AppProvider>
+        <BrowserRouter>
+          <Gate />
+        </BrowserRouter>
+      </AppProvider>
+    </LanguageProvider>
   );
 }

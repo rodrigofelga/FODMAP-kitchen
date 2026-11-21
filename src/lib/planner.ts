@@ -2,7 +2,10 @@ import { MEALS, type Meal, type Recipe, type Unit } from '../data/types';
 import { RECIPE_BY_ID } from '../data/recipes';
 import { evaluateRecipe, type Preferences } from './analysis';
 import { formatAmount, mustResolve } from './ingredients';
+import { compareText } from '../i18n/core';
+import { messages, recipeTitle } from '../i18n/content';
 
+/** Structural (seven days, Monday first); display names come from the i18n messages. */
 export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export type DayPlan = Record<Meal, string | null>;
@@ -87,13 +90,14 @@ export function buildGroceryList(plan: MealPlan, householdSize: number): Grocery
       for (const ing of r.ingredients) {
         const e = acc.get(ing.id) ?? { qty: new Map(), recipes: new Set(), optionalOnly: true };
         e.qty.set(ing.unit, (e.qty.get(ing.unit) ?? 0) + ing.qty * factor);
-        e.recipes.add(r.title);
+        e.recipes.add(recipeTitle(r));
         if (!ing.optional) e.optionalOnly = false;
         acc.set(ing.id, e);
       }
     }
   }
   const lines: GroceryLine[] = [];
+  const optional = messages().grocery.optional;
   for (const [id, e] of acc) {
     const f = mustResolve(id);
     const amounts = [...e.qty.entries()]
@@ -102,14 +106,14 @@ export function buildGroceryList(plan: MealPlan, householdSize: number): Grocery
     lines.push({
       key: id,
       id,
-      name: f.name + (e.optionalOnly ? ' (optional)' : ''),
+      name: f.name + (e.optionalOnly ? optional : ''),
       group: f.group,
       status: f.status,
       amounts,
-      recipes: [...e.recipes].sort(),
+      recipes: [...e.recipes].sort(compareText),
     });
   }
-  return lines.sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
+  return lines.sort((a, b) => compareText(a.group, b.group) || compareText(a.name, b.name));
 }
 
 export function planRecipeCount(plan: MealPlan): number {

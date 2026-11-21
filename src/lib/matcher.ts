@@ -1,6 +1,8 @@
 import type { Recipe } from '../data/types';
 import { evaluateRecipe, type Evaluation, type Preferences } from './analysis';
 import { mustResolve } from './ingredients';
+import { compareText } from '../i18n/core';
+import { recipeTitle } from '../i18n/content';
 
 /** Basics most kitchens have; can be assumed by the matcher. */
 export const PANTRY_BASICS = ['salt', 'black-pepper', 'still-water', 'olive-oil', 'evoo', 'canola-oil'];
@@ -52,7 +54,7 @@ export function matchRecipe(recipe: Recipe, selected: Set<string>, prefs: Prefer
 export function matchRecipes(recipes: Recipe[], selected: Set<string>, prefs: Preferences, assumeBasics = true) {
   const all = recipes.map((r) => matchRecipe(r, selected, prefs, assumeBasics)).filter((m) => m.have.length > 0);
   const byScore = (a: MatchResult, b: MatchResult) =>
-    a.missing.length - b.missing.length || b.coverage - a.coverage || a.recipe.title.localeCompare(b.recipe.title);
+    a.missing.length - b.missing.length || b.coverage - a.coverage || compareText(recipeTitle(a.recipe), recipeTitle(b.recipe));
   const recommended = all.filter((m) => m.evaluation.verdict !== 'excluded').sort(byScore);
   const excluded = all.filter((m) => m.evaluation.verdict === 'excluded' && m.coverage >= 0.5).sort(byScore);
   return { recommended, excluded };

@@ -2,6 +2,7 @@ import { DEFAULT_PREFERENCES, type Preferences } from './analysis';
 import { DAY_NAMES, emptyDay, type MealPlan } from './planner';
 import { RECIPE_BY_ID } from '../data/recipes';
 import { MEALS } from '../data/types';
+import { messages } from '../i18n/content';
 
 export const DATA_VERSION = 1;
 
@@ -34,7 +35,7 @@ export function newProfile(name: string): Profile {
 }
 
 export function defaultData(): AppData {
-  const p = newProfile('Me');
+  const p = newProfile(messages().settings.defaultProfileName);
   return { version: DATA_VERSION, activeProfileId: p.id, profiles: [p] };
 }
 
@@ -53,7 +54,7 @@ function normalizePlan(raw: unknown): MealPlan | null {
     }
     return d;
   });
-  return { id: p.id, name: typeof p.name === 'string' ? p.name : 'My week', createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date().toISOString(), days, checked: arr(p.checked) };
+  return { id: p.id, name: typeof p.name === 'string' ? p.name : messages().planner.defaultPlanName, createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date().toISOString(), days, checked: arr(p.checked) };
 }
 
 /**
@@ -81,7 +82,7 @@ export function normalizeData(raw: unknown): AppData {
       const plans = (Array.isArray(pr.plans) ? pr.plans : []).map(normalizePlan).filter((x): x is MealPlan => !!x);
       return {
         id: pr.id,
-        name: typeof pr.name === 'string' && pr.name.trim() ? pr.name : 'Me',
+        name: typeof pr.name === 'string' && pr.name.trim() ? pr.name : messages().settings.defaultProfileName,
         prefs,
         favourites: arr(pr.favourites).filter((id) => RECIPE_BY_ID.has(id)),
         plans,

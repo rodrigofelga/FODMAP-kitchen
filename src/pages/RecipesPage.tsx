@@ -1,15 +1,20 @@
 import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { RECIPES } from '../data/recipes';
-import { MEALS, MEAL_LABELS, type Meal } from '../data/types';
+import { MEALS, type Meal } from '../data/types';
 import { evaluateRecipe } from '../lib/analysis';
 import { searchRecipes } from '../lib/search';
 import { useStore } from '../lib/store';
 import { IconSearch } from '../components/Icons';
 import { RecipeCard } from '../components/RecipeBits';
+import { useI18n } from '../i18n/context';
+import { recipeTitle } from '../i18n/content';
+import { compareText } from '../i18n/core';
 
 export function RecipesPage() {
   const { profile } = useStore();
+  const { m: msg } = useI18n();
+  const t = msg.recipes;
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
   const meal = (params.get('meal') as Meal | null) ?? null;
@@ -29,50 +34,51 @@ export function RecipesPage() {
     const base = searchRecipes(RECIPES, q).filter((r) => (!meal || r.meal === meal) && (!brazilian || r.brazilian) && (!favOnly || favs.has(r.id)));
     const withEval = base.map((r) => ({ r, e: evaluateRecipe(r, profile.prefs) }));
     const hidden = withEval.filter((x) => x.e.verdict === 'excluded');
-    const visible = (showExcluded ? withEval : withEval.filter((x) => x.e.verdict !== 'excluded')).sort((a, b) => a.r.title.localeCompare(b.r.title));
+    const visible = (showExcluded ? withEval : withEval.filter((x) => x.e.verdict !== 'excluded')).sort((a, b) => compareText(recipeTitle(a.r), recipeTitle(b.r)));
     return { visible, hidden };
   }, [q, meal, brazilian, favOnly, showExcluded, profile]);
 
   return (
     <>
       <div className="page-head">
-        <h1>Recipes</h1>
+        <h1>{t.title}</h1>
         <p>
-          {RECIPES.length} low-FODMAP recipes, mostly Brazilian-style. <Link to="/matcher">Find recipes from ingredients you have →</Link>
+          {t.intro(RECIPES.length)}
+          <Link to="/matcher">{t.matcherLink}</Link>
         </p>
       </div>
 
       <label className="search">
         <IconSearch />
-        <span className="sr-only">Search recipes</span>
-        <input type="search" value={q} onChange={(e) => set('q', e.target.value)} placeholder="Search by name or ingredient" />
+        <span className="sr-only">{t.searchLabel}</span>
+        <input type="search" value={q} onChange={(e) => set('q', e.target.value)} placeholder={t.searchPlaceholder} />
       </label>
 
-      <div className="chips" role="group" aria-label="Meal type" style={{ marginTop: 12 }}>
+      <div className="chips" role="group" aria-label={t.mealType} style={{ marginTop: 12 }}>
         <button className="chip" aria-pressed={!meal} onClick={() => set('meal', null)}>
-          All meals
+          {t.allMeals}
         </button>
         {MEALS.map((m) => (
           <button key={m} className="chip" aria-pressed={meal === m} onClick={() => set('meal', m)}>
-            {MEAL_LABELS[m]}
+            {msg.meals[m]}
           </button>
         ))}
       </div>
-      <div className="chips" role="group" aria-label="More filters">
+      <div className="chips" role="group" aria-label={t.moreFilters}>
         <button className="chip" aria-pressed={brazilian} onClick={() => set('brazilian', brazilian ? null : '1')}>
-          Brazilian only
+          {t.brazilianOnly}
         </button>
         <button className="chip" aria-pressed={favOnly} onClick={() => set('fav', favOnly ? null : '1')}>
-          Favourites only
+          {t.favouritesOnly}
         </button>
         <button className="chip" aria-pressed={showExcluded} onClick={() => set('all', showExcluded ? null : '1')}>
-          Show recipes hidden by settings
+          {t.showHidden}
         </button>
       </div>
 
       <p className="small muted" aria-live="polite">
-        {visible.length} recipe{visible.length === 1 ? '' : 's'}
-        {!showExcluded && hidden.length > 0 && ` · ${hidden.length} hidden by your settings`}
+        {t.count(visible.length)}
+        {!showExcluded && hidden.length > 0 && t.hiddenCount(hidden.length)}
       </p>
 
       {visible.length ? (
@@ -83,9 +89,9 @@ export function RecipesPage() {
         </div>
       ) : (
         <div className="empty">
-          <p>No recipes match these filters.</p>
+          <p>{t.none}</p>
           <button className="btn" onClick={() => setParams(new URLSearchParams(), { replace: true })}>
-            Clear filters
+            {t.clearFilters}
           </button>
         </div>
       )}

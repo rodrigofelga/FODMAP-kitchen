@@ -8,6 +8,9 @@ import { IMAGES } from '../lib/images';
 import { mustResolve } from '../lib/ingredients';
 import { norm } from '../lib/search';
 import { useStore } from '../lib/store';
+import { useI18n } from '../i18n/context';
+import { compareText, LANGS, type Lang } from '../i18n/core';
+import { messages } from '../i18n/content';
 
 declare const __APP_VERSION__: string;
 declare const __APP_COMMIT__: string;
@@ -17,18 +20,18 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const DIET_LABELS: [keyof DietPrefs, string, string][] = [
-  ['vegetarian', 'Vegetarian', 'Hide recipes with meat, poultry, fish or seafood.'],
-  ['pescatarian', 'Pescatarian', 'Hide recipes with meat or poultry.'],
-  ['noPork', 'No pork', 'Hide recipes with pork, bacon, ham or sausages.'],
-  ['dairyFree', 'Dairy-free', 'Hide recipes with any dairy, including lactose-free dairy and butter.'],
-  ['eggFree', 'Egg-free', 'Hide recipes with eggs or mayonnaise.'],
-  ['nutFree', 'Nut- and peanut-free', 'Hide recipes with nuts or peanuts.'],
-  ['noSpicy', 'No chili', 'Hide recipes with hot peppers.'],
-];
+type SwState = 'checking' | 'unsupported' | 'active' | 'installed' | 'none';
+const SW_TEXT = { checking: 'swChecking', unsupported: 'swUnsupported', active: 'swActive', installed: 'swInstalled', none: 'swNone' } as const;
 
-const LIMIT_FOODS = FOODS.filter((f) => f.status === 'limit').sort((a, b) => a.name.localeCompare(b.name));
-const RECIPE_INGREDIENTS = [...new Set(RECIPES.flatMap((r) => r.ingredients.map((i) => i.id)))].map(mustResolve).sort((a, b) => a.name.localeCompare(b.name));
+const LIMIT_IDS = FOODS.filter((f) => f.status === 'limit').map((f) => f.id);
+const RECIPE_INGREDIENT_IDS = [...new Set(RECIPES.flatMap((r) => r.ingredients.map((i) => i.id)))];
+/** Names in the current language, sorted alphabetically for that language. */
+const namedSorted = (ids: string[]) => ids.map(mustResolve).sort((a, b) => compareText(a.name, b.name));
+/** Megabytes with one decimal ("3.4" / "3,4"). */
+const formatMb = (bytes: number, lang: Lang) => {
+  const mb = (bytes / 1024 / 1024).toFixed(1);
+  return lang === 'pt-BR' ? mb.replace('.', ',') : mb;
+};
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 if (typeof window !== 'undefined') {
@@ -41,10 +44,19 @@ if (typeof window !== 'undefined') {
 
 function PickList({ items, selected, onToggle, label }: { items: { id: string; name: string }[]; selected: string[]; onToggle: (id: string) => void; label: string }) {
   const [q, setQ] = useState('');
+  const { m } = useI18n();
   const shown = items.filter((i) => !q || norm(i.name).includes(norm(q)));
   return (
     <div>
-      <input type="text" className="field" style={{ minHeight: 40, borderRadius: 10, border: '1px solid var(--line)', padding: '6px 10px', width: '100%', marginBottom: 8, background: 'var(--surface)' }} placeholder={`Filter ${label}`} aria-label={`Filter ${label}`} value={q} onChange={(e) => setQ(e.target.value)} />
+      <input
+        type="text"
+        className="field"
+        style={{ minHeight: 40, borderRadius: 10, border: '1px solid var(--line)', padding: '6px 10px', width: '100%', marginBottom: 8, background: 'var(--surface)' }}
+        placeholder={m.settings.filter(label)}
+        aria-label={m.settings.filter(label)}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
       <div className="pickgrid" style={{ maxHeight: 240, overflowY: 'auto' }}>
         {shown.map((i) => (
           <button key={i.id} type="button" className="pick" aria-pressed={selected.includes(i.id)} onClick={() => onToggle(i.id)}>
@@ -58,16 +70,21 @@ function PickList({ items, selected, onToggle, label }: { items: { id: string; n
 
 export function SettingsPage() {
   const { profile, data, updateProfile, updateData, storage } = useStore();
+  const { lang, m: t, setLanguage } = useI18n();
+  const s = t.settings;
   const prefs = profile.prefs;
   const { hash } = useLocation();
   const fileRef = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [persisted, setPersisted] = useState<boolean | null>(null);
-  const [estimate, setEstimate] = useState<string | null>(null);
-  const [swState, setSwState] = useState(() => ('serviceWorker' in navigator ? 'checking…' : 'Not supported by this browser'));
+  const [estimate, setEstimate] = useState<number | null>(null);
+  const [swState, setSwState] = useState<SwState>(() => ('serviceWorker' in navigator ? 'checking' : 'unsupported'));
   const [canInstall, setCanInstall] = useState(!!deferredPrompt);
   const standalone = typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true);
   const isIOS = typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent);
+  // The page re-mounts on a language switch (see Layout), so these lists are rebuilt in the new language.
+  const limitFoods = useMemo(() => namedSorted(LIMIT_IDS), []);
+  const recipeIngredients = useMemo(() => namedSorted(RECIPE_INGREDIENT_IDS), []);
 
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
@@ -76,11 +93,11 @@ export function SettingsPage() {
   useEffect(() => {
     navigator.storage?.persisted?.().then(setPersisted, () => setPersisted(null));
     navigator.storage?.estimate?.().then(
-      (e) => setEstimate(e.usage != null ? `${(e.usage / 1024 / 1024).toFixed(1)} MB used` : null),
+      (e) => setEstimate(e.usage != null ? e.usage : null),
       () => undefined,
     );
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then((r) => setSwState(r?.active ? (navigator.serviceWorker.controller ? 'Active — app works offline' : 'Installed — reload once to enable offline') : 'Not installed yet'));
+      navigator.serviceWorker.getRegistration().then((r) => setSwState(r?.active ? (navigator.serviceWorker.controller ? 'active' : 'installed') : 'none'));
     }
     const onPrompt = () => setCanInstall(true);
     window.addEventListener('beforeinstallprompt', onPrompt);
@@ -103,7 +120,7 @@ export function SettingsPage() {
     a.download = `fodmap-kitchen-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    setMsg('Backup downloaded.');
+    setMsg(s.backupDownloaded);
   };
 
   const importData = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -114,19 +131,19 @@ export function SettingsPage() {
       const parsed = JSON.parse(await file.text());
       if (!parsed || !Array.isArray(parsed.profiles)) throw new Error('not a backup');
       const next = normalizeData(parsed);
-      if (!confirm(`Replace all data on this device with the backup (${next.profiles.length} profile(s))?`)) return;
+      if (!confirm(s.confirmImport(next.profiles.length))) return;
       updateData(() => next);
-      setMsg('Backup restored.');
+      setMsg(s.restored);
     } catch {
-      setMsg('That file is not a valid My FODMAP Kitchen backup.');
+      setMsg(s.invalidBackup);
     }
   };
 
   return (
     <>
       <div className="page-head">
-        <h1>Settings</h1>
-        <p>Preferences are saved on this device only. Each household member can have a separate profile.</p>
+        <h1>{s.title}</h1>
+        <p>{s.intro}</p>
       </div>
 
       {msg && (
@@ -135,10 +152,24 @@ export function SettingsPage() {
         </div>
       )}
 
+      <section id="language" className="card section">
+        <h2>{s.language}</h2>
+        <div className="seg" role="group" aria-label={s.language}>
+          {LANGS.map((l) => (
+            <button key={l} lang={l} aria-pressed={lang === l} onClick={() => setLanguage(l)}>
+              {messages(l).langName}
+            </button>
+          ))}
+        </div>
+        <p className="small muted" style={{ margin: '8px 0 0' }}>
+          {s.languageHint}
+        </p>
+      </section>
+
       <section id="profiles" className="card section">
-        <h2>Profiles</h2>
+        <h2>{s.profiles}</h2>
         <div className="field">
-          <label htmlFor="profile-select">Active profile</label>
+          <label htmlFor="profile-select">{s.activeProfile}</label>
           <select id="profile-select" value={profile.id} onChange={(e) => updateData((d) => ({ ...d, activeProfileId: e.target.value }))}>
             {data.profiles.map((p) => (
               <option key={p.id} value={p.id}>
@@ -148,73 +179,73 @@ export function SettingsPage() {
           </select>
         </div>
         <div className="field">
-          <label htmlFor="profile-name">Profile name</label>
+          <label htmlFor="profile-name">{s.profileName}</label>
           <input id="profile-name" type="text" maxLength={30} value={profile.name} onChange={(e) => updateProfile((p) => ({ ...p, name: e.target.value }))} />
         </div>
         <div className="row">
           <button
             className="btn"
             onClick={() => {
-              const p = newProfile(`Person ${data.profiles.length + 1}`);
+              const p = newProfile(s.personN(data.profiles.length + 1));
               updateData((d) => ({ ...d, profiles: [...d.profiles, p], activeProfileId: p.id }));
             }}
           >
-            Add profile
+            {s.addProfile}
           </button>
           {data.profiles.length > 1 && (
             <button
               className="btn danger"
               onClick={() => {
-                if (!confirm(`Delete profile “${profile.name}” and its plans and favourites? This cannot be undone.`)) return;
+                if (!confirm(s.confirmDeleteProfile(profile.name))) return;
                 updateData((d) => {
                   const profiles = d.profiles.filter((p) => p.id !== profile.id);
                   return { ...d, profiles, activeProfileId: profiles[0].id };
                 });
               }}
             >
-              Delete this profile
+              {s.deleteProfile}
             </button>
           )}
         </div>
       </section>
 
       <section className="card section">
-        <h2>Dietary preferences</h2>
+        <h2>{s.dietary}</h2>
         <div className="field">
-          <span className="label">Phase</span>
-          <div className="seg" role="group" aria-label="Diet phase">
+          <span className="label">{s.phase}</span>
+          <div className="seg" role="group" aria-label={s.phaseLabel}>
             <button aria-pressed={prefs.phase === 'elimination'} onClick={() => setPrefs((p) => ({ ...p, phase: 'elimination' }))}>
-              Elimination
+              {s.elimination}
             </button>
             <button aria-pressed={prefs.phase === 'reintroduction'} onClick={() => setPrefs((p) => ({ ...p, phase: 'reintroduction' }))}>
-              Reintroduction
+              {s.reintroduction}
             </button>
           </div>
-          <span className="small muted">During elimination, any recipe with an AVOID FOR NOW food is excluded.</span>
+          <span className="small muted">{s.phaseHint}</span>
         </div>
         <div className="field">
-          <span className="label">LIMIT / CHECK foods</span>
-          <div className="seg" role="group" aria-label="LIMIT food handling">
+          <span className="label">{s.limitFoods}</span>
+          <div className="seg" role="group" aria-label={s.limitLabel}>
             <button aria-pressed={prefs.limitHandling === 'warn'} onClick={() => setPrefs((p) => ({ ...p, limitHandling: 'warn' }))}>
-              Show with portion checks
+              {s.limitWarn}
             </button>
             <button aria-pressed={prefs.limitHandling === 'exclude'} onClick={() => setPrefs((p) => ({ ...p, limitHandling: 'exclude' }))}>
-              Hide recipes using them
+              {s.limitExclude}
             </button>
           </div>
         </div>
         <div className="field">
-          <label htmlFor="household">Household size for grocery lists</label>
+          <label htmlFor="household">{s.household}</label>
           <select id="household" value={prefs.householdSize} onChange={(e) => setPrefs((p) => ({ ...p, householdSize: Number(e.target.value) }))}>
             {Array.from({ length: 8 }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
-                {n} {n === 1 ? 'person' : 'people'}
+                {s.people(n)}
               </option>
             ))}
           </select>
         </div>
         <div>
-          {DIET_LABELS.map(([k, label, hint]) => (
+          {(s.diets as [keyof DietPrefs, string, string][]).map(([k, label, hint]) => (
             <label key={k} className="toggle">
               <input type="checkbox" checked={prefs.diet[k]} onChange={(e) => setPrefs((p) => ({ ...p, diet: { ...p.diet, [k]: e.target.checked } }))} />
               <span>
@@ -227,55 +258,55 @@ export function SettingsPage() {
       </section>
 
       <section className="card section">
-        <h2>Excluded ingredients ({prefs.excluded.length})</h2>
-        <p className="small muted">Recipes needing these are never recommended; optional uses are flagged “leave out”.</p>
-        <PickList items={RECIPE_INGREDIENTS} selected={prefs.excluded} onToggle={(id) => toggleIn('excluded', id)} label="ingredients" />
+        <h2>{s.excludedTitle(prefs.excluded.length)}</h2>
+        <p className="small muted">{s.excludedHint}</p>
+        <PickList items={recipeIngredients} selected={prefs.excluded} onToggle={(id) => toggleIn('excluded', id)} label={s.excludedFilter} />
       </section>
 
       <section className="card section">
-        <h2>LIMIT foods I tolerate ({prefs.tolerated.length})</h2>
-        <p className="small muted">Mark LIMIT / CHECK foods you have successfully reintroduced with your dietitian. Portion amounts are still shown.</p>
-        <PickList items={LIMIT_FOODS} selected={prefs.tolerated} onToggle={(id) => toggleIn('tolerated', id)} label="LIMIT foods" />
+        <h2>{s.toleratedTitle(prefs.tolerated.length)}</h2>
+        <p className="small muted">{s.toleratedHint}</p>
+        <PickList items={limitFoods} selected={prefs.tolerated} onToggle={(id) => toggleIn('tolerated', id)} label={s.toleratedFilter} />
       </section>
 
       <section className="card section" id="offline">
-        <h2>Offline &amp; storage</h2>
+        <h2>{s.offline}</h2>
         <table className="meta">
           <tbody>
             <tr>
-              <td>Offline mode</td>
-              <td>{swState}</td>
+              <td>{s.offlineMode}</td>
+              <td>{s[SW_TEXT[swState]]}</td>
             </tr>
             <tr>
-              <td>Saved data</td>
-              <td>{storage === 'indexeddb' ? 'IndexedDB on this device' : storage === 'memory' ? 'Temporary (this browser blocks storage — data is lost on close)' : '…'}</td>
+              <td>{s.savedData}</td>
+              <td>{storage === 'indexeddb' ? s.storageIdb : storage === 'memory' ? s.storageMemory : '…'}</td>
             </tr>
             <tr>
-              <td>Protected from cleanup</td>
-              <td>{persisted === null ? 'Unknown' : persisted ? 'Yes' : 'No'}</td>
+              <td>{s.protected}</td>
+              <td>{persisted === null ? s.unknown : persisted ? s.yes : s.no}</td>
             </tr>
-            {estimate && (
+            {estimate != null && (
               <tr>
-                <td>Storage used</td>
-                <td>{estimate} (app, recipes and photos)</td>
+                <td>{s.storageUsed}</td>
+                <td>{s.storageWhat(s.mbUsed(formatMb(estimate, lang)))}</td>
               </tr>
             )}
           </tbody>
         </table>
         {persisted === false && (
           <button className="btn" style={{ marginTop: 10 }} onClick={() => navigator.storage?.persist?.().then(setPersisted)}>
-            Ask browser to keep my data
+            {s.keepData}
           </button>
         )}
         <p className="small muted" style={{ marginTop: 10 }}>
-          The food guide, all recipes and recipe photos are stored for offline use. App updates never erase your saved preferences, favourites or plans.
+          {s.offlineNote}
         </p>
       </section>
 
       <section className="card section">
-        <h2>Install the app</h2>
+        <h2>{s.install}</h2>
         {standalone ? (
-          <p>✅ My FODMAP Kitchen is installed on this device.</p>
+          <p>{s.installed}</p>
         ) : canInstall ? (
           <button
             className="btn primary"
@@ -287,59 +318,56 @@ export function SettingsPage() {
               setCanInstall(false);
             }}
           >
-            Install My FODMAP Kitchen
+            {s.installButton}
           </button>
         ) : isIOS ? (
-          <p>On iPhone or iPad: open this site in Safari, tap the Share button, then “Add to Home Screen”.</p>
+          <p>{s.installIos}</p>
         ) : (
-          <p className="muted">Use your browser’s menu and choose “Install app” or “Add to Home screen”.</p>
+          <p className="muted">{s.installOther}</p>
         )}
       </section>
 
       <section className="card section">
-        <h2>Backup &amp; restore</h2>
-        <p className="small muted">Export all profiles, preferences, favourites and meal plans to a file, or restore from one.</p>
+        <h2>{s.backup}</h2>
+        <p className="small muted">{s.backupHint}</p>
         <div className="row">
           <button className="btn" onClick={exportData}>
-            Export data
+            {s.exportData}
           </button>
           <button className="btn" onClick={() => fileRef.current?.click()}>
-            Import data
+            {s.importData}
           </button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
         </div>
       </section>
 
       <section className="card section" id="disclaimer">
-        <h2>Dietary disclaimer</h2>
+        <h2>{s.disclaimer}</h2>
         <p>
-          My FODMAP Kitchen is an organiser for a personal food guide. It is <strong>not medical advice</strong> and does not diagnose or treat IBS or any other condition. The food
-          classifications come from the supplied guide (“IBS low-FODMAP food guide”, 5 pages) and have not been independently verified.
+          {s.disclaimer1a}
+          <strong>{s.disclaimer1b}</strong>
+          {s.disclaimer1c}
         </p>
-        <p>
-          The low-FODMAP diet is normally followed for a short elimination period (2–6 weeks, per the guide) and then foods are reintroduced — ideally with a registered dietitian. FODMAP
-          content depends on portion size, ripeness, brand and recipe; always read labels for onion, garlic, wheat, lactose and polyols. LIMIT / CHECK foods are never treated as automatically
-          safe. Ingredients marked “Not in guide” are not classified by the source guide.
-        </p>
-        <p>If you have severe, worsening or new symptoms — such as weight loss, bleeding or night-time symptoms — speak to a doctor.</p>
+        <p>{s.disclaimer2}</p>
+        <p>{s.disclaimer3}</p>
       </section>
 
       <section className="card section">
-        <h2>Photo credits</h2>
+        <h2>{s.credits}</h2>
         <p className="small">
-          Most recipe photos come from <a href="https://www.foodiesfeed.com/" target="_blank" rel="noopener noreferrer">Foodiesfeed</a> under the{' '}
+          {s.creditsA}
+          <a href="https://www.foodiesfeed.com/" target="_blank" rel="noopener noreferrer">
+            Foodiesfeed
+          </a>
+          {s.creditsB}
           <a href="https://www.foodiesfeed.com/license" target="_blank" rel="noopener noreferrer">
-            Foodiesfeed licence
-          </a>{' '}
-          (CC0-equivalent; free for commercial use, no attribution required). Sponsored third-party stock images shown on Foodiesfeed were not used. {photoStats.owner} photos were supplied by the app owner.{' '}
-          {photoStats.exact} photos show the actual dish and {photoStats.rep} are labelled “Representative photo” because they show a similar dish or ingredients the recipe leaves out
-          {photoStats.ph > 0 ? `; ${photoStats.ph} recipes use a placeholder because no accurate photo was found` : ''}. The recipe’s ingredient list is always what counts. Each recipe page credits its photo.
+            {s.creditsLicence}
+          </a>
+          {s.creditsC(photoStats.owner, photoStats.exact, photoStats.rep, photoStats.ph)}
         </p>
       </section>
 
-      <p className="small muted">
-        Version {__APP_VERSION__} · build {__APP_COMMIT__} · {FOODS.length} foods · {RECIPES.length} recipes
-      </p>
+      <p className="small muted">{s.version(__APP_VERSION__, __APP_COMMIT__, FOODS.length, RECIPES.length)}</p>
     </>
   );
 }

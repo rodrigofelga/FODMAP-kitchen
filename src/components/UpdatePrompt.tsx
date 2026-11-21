@@ -1,4 +1,5 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useI18n } from '../i18n/context';
 
 /**
  * Shows a small toast when a new version has been downloaded. The new service
@@ -6,6 +7,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
  * them mid-task. Saved data lives in IndexedDB and is untouched by updates.
  */
 export function UpdatePrompt() {
+  const { m } = useI18n();
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
@@ -22,13 +24,13 @@ export function UpdatePrompt() {
   if (needRefresh) {
     return (
       <div className="update-toast" role="status">
-        <span>A new version of My FODMAP Kitchen is ready.</span>
+        <span>{m.update.ready}</span>
         <span className="row">
           <button className="btn small ghost" style={{ color: 'inherit' }} onClick={() => setNeedRefresh(false)}>
-            Later
+            {m.update.later}
           </button>
           <button className="btn small primary" onClick={() => updateServiceWorker(true)}>
-            Update
+            {m.update.update}
           </button>
         </span>
       </div>

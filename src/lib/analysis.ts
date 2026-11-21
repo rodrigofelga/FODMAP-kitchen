@@ -1,5 +1,6 @@
 import type { Recipe, RecipeIngredient } from '../data/types';
-import { STATUS_LABELS } from '../data/foods';
+import { getLang } from '../i18n/core';
+import { messages } from '../i18n/content';
 import { mustResolve, perServing, type ResolvedIngredient } from './ingredients';
 
 export interface DietPrefs {
@@ -50,10 +51,12 @@ export interface RecipeAnalysis {
   level: 'eat' | 'limit' | 'avoid';
 }
 
+/** Keyed by language + recipe id: ingredient names and amounts are display text. */
 const cache = new Map<string, RecipeAnalysis>();
 
 export function analyzeRecipe(r: Recipe): RecipeAnalysis {
-  const hit = cache.get(r.id);
+  const key = `${getLang()}|${r.id}`;
+  const hit = cache.get(key);
   if (hit) return hit;
   const items = r.ingredients.map((ing) => ({ ing, food: mustResolve(ing.id), perServing: perServing(ing, r.servings) }));
   const required = items.filter((i) => !i.ing.optional);
@@ -78,7 +81,7 @@ export function analyzeRecipe(r: Recipe): RecipeAnalysis {
     },
     level: required.some((i) => i.food.status === 'avoid') ? 'avoid' : required.some((i) => i.food.status === 'limit') ? 'limit' : 'eat',
   };
-  cache.set(r.id, a);
+  cache.set(key, a);
   return a;
 }
 
@@ -104,64 +107,69 @@ export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
   const omit: string[] = [];
   const excluded = new Set(prefs.excluded);
   const tolerated = new Set(prefs.tolerated);
+  const t = messages().analysis;
+  // True when a check still needs the user's attention (anything other than a tolerated-food reminder).
+  let pendingChecks = false;
 
   for (const it of a.items) {
     const { ing, food } = it;
     if (excluded.has(ing.id)) {
-      if (ing.optional) omit.push(`${food.name} (you excluded it)`);
-      else reasons.push(`Contains ${food.name}, which you excluded in Settings.`);
+      if (ing.optional) omit.push(t.excludedOptional(food.name));
+      else reasons.push(t.excludedRequired(food.name));
       continue;
     }
     if (food.status === 'avoid') {
       if (prefs.phase === 'elimination') {
-        if (ing.optional) omit.push(`${food.name} (AVOID FOR NOW)`);
-        else reasons.push(`Contains ${food.name} — AVOID FOR NOW during elimination.`);
+        if (ing.optional) omit.push(t.avoidOptional(food.name));
+        else reasons.push(t.avoidRequired(food.name));
       } else {
-        checks.push(`${food.name} is AVOID FOR NOW in the guide — reintroduce only as part of a planned challenge.`);
+        checks.push(t.avoidReintro(food.name));
+        pendingChecks = true;
       }
       continue;
     }
     if (food.status === 'limit') {
       if (tolerated.has(ing.id)) {
-        checks.push(`${food.name}: you marked it as tolerated — still keep to ${it.perServing} per serving.`);
+        checks.push(t.tolerated(food.name, it.perServing));
       } else if (prefs.limitHandling === 'exclude') {
-        if (ing.optional) omit.push(`${food.name} (LIMIT / CHECK)`);
-        else reasons.push(`Uses ${food.name} (LIMIT / CHECK) — hidden because Settings exclude LIMIT foods.`);
+        if (ing.optional) omit.push(t.limitOptionalHidden(food.name));
+        else reasons.push(t.limitHidden(food.name));
       } else {
-        checks.push(`${food.name} — ${STATUS_LABELS.limit}: ${it.perServing} per serving${ing.optional ? ' (optional)' : ''}.`);
+        checks.push(t.limitCheck(food.name, it.perServing, !!ing.optional));
+        pendingChecks = true;
       }
     }
   }
 
   const d = prefs.diet;
-  if (d.vegetarian && !a.diets.vegetarian) reasons.push('Contains meat or fish (vegetarian preference).');
-  else if (d.pescatarian && !a.diets.pescatarian) reasons.push('Contains meat (pescatarian preference).');
-  if (d.noPork && !a.diets.porkFree) reasons.push('Contains pork (no-pork preference).');
-  if (d.dairyFree && !a.diets.dairyFree) reasons.push('Contains dairy (dairy-free preference).');
-  if (d.eggFree && !a.diets.eggFree) reasons.push('Contains egg (egg-free preference).');
-  if (d.nutFree && !a.diets.nutFree) reasons.push('Contains nuts or peanuts (nut-free preference).');
-  if (d.noSpicy && a.diets.spicy) reasons.push('Contains chili / hot pepper (no-spicy preference).');
+  if (d.vegetarian && !a.diets.vegetarian) reasons.push(t.dietVegetarian);
+  else if (d.pescatarian && !a.diets.pescatarian) reasons.push(t.dietPescatarian);
+  if (d.noPork && !a.diets.porkFree) reasons.push(t.dietNoPork);
+  if (d.dairyFree && !a.diets.dairyFree) reasons.push(t.dietDairy);
+  if (d.eggFree && !a.diets.eggFree) reasons.push(t.dietEgg);
+  if (d.nutFree && !a.diets.nutFree) reasons.push(t.dietNut);
+  if (d.noSpicy && a.diets.spicy) reasons.push(t.dietSpicy);
 
   if (reasons.length) return { verdict: 'excluded', reasons, checks, qualifies, omit };
 
   const guideItems = a.items.filter((i) => i.food.kind === 'food' && !i.ing.optional);
   const eatCount = guideItems.filter((i) => i.food.status === 'eat').length;
-  qualifies.push(`No AVOID FOR NOW foods${prefs.phase === 'elimination' ? ' (elimination phase)' : ''}.`);
-  if (eatCount === guideItems.length) qualifies.push(`All ${guideItems.length} guide ingredients are EAT.`);
-  else qualifies.push(`${eatCount} of ${guideItems.length} guide ingredients are EAT; the rest are LIMIT / CHECK at the per-serving amounts shown.`);
-  if (a.unlisted.length) qualifies.push(`${a.unlisted.length} pantry item(s) are not classified in the guide.`);
+  qualifies.push(t.noAvoid(prefs.phase === 'elimination'));
+  if (eatCount === guideItems.length) qualifies.push(t.allEat(guideItems.length));
+  else qualifies.push(t.someEat(eatCount, guideItems.length));
+  if (a.unlisted.length) qualifies.push(t.unlisted(a.unlisted.length));
 
-  const pendingChecks = checks.some((c) => !c.includes('marked it as tolerated'));
   return { verdict: pendingChecks ? 'check' : 'suitable', reasons, checks, qualifies, omit };
 }
 
 export function dietLabels(r: Recipe): string[] {
   const d = analyzeRecipe(r).diets;
+  const l = messages().diet;
   const out: string[] = [];
-  if (d.vegetarian) out.push('Vegetarian');
-  else if (d.pescatarian) out.push('Pescatarian');
-  if (d.dairyFree) out.push('Dairy-free');
-  if (d.eggFree) out.push('Egg-free');
-  if (d.nutFree) out.push('Nut-free');
+  if (d.vegetarian) out.push(l.vegetarian);
+  else if (d.pescatarian) out.push(l.pescatarian);
+  if (d.dairyFree) out.push(l.dairyFree);
+  if (d.eggFree) out.push(l.eggFree);
+  if (d.nutFree) out.push(l.nutFree);
   return out;
 }

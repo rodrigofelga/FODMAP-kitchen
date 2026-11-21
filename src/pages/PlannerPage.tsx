@@ -1,16 +1,24 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { RECIPES, RECIPE_BY_ID } from '../data/recipes';
-import { MEALS, MEAL_LABELS, type Meal } from '../data/types';
+import { MEALS, type Meal } from '../data/types';
 import { evaluateRecipe } from '../lib/analysis';
 import { buildGroceryList, DAY_NAMES, emptyDay, generateWeek, newPlan, planRecipeCount, type MealPlan } from '../lib/planner';
 import { useStore } from '../lib/store';
 import { StatusBadge, VerdictBadge } from '../components/RecipeBits';
+import { useI18n } from '../i18n/context';
+import { compareText, type Lang } from '../i18n/core';
+import { recipeTitle } from '../i18n/content';
+
+/** English keeps the browser's own date format (as before); Portuguese uses Brazilian dates. */
+const dateLocale = (lang: Lang) => (lang === 'en' ? undefined : 'pt-BR');
 
 type Tab = 'week' | 'grocery' | 'saved';
 
 export function PlannerPage() {
   const { profile, updateProfile } = useStore();
+  const { lang, m: msg } = useI18n();
+  const t = msg.planner;
   const [params, setParams] = useSearchParams();
   const tab = (params.get('tab') as Tab) || 'week';
   const setTab = (t: Tab) => setParams(t === 'week' ? {} : { tab: t }, { replace: true });
@@ -21,7 +29,7 @@ export function PlannerPage() {
     updateProfile((p) => ({ ...p, plans: p.plans.some((x) => x.id === next.id) ? p.plans.map((x) => (x.id === next.id ? next : x)) : [...p.plans, next], activePlanId: next.id }));
 
   const create = (generate: boolean) => {
-    const n = newPlan(`Week of ${new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`);
+    const n = newPlan(t.weekOf(new Date().toLocaleDateString(dateLocale(lang), { day: 'numeric', month: 'short' })));
     if (generate) n.days = generateWeek(RECIPES, prefs, profile.favourites);
     savePlan(n);
   };
@@ -30,40 +38,40 @@ export function PlannerPage() {
     const out = {} as Record<Meal, { id: string; title: string; excluded: boolean }[]>;
     for (const m of MEALS)
       out[m] = RECIPES.filter((r) => r.meal === m)
-        .map((r) => ({ id: r.id, title: r.title, excluded: evaluateRecipe(r, prefs).verdict === 'excluded' }))
-        .sort((a, b) => a.title.localeCompare(b.title));
+        .map((r) => ({ id: r.id, title: recipeTitle(r), excluded: evaluateRecipe(r, prefs).verdict === 'excluded' }))
+        .sort((a, b) => compareText(a.title, b.title));
     return out;
   }, [prefs]);
 
   return (
     <>
       <div className="page-head">
-        <h1>Meal Planner</h1>
-        <p>Plan seven days of breakfast, lunch, dinner and snacks. Your plans are saved on this device.</p>
+        <h1>{t.title}</h1>
+        <p>{t.intro}</p>
       </div>
 
-      <div className="seg no-print" role="group" aria-label="Planner sections" style={{ marginBottom: 16 }}>
+      <div className="seg no-print" role="group" aria-label={t.sections} style={{ marginBottom: 16 }}>
         <button aria-pressed={tab === 'week'} onClick={() => setTab('week')}>
-          Week
+          {t.week}
         </button>
         <button aria-pressed={tab === 'grocery'} onClick={() => setTab('grocery')}>
-          Grocery list
+          {t.grocery}
         </button>
         <button aria-pressed={tab === 'saved'} onClick={() => setTab('saved')}>
-          Saved plans ({profile.plans.length})
+          {t.saved(profile.plans.length)}
         </button>
       </div>
 
       {!plan && tab !== 'saved' ? (
         <div className="card">
-          <h2>No meal plan yet</h2>
-          <p className="muted">Generate a week from recipes that fit your settings (favourites first), or start empty and choose each meal.</p>
+          <h2>{t.noPlanTitle}</h2>
+          <p className="muted">{t.noPlanBody}</p>
           <div className="row">
             <button className="btn primary" onClick={() => create(true)}>
-              Generate a week
+              {t.generate}
             </button>
             <button className="btn" onClick={() => create(false)}>
-              Start an empty week
+              {t.startEmpty}
             </button>
           </div>
         </div>
@@ -73,38 +81,38 @@ export function PlannerPage() {
         <>
           <div className="card no-print" style={{ marginBottom: 16 }}>
             <div className="field" style={{ marginBottom: 10 }}>
-              <label htmlFor="plan-name">Plan name</label>
+              <label htmlFor="plan-name">{t.planName}</label>
               <input id="plan-name" type="text" value={plan.name} maxLength={60} onChange={(e) => savePlan({ ...plan, name: e.target.value })} />
             </div>
             <div className="row">
               <button className="btn primary" onClick={() => savePlan({ ...plan, days: generateWeek(RECIPES, prefs, profile.favourites, Date.now(), plan.days) })}>
-                Fill empty slots
+                {t.fillEmpty}
               </button>
               <button className="btn" onClick={() => savePlan({ ...plan, days: generateWeek(RECIPES, prefs, profile.favourites) })}>
-                Regenerate all
+                {t.regenerate}
               </button>
               <button className="btn ghost" onClick={() => savePlan({ ...plan, days: DAY_NAMES.map(emptyDay) })}>
-                Clear week
+                {t.clearWeek}
               </button>
             </div>
             <p className="small muted" style={{ margin: '8px 0 0' }}>
-              {planRecipeCount(plan)} of 28 meals planned. Generated plans skip recipes excluded by your settings.
+              {t.plannedCount(planRecipeCount(plan))}
             </p>
           </div>
           <div className="week">
             {plan.days.map((day, di) => (
               <section key={di} className="card day" aria-labelledby={`day-${di}`}>
-                <h3 id={`day-${di}`}>{DAY_NAMES[di]}</h3>
+                <h3 id={`day-${di}`}>{msg.days[di]}</h3>
                 {MEALS.map((m) => {
                   const rid = day[m];
                   const r = rid ? RECIPE_BY_ID.get(rid) : undefined;
                   const ev = r ? evaluateRecipe(r, prefs) : null;
                   return (
                     <div key={m} className="slot">
-                      <span className="label">{MEAL_LABELS[m]}</span>
+                      <span className="label">{msg.meals[m]}</span>
                       <div style={{ minWidth: 0 }}>
                         <label className="sr-only" htmlFor={`s-${di}-${m}`}>
-                          {DAY_NAMES[di]} {MEAL_LABELS[m]}
+                          {msg.days[di]} {msg.meals[m]}
                         </label>
                         <select
                           id={`s-${di}-${m}`}
@@ -114,17 +122,17 @@ export function PlannerPage() {
                             savePlan({ ...plan, days });
                           }}
                         >
-                          <option value="">— Not planned —</option>
+                          <option value="">{t.notPlanned}</option>
                           {options[m].map((o) => (
                             <option key={o.id} value={o.id} disabled={o.excluded && o.id !== rid}>
                               {o.title}
-                              {o.excluded ? ' (not for you now)' : ''}
+                              {o.excluded ? t.notForYou : ''}
                             </option>
                           ))}
                         </select>
                         {r && ev && (
                           <div className="row small" style={{ marginTop: 4 }}>
-                            <Link to={`/recipes/${r.id}`}>View recipe</Link>
+                            <Link to={`/recipes/${r.id}`}>{t.viewRecipe}</Link>
                             {ev.verdict !== 'suitable' && <VerdictBadge verdict={ev.verdict} />}
                           </div>
                         )}
@@ -142,37 +150,37 @@ export function PlannerPage() {
 
       {tab === 'saved' && (
         <div className="card">
-          {profile.plans.length === 0 && <p className="muted">No saved plans yet.</p>}
+          {profile.plans.length === 0 && <p className="muted">{t.noSaved}</p>}
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {profile.plans.map((p) => (
               <li key={p.id} className="slot" style={{ gridTemplateColumns: '1fr auto' }}>
                 <div style={{ minWidth: 0 }}>
                   <strong>{p.name}</strong>
-                  {p.id === profile.activePlanId && <span className="badge eat" style={{ marginLeft: 6 }}>Active</span>}
+                  {p.id === profile.activePlanId && <span className="badge eat" style={{ marginLeft: 6 }}>{t.active}</span>}
                   <div className="small muted">
-                    {planRecipeCount(p)} meals · created {new Date(p.createdAt).toLocaleDateString()}
+                    {t.planMeta(planRecipeCount(p), new Date(p.createdAt).toLocaleDateString(dateLocale(lang)))}
                   </div>
                 </div>
                 <div className="row">
                   {p.id !== profile.activePlanId && (
                     <button className="btn small" onClick={() => updateProfile((pr) => ({ ...pr, activePlanId: p.id }))}>
-                      Open
+                      {t.open}
                     </button>
                   )}
-                  <button className="btn small" onClick={() => savePlan({ ...structuredClone(p), ...newPlanIdentity(`${p.name} (copy)`) })}>
-                    Duplicate
+                  <button className="btn small" onClick={() => savePlan({ ...structuredClone(p), ...newPlanIdentity(t.copyName(p.name)) })}>
+                    {t.duplicate}
                   </button>
                   <button
                     className="btn small danger"
                     onClick={() => {
-                      if (!confirm(`Delete “${p.name}”? This cannot be undone.`)) return;
+                      if (!confirm(t.confirmDelete(p.name))) return;
                       updateProfile((pr) => {
                         const plans = pr.plans.filter((x) => x.id !== p.id);
                         return { ...pr, plans, activePlanId: pr.activePlanId === p.id ? (plans[0]?.id ?? null) : pr.activePlanId };
                       });
                     }}
                   >
-                    Delete
+                    {t.delete}
                   </button>
                 </div>
               </li>
@@ -180,10 +188,10 @@ export function PlannerPage() {
           </ul>
           <div className="row" style={{ marginTop: 12 }}>
             <button className="btn primary" onClick={() => create(true)}>
-              New generated week
+              {t.newGenerated}
             </button>
             <button className="btn" onClick={() => create(false)}>
-              New empty week
+              {t.newEmpty}
             </button>
           </div>
         </div>
@@ -202,23 +210,25 @@ function GroceryList({ plan, onChange, householdSize }: { plan: MealPlan; onChan
   const checked = new Set(plan.checked);
   const groups = [...new Set(lines.map((l) => l.group))];
   const [copied, setCopied] = useState(false);
-  if (!lines.length) return <p className="empty">Add meals to your week to build a grocery list.</p>;
+  const { m: msg } = useI18n();
+  const t = msg.grocery;
+  if (!lines.length) return <p className="empty">{t.empty}</p>;
   const toggle = (k: string) => onChange({ ...plan, checked: checked.has(k) ? plan.checked.filter((x) => x !== k) : [...plan.checked, k] });
   const text = groups.map((g) => `${g}\n${lines.filter((l) => l.group === g).map((l) => `- ${l.name}: ${l.amounts}`).join('\n')}`).join('\n\n');
   return (
     <div className="card grocery">
       <div className="section-head">
-        <h2>Grocery list</h2>
+        <h2>{t.title}</h2>
         <span className="small muted">
-          {lines.length - lines.filter((l) => checked.has(l.key)).length} of {lines.length} left
+          {t.left(lines.length - lines.filter((l) => checked.has(l.key)).length, lines.length)}
         </span>
       </div>
       <p className="small muted">
-        Amounts are scaled to {householdSize} {householdSize === 1 ? 'person' : 'people'} per meal (change in Settings) and rounded up.
+        {t.scaled(householdSize)}
       </p>
       <div className="row no-print" style={{ marginBottom: 8 }}>
         <button className="btn small" onClick={() => window.print()}>
-          Print
+          {t.print}
         </button>
         <button
           className="btn small"
@@ -229,11 +239,11 @@ function GroceryList({ plan, onChange, householdSize }: { plan: MealPlan; onChan
             )
           }
         >
-          {copied ? 'Copied!' : 'Copy as text'}
+          {copied ? t.copied : t.copy}
         </button>
         {plan.checked.length > 0 && (
           <button className="btn small ghost" onClick={() => onChange({ ...plan, checked: [] })}>
-            Untick all
+            {t.untick}
           </button>
         )}
       </div>
@@ -249,7 +259,7 @@ function GroceryList({ plan, onChange, householdSize }: { plan: MealPlan; onChan
                   <label htmlFor={`g-${l.key}`} style={{ minWidth: 0, flex: 1 }}>
                     <span className="gname">{l.name}</span> — {l.amounts} {l.status !== 'eat' && <StatusBadge status={l.status as 'limit'} />}
                     <span className="small muted" style={{ display: 'block' }}>
-                      For: {l.recipes.join(', ')}
+                      {t.for(l.recipes.join(', '))}
                     </span>
                   </label>
                 </li>

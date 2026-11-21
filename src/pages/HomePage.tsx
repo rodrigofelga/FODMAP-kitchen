@@ -1,12 +1,17 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { RECIPES, RECIPE_BY_ID } from '../data/recipes';
-import { MEALS, MEAL_LABELS, type Meal, type Recipe } from '../data/types';
+import { MEALS, type Meal, type Recipe } from '../data/types';
 import { evaluateRecipe } from '../lib/analysis';
-import { buildGroceryList, DAY_NAMES, mulberry32, planRecipeCount } from '../lib/planner';
+import { buildGroceryList, mulberry32, planRecipeCount } from '../lib/planner';
 import { useStore } from '../lib/store';
 import { IconSearch } from '../components/Icons';
 import { RecipeCard, RecipeImage } from '../components/RecipeBits';
+import { useI18n } from '../i18n/context';
+import { recipeTitle } from '../i18n/content';
+
+/** Default profile names (every language) are not used in the greeting. */
+const DEFAULT_NAMES = new Set(['Me', 'Eu']);
 
 function todayIndex(): number {
   return (new Date().getDay() + 6) % 7; // Monday = 0
@@ -15,6 +20,8 @@ function todayIndex(): number {
 export function HomePage() {
   const { profile } = useStore();
   const navigate = useNavigate();
+  const { m } = useI18n();
+  const h = m.home;
   const [q, setQ] = useState('');
   const prefs = profile.prefs;
   const plan = profile.plans.find((p) => p.id === profile.activePlanId) ?? null;
@@ -65,27 +72,27 @@ export function HomePage() {
     <>
       <section className="hero">
         <span className="small muted">
-          {DAY_NAMES[todayIndex()]} · {prefs.phase === 'elimination' ? 'Elimination phase' : 'Reintroduction phase'}
+          {m.days[todayIndex()]} · {prefs.phase === 'elimination' ? h.elimination : h.reintroduction}
         </span>
-        <h1>Olá{profile.name && profile.name !== 'Me' ? `, ${profile.name}` : ''}! What’s cooking today?</h1>
+        <h1>{h.greeting(profile.name && !DEFAULT_NAMES.has(profile.name) ? profile.name : null)}</h1>
         <p className="muted" style={{ margin: 0 }}>
-          Low-FODMAP, Brazilian-style recipes checked against your food guide.
+          {h.intro}
         </p>
       </section>
 
       <form className="section" role="search" onSubmit={onSearch}>
         <label className="search">
           <IconSearch />
-          <span className="sr-only">Search recipes</span>
-          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search recipes, e.g. frango, tapioca, salmon" enterKeyHint="search" />
+          <span className="sr-only">{h.searchLabel}</span>
+          <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={h.searchPlaceholder} enterKeyHint="search" />
         </label>
       </form>
 
       <section className="section" aria-labelledby="today-h">
         <div className="section-head">
-          <h2 id="today-h">Today’s suggested meals</h2>
+          <h2 id="today-h">{h.todayTitle}</h2>
           <Link to="/planner" className="small">
-            {plan ? 'Open planner' : 'Plan your week'}
+            {plan ? h.openPlanner : h.planWeek}
           </Link>
         </div>
         <div className="today-list">
@@ -95,15 +102,15 @@ export function HomePage() {
                 <RecipeImage recipe={recipe} sizes="88px" />
                 <div className="t">
                   <div className="lbl">
-                    {MEAL_LABELS[meal]} {planned ? '· planned' : '· suggestion'}
+                    {m.meals[meal]} {planned ? h.planned : h.suggestion}
                   </div>
-                  <div className="nm">{recipe.title}</div>
-                  <div className="small muted">{recipe.prepMinutes + recipe.cookMinutes} min</div>
+                  <div className="nm">{recipeTitle(recipe)}</div>
+                  <div className="small muted">{m.common.minutes(recipe.prepMinutes + recipe.cookMinutes)}</div>
                 </div>
               </Link>
             ) : (
               <div key={meal} className="card small muted">
-                No {MEAL_LABELS[meal].toLowerCase()} recipes match your current settings.
+                {h.noMealRecipes(meal)}
               </div>
             ),
           )}
@@ -111,18 +118,18 @@ export function HomePage() {
       </section>
 
       <section className="section card" aria-labelledby="matcher-h">
-        <h2 id="matcher-h">What can I cook with what I have?</h2>
-        <p className="muted">Tick the ingredients in your kitchen and get recipes that fit your guide — with any missing items listed.</p>
+        <h2 id="matcher-h">{h.matcherTitle}</h2>
+        <p className="muted">{h.matcherBody}</p>
         <Link to="/matcher" className="btn primary">
-          Open the Ingredient Matcher
+          {h.matcherButton}
         </Link>
       </section>
 
       <section className="section" aria-labelledby="quick-h">
         <div className="section-head">
-          <h2 id="quick-h">Quick Brazilian favourites</h2>
+          <h2 id="quick-h">{h.quickTitle}</h2>
           <Link to="/recipes?brazilian=1" className="small">
-            See all
+            {m.common.seeAll}
           </Link>
         </div>
         {quick.length ? (
@@ -132,16 +139,16 @@ export function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="muted">No quick recipes match your settings.</p>
+          <p className="muted">{h.noQuick}</p>
         )}
       </section>
 
       <section className="section" aria-labelledby="fav-h">
         <div className="section-head">
-          <h2 id="fav-h">Favourite recipes</h2>
+          <h2 id="fav-h">{h.favTitle}</h2>
           {favourites.length > 0 && (
             <Link to="/recipes?fav=1" className="small">
-              See all
+              {m.common.seeAll}
             </Link>
           )}
         </div>
@@ -152,13 +159,13 @@ export function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="muted">Tap the heart on any recipe to save it here.</p>
+          <p className="muted">{h.noFav}</p>
         )}
       </section>
 
       <section className="section" aria-labelledby="week-h">
         <div className="section-head">
-          <h2 id="week-h">This week</h2>
+          <h2 id="week-h">{h.weekTitle}</h2>
         </div>
         {summary ? (
           <div className="card">
@@ -166,42 +173,44 @@ export function HomePage() {
             <div className="stats">
               <div className="stat">
                 <strong>{summary.count}/28</strong>
-                <span>meals planned</span>
+                <span>{h.mealsPlanned}</span>
               </div>
               <div className="stat">
                 <strong>{summary.unique}</strong>
-                <span>different recipes</span>
+                <span>{h.differentRecipes}</span>
               </div>
               <div className="stat">
                 <strong>{summary.left}</strong>
-                <span>grocery items left of {summary.items}</span>
+                <span>{h.groceryLeft(summary.items)}</span>
               </div>
               <div className="stat">
                 <strong>{summary.checks}</strong>
-                <span>meals with portion checks</span>
+                <span>{h.portionMeals}</span>
               </div>
             </div>
             <div className="row" style={{ marginTop: 12 }}>
               <Link to="/planner" className="btn">
-                View week
+                {h.viewWeek}
               </Link>
               <Link to="/planner?tab=grocery" className="btn">
-                Grocery list
+                {h.groceryList}
               </Link>
             </div>
           </div>
         ) : (
           <div className="card">
-            <p className="muted">You haven’t planned a week yet. Generate one in seconds — it only uses recipes that fit your settings.</p>
+            <p className="muted">{h.noPlan}</p>
             <Link to="/planner" className="btn primary">
-              Plan my week
+              {h.planMyWeek}
             </Link>
           </div>
         )}
       </section>
 
       <p className="small muted">
-        This app supports — but does not replace — advice from your doctor or dietitian. See <Link to="/settings#disclaimer">the dietary disclaimer</Link>.
+        {h.disclaimerBefore}
+        <Link to="/settings#disclaimer">{h.disclaimerLink}</Link>
+        {h.disclaimerAfter}
       </p>
     </>
   );
