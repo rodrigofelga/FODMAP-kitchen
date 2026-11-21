@@ -73,7 +73,7 @@ test('recipe page shows suitability, portions and photo credit', async ({ page }
   await expect(page.getByText('Photo of this dish')).toBeVisible();
   const img = page.locator('.detail-hero img');
   await expect(img).toHaveAttribute('alt', /salmon/i);
-  expect(await img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true);
+  await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), { timeout: 15_000 }).toBe(true);
 });
 
 test('favourites and settings survive reloads and a cache/service-worker reset', async ({ page }) => {
