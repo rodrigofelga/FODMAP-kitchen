@@ -1,11 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { RECIPES, RECIPE_BY_ID } from '../data/recipes';
 import { MEALS, type Meal } from '../data/types';
 import { evaluateRecipe } from '../lib/analysis';
-import { buildGroceryList, DAY_NAMES, emptyDay, generateWeek, newPlan, planRecipeCount, type MealPlan } from '../lib/planner';
+import { DAY_NAMES, emptyDay, generateWeek, newPlan, planRecipeCount, type MealPlan } from '../lib/planner';
 import { useStore } from '../lib/store';
-import { StatusBadge, VerdictBadge } from '../components/RecipeBits';
+import { VerdictBadge } from '../components/RecipeBits';
+import { ExportBar, ShoppingList } from '../components/ShoppingList';
+import { SharePanel, StartSharing, SyncBadge } from '../components/SharePanel';
+import { generateList, planSignature } from '../lib/grocery';
+import { applyOp, liveItems, mergeRegenerated, newOpId, progress, type ListOp } from '../lib/listModel';
+import { useSharedList } from '../lib/useSharedList';
+import { effectiveDoc } from '../lib/sync';
 import { useI18n } from '../i18n/context';
 import { compareText, type Lang } from '../i18n/core';
 import { recipeTitle } from '../i18n/content';
@@ -32,6 +38,19 @@ export function PlannerPage() {
     const n = newPlan(t.weekOf(new Date().toLocaleDateString(dateLocale(lang), { day: 'numeric', month: 'short' })));
     if (generate) n.days = generateWeek(RECIPES, prefs, profile.favourites);
     savePlan(n);
+  };
+
+  /** Makes (or refreshes) the week's grocery list and opens it. */
+  const generateGrocery = () => {
+    if (!plan) return;
+    const shared = plan.sharedListId ? profile.sharedLists.find((r) => r.listId === plan.sharedListId && r.status === 'active') : undefined;
+    if (shared) {
+      const doc = generateList(plan, effectiveDoc(shared).people);
+      updateProfile((p) => ({ ...p, sharedLists: p.sharedLists.map((r) => (r.listId === shared.listId ? { ...r, pending: [...r.pending, { type: 'regenerate', opId: newOpId(), doc }] } : r)) }));
+    } else {
+      updateProfile((p) => ({ ...p, plans: p.plans.map((x) => (x.id === plan.id ? { ...x, grocery: regeneratePlanList(x, prefs.householdSize) } : x)) }));
+    }
+    setTab('grocery');
   };
 
   const options = useMemo(() => {
@@ -98,6 +117,11 @@ export function PlannerPage() {
             <p className="small muted" style={{ margin: '8px 0 0' }}>
               {t.plannedCount(planRecipeCount(plan))}
             </p>
+            <div className="row" style={{ marginTop: 10 }}>
+              <button className="btn primary" disabled={!planRecipeCount(plan)} onClick={generateGrocery}>
+                {msg.shopping.generate}
+              </button>
+            </div>
           </div>
           <div className="week">
             {plan.days.map((day, di) => (
@@ -146,7 +170,8 @@ export function PlannerPage() {
         </>
       )}
 
-      {plan && tab === 'grocery' && <GroceryList plan={plan} onChange={savePlan} householdSize={prefs.householdSize} />}
+      {plan && tab === 'grocery' && <GroceryTab plan={plan} />}
+      {tab === 'grocery' && <SharedWithMe />}
 
       {tab === 'saved' && (
         <div className="card">
@@ -205,68 +230,101 @@ function newPlanIdentity(name: string) {
   return { id: n.id, name: n.name, createdAt: n.createdAt, checked: [] as string[] };
 }
 
-function GroceryList({ plan, onChange, householdSize }: { plan: MealPlan; onChange: (p: MealPlan) => void; householdSize: number }) {
-  const lines = useMemo(() => buildGroceryList(plan, householdSize), [plan, householdSize]);
-  const checked = new Set(plan.checked);
-  const groups = [...new Set(lines.map((l) => l.group))];
-  const [copied, setCopied] = useState(false);
-  const { m: msg } = useI18n();
-  const t = msg.grocery;
-  if (!lines.length) return <p className="empty">{t.empty}</p>;
-  const toggle = (k: string) => onChange({ ...plan, checked: checked.has(k) ? plan.checked.filter((x) => x !== k) : [...plan.checked, k] });
-  const text = groups.map((g) => `${g}\n${lines.filter((l) => l.group === g).map((l) => `- ${l.name}: ${l.amounts}`).join('\n')}`).join('\n\n');
+/** Builds or refreshes a plan's grocery list, keeping ticks, renames and items added by hand. */
+function regeneratePlanList(plan: MealPlan, people: number, now = Date.now()) {
+  const fresh = generateList(plan, plan.grocery?.people ?? people, now);
+  return plan.grocery ? mergeRegenerated(plan.grocery, fresh, now) : fresh;
+}
+
+function GroceryTab({ plan }: { plan: MealPlan }) {
+  const { profile } = useStore();
+  const ref = plan.sharedListId ? profile.sharedLists.find((r) => r.listId === plan.sharedListId) : undefined;
+  if (ref) return <SharedGrocery plan={plan} listId={ref.listId} />;
+  return <LocalGrocery plan={plan} />;
+}
+
+function LocalGrocery({ plan }: { plan: MealPlan }) {
+  const { profile, updateProfile } = useStore();
+  const people = profile.prefs.householdSize;
+  const fallback = useMemo(() => generateList(plan, people), [plan, people]);
+  const needsFresh = !plan.grocery || (!liveItems(plan.grocery).length && plan.grocery.source !== planSignature(plan));
+  const doc = needsFresh ? fallback : plan.grocery!;
+
+  // The first visit (or an empty list after the week changed) makes the list automatically.
+  useEffect(() => {
+    if (!needsFresh) return;
+    updateProfile((p) => ({ ...p, plans: p.plans.map((x) => (x.id === plan.id ? { ...x, grocery: generateList(x, x.grocery?.people ?? people) } : x)) }));
+  }, [needsFresh, plan.id, people, updateProfile]);
+
+  const onOp = (op: ListOp) =>
+    updateProfile((p) => ({
+      ...p,
+      plans: p.plans.map((x) => (x.id === plan.id ? { ...x, grocery: applyOp(x.grocery ?? generateList(x, people), op, Date.now()) } : x)),
+    }));
+  const update = () => updateProfile((p) => ({ ...p, plans: p.plans.map((x) => (x.id === plan.id ? { ...x, grocery: regeneratePlanList(x, people) } : x)) }));
+
   return (
-    <div className="card grocery">
-      <div className="section-head">
-        <h2>{t.title}</h2>
-        <span className="small muted">
-          {t.left(lines.length - lines.filter((l) => checked.has(l.key)).length, lines.length)}
-        </span>
-      </div>
-      <p className="small muted">
-        {t.scaled(householdSize)}
-      </p>
-      <div className="row no-print" style={{ marginBottom: 8 }}>
-        <button className="btn small" onClick={() => window.print()}>
-          {t.print}
-        </button>
-        <button
-          className="btn small"
-          onClick={() =>
-            navigator.clipboard?.writeText(`${plan.name}\n\n${text}`).then(
-              () => setCopied(true),
-              () => setCopied(false),
-            )
-          }
-        >
-          {copied ? t.copied : t.copy}
-        </button>
-        {plan.checked.length > 0 && (
-          <button className="btn small ghost" onClick={() => onChange({ ...plan, checked: [] })}>
-            {t.untick}
-          </button>
-        )}
-      </div>
-      {groups.map((g) => (
-        <section key={g} style={{ marginTop: 12 }}>
-          <h3>{g}</h3>
-          <ul>
-            {lines
-              .filter((l) => l.group === g)
-              .map((l) => (
-                <li key={l.key} className={checked.has(l.key) ? 'done' : ''}>
-                  <input type="checkbox" id={`g-${l.key}`} checked={checked.has(l.key)} onChange={() => toggle(l.key)} />
-                  <label htmlFor={`g-${l.key}`} style={{ minWidth: 0, flex: 1 }}>
-                    <span className="gname">{l.name}</span> — {l.amounts} {l.status !== 'eat' && <StatusBadge status={l.status as 'limit'} />}
-                    <span className="small muted" style={{ display: 'block' }}>
-                      {t.for(l.recipes.join(', '))}
-                    </span>
-                  </label>
-                </li>
-              ))}
-          </ul>
-        </section>
-      ))}
-    </div>
+    <>
+      <ShoppingList doc={doc} onOp={onOp} pantrySelection={profile.pantrySelection} stale={!!doc.source && doc.source !== planSignature(plan)} onUpdateFromPlan={update} />
+      <ExportBar doc={doc} />
+      <StartSharing plan={plan} doc={doc} />
+    </>
+  );
+}
+
+function SharedGrocery({ plan, listId }: { plan: MealPlan; listId: string }) {
+  const { profile } = useStore();
+  const s = useSharedList(listId);
+  if (!s.ref || !s.doc) return null;
+  const doc = s.doc;
+  return (
+    <>
+      {s.ref.status !== 'active' && <SharePanel sharedRef={s.ref} members={s.members} invite={s.invite} setInvite={s.setInvite} setMembers={s.setMembers} />}
+      <ShoppingList
+        doc={doc}
+        onOp={s.dispatch}
+        pantrySelection={profile.pantrySelection}
+        stale={s.ref.status === 'active' && !!doc.source && doc.source !== planSignature(plan)}
+        onUpdateFromPlan={() => s.dispatch({ type: 'regenerate', opId: newOpId(), doc: generateList(plan, doc.people) })}
+        status={s.ref.status === 'active' ? <SyncBadge status={s.status} /> : undefined}
+      />
+      <ExportBar doc={doc} />
+      {s.ref.status === 'active' && <SharePanel sharedRef={s.ref} members={s.members} invite={s.invite} setInvite={s.setInvite} setMembers={s.setMembers} />}
+    </>
+  );
+}
+
+/** Lists other people shared with this device. */
+function SharedWithMe() {
+  const { profile } = useStore();
+  const { m } = useI18n();
+  const t = m.shopping;
+  const joined = profile.sharedLists.filter((r) => r.role === 'member');
+  if (!joined.length) return null;
+  return (
+    <section className="card section no-print" aria-labelledby="shared-with-me">
+      <h2 id="shared-with-me" style={{ fontSize: '1.1rem' }}>
+        {t.sharedWithMe}
+      </h2>
+      <ul className="members">
+        {joined.map((r) => {
+          const d = effectiveDoc(r);
+          const { done, total } = progress(d);
+          return (
+            <li key={r.listId}>
+              <span style={{ minWidth: 0 }}>
+                <strong>{d.title || t.listTitle}</strong>
+                <span className="small muted" style={{ display: 'block' }}>
+                  {r.status === 'active' ? t.progress(done, total) : r.status === 'revoked' ? t.revoked : t.gone}
+                </span>
+              </span>
+              <Link className="btn small" to={`/lists/${r.listId}`}>
+                {t.open}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

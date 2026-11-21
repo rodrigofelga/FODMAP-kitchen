@@ -1,8 +1,11 @@
 {
-  // Cloudflare Worker "fodmap-kitchen" serving the Vite build as static assets.
+  // Cloudflare Worker "fodmap-kitchen": serves the Vite build as static assets
+  // and, under /api/, the shared shopping lists (one SQLite-backed Durable
+  // Object per list — available on the Workers Free plan, no extra services).
   // Works both for Workers Builds (Git integration on `main`) and `npx wrangler deploy`.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fodmap-kitchen",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
   "preview_urls": false,
@@ -11,6 +14,13 @@
   },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Only API requests run the Worker; every other request is served straight from the assets.
+    "run_worker_first": ["/api/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "LISTS", "class_name": "ShoppingList" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ShoppingList"] }]
 }

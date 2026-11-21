@@ -85,7 +85,7 @@ describe('interface strings', () => {
   it('every pt-BR string is non-empty and none is left in English', () => {
     const enLeaves = new Map(leaves(en));
     // Identical by design: the brand name, "min" and metric units (the same in both languages), and the internal diet keys.
-    const sameAllowed = /^(common\.appName|common\.minutes|units\.|settings\.diets\[\d\]\[0\])/;
+    const sameAllowed = /^(shopping\.(whatsapp|email)|common\.appName|common\.minutes|units\.|settings\.diets\[\d\]\[0\])/;
     expect(ptBR.settings.diets.map((d) => d[0])).toEqual(en.settings.diets.map((d) => d[0]));
     let compared = 0;
     for (const [path, value] of leaves(ptBR)) {

@@ -51,6 +51,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,webmanifest}'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallback: '/index.html',
+        // The shared-list API is never answered from the cache.
+        navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
       },
     }),

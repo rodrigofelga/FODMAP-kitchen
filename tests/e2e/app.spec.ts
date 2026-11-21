@@ -99,7 +99,7 @@ test('meal planner generates a week and a grocery list', async ({ page }) => {
   await page.goto('/planner');
   await page.getByRole('button', { name: 'Generate a week' }).click();
   await expect(page.getByText('28 of 28 meals planned')).toBeVisible();
-  await page.getByRole('button', { name: 'Grocery list' }).click();
+  await page.getByRole('button', { name: 'Grocery list', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Grocery list' })).toBeVisible();
   const first = page.locator('.grocery input[type=checkbox]').first();
   await first.check();
@@ -244,7 +244,7 @@ test('Portuguese food guide, recipe page, planner and matcher', async ({ page })
   await page.goto('/planner');
   await page.getByRole('button', { name: 'Gerar uma semana' }).click();
   await expect(page.getByText('28 de 28 refeições planejadas')).toBeVisible();
-  await page.getByRole('button', { name: 'Lista de compras' }).click();
+  await page.getByRole('button', { name: 'Lista de compras', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Lista de compras' })).toBeVisible();
 
   await page.goto('/matcher');

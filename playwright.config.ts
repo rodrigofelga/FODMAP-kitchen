@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 // Uses an installed browser channel (Edge by default on Windows) so no browser
 // download is required. Override with PW_CHANNEL=chrome or PW_CHANNEL=chromium.
 const channel = process.env.PW_CHANNEL ?? 'msedge';
-const baseURL = process.env.BASE_URL ?? 'http://localhost:4173';
+const baseURL = process.env.BASE_URL ?? 'http://127.0.0.1:4173';
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -18,5 +18,6 @@ export default defineConfig({
   ],
   webServer: process.env.BASE_URL
     ? undefined
-    : { command: 'npm run preview', url: baseURL, reuseExistingServer: true, timeout: 60_000 },
+    : // The local Worker (static assets + shared-list API with a local Durable Object), built first.
+      { command: 'npx wrangler dev --port 4173 --ip 127.0.0.1', url: baseURL, reuseExistingServer: true, timeout: 180_000 },
 });

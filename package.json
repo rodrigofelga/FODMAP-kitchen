@@ -21,6 +21,7 @@
     "deploy": "npm run check && wrangler deploy"
   },
   "dependencies": {
+    "pdf-lib": "^1.17.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.6"

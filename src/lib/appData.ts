@@ -3,6 +3,7 @@ import { DAY_NAMES, emptyDay, type MealPlan } from './planner';
 import { RECIPE_BY_ID } from '../data/recipes';
 import { MEALS } from '../data/types';
 import { messages } from '../i18n/content';
+import { sanitizeDoc, sanitizeOp, type ListDoc, type ListOp } from './listModel';
 
 export const DATA_VERSION = 1;
 
@@ -14,6 +15,24 @@ export interface Profile {
   plans: MealPlan[];
   activePlanId: string | null;
   pantrySelection: string[];
+  /** Shared shopping lists this profile owns or joined (credentials and an offline copy). */
+  sharedLists: SharedListRef[];
+}
+
+export interface SharedListRef {
+  listId: string;
+  /** Secret access token for this device's membership (never put in a link). */
+  token: string;
+  memberId: string;
+  role: 'owner' | 'member';
+  /** Last copy received from the server (shown offline). */
+  doc: ListDoc;
+  version: number;
+  /** Changes made here that the server has not confirmed yet. */
+  pending: ListOp[];
+  status: 'active' | 'revoked' | 'gone';
+  /** Owner only: the current invite secret, so the link can be shown again. */
+  invite?: string;
 }
 
 export interface AppData {
@@ -31,6 +50,7 @@ export function newProfile(name: string): Profile {
     plans: [],
     activePlanId: null,
     pantrySelection: [],
+    sharedLists: [],
   };
 }
 
@@ -54,7 +74,29 @@ function normalizePlan(raw: unknown): MealPlan | null {
     }
     return d;
   });
-  return { id: p.id, name: typeof p.name === 'string' ? p.name : messages().planner.defaultPlanName, createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date().toISOString(), days, checked: arr(p.checked) };
+  const plan: MealPlan = { id: p.id, name: typeof p.name === 'string' ? p.name : messages().planner.defaultPlanName, createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date().toISOString(), days, checked: arr(p.checked) };
+  const grocery = p.grocery ? sanitizeDoc(p.grocery) : null;
+  if (grocery) plan.grocery = grocery;
+  if (typeof p.sharedListId === 'string') plan.sharedListId = p.sharedListId;
+  return plan;
+}
+
+function normalizeShared(raw: unknown): SharedListRef | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Partial<SharedListRef>;
+  const doc = sanitizeDoc(r.doc);
+  if (typeof r.listId !== 'string' || typeof r.token !== 'string' || typeof r.memberId !== 'string' || !doc) return null;
+  return {
+    listId: r.listId,
+    token: r.token,
+    memberId: r.memberId,
+    role: r.role === 'owner' ? 'owner' : 'member',
+    doc,
+    version: Number(r.version) || 0,
+    pending: (Array.isArray(r.pending) ? r.pending : []).map(sanitizeOp).filter((x): x is ListOp => !!x),
+    status: r.status === 'revoked' || r.status === 'gone' ? r.status : 'active',
+    ...(typeof r.invite === 'string' && /^[A-Za-z0-9_-]{16,64}$/.test(r.invite) ? { invite: r.invite } : {}),
+  };
 }
 
 /**
@@ -88,6 +130,7 @@ export function normalizeData(raw: unknown): AppData {
         plans,
         activePlanId: plans.some((p) => p.id === pr.activePlanId) ? pr.activePlanId! : (plans[0]?.id ?? null),
         pantrySelection: arr(pr.pantrySelection),
+        sharedLists: (Array.isArray(pr.sharedLists) ? pr.sharedLists : []).map(normalizeShared).filter((x): x is SharedListRef => !!x),
       };
     })
     .filter((x): x is Profile => !!x);

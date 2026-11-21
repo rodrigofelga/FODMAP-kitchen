@@ -4,6 +4,7 @@ import { evaluateRecipe, type Preferences } from './analysis';
 import { formatAmount, mustResolve } from './ingredients';
 import { compareText } from '../i18n/core';
 import { messages, recipeTitle } from '../i18n/content';
+import type { ListDoc } from './listModel';
 
 /** Structural (seven days, Monday first); display names come from the i18n messages. */
 export const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -15,8 +16,12 @@ export interface MealPlan {
   name: string;
   createdAt: string;
   days: DayPlan[];
-  /** Grocery item keys already ticked off. */
+  /** Grocery item keys already ticked off (lists made before the shopping-list feature). */
   checked: string[];
+  /** The generated, editable shopping list for this week. */
+  grocery?: ListDoc;
+  /** Set when the list is shared: the shared copy (see Profile.sharedLists) is used instead. */
+  sharedListId?: string;
 }
 
 export function emptyDay(): DayPlan {

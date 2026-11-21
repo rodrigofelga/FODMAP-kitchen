@@ -57,3 +57,23 @@ export const IconPlate = (p: SVGProps<SVGSVGElement>) => (
     <circle cx="12" cy="12" r="4.5" />
   </svg>
 );
+export const IconPlus = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+export const IconTrash = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} {...p}>
+    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+  </svg>
+);
+export const IconChevron = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} {...p}>
+    <path d="m9 6 6 6-6 6" />
+  </svg>
+);
+export const IconShare = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} {...p}>
+    <path d="M12 3v12M7 8l5-5 5 5M5 13v7h14v-7" />
+  </svg>
+);

@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RECIPES, RECIPE_BY_ID } from '../data/recipes';
 import { MEALS, type Meal, type Recipe } from '../data/types';
 import { evaluateRecipe } from '../lib/analysis';
+import { progress } from '../lib/listModel';
+import { effectiveDoc } from '../lib/sync';
 import { buildGroceryList, mulberry32, planRecipeCount } from '../lib/planner';
 import { useStore } from '../lib/store';
 import { IconSearch } from '../components/Icons';
@@ -60,8 +62,15 @@ export function HomePage() {
       .flatMap((d) => MEALS.map((m) => d[m]))
       .filter((id): id is string => !!id)
       .filter((id) => evaluateRecipe(RECIPE_BY_ID.get(id)!, prefs).verdict === 'check').length;
+    // The grocery list itself (shared or not) is what counts once it exists.
+    const shared = plan.sharedListId ? profile.sharedLists.find((r) => r.listId === plan.sharedListId) : undefined;
+    const doc = shared ? effectiveDoc(shared) : plan.grocery;
+    if (doc) {
+      const pr = progress(doc);
+      return { count, unique, items: pr.total, left: pr.total - pr.done, checks };
+    }
     return { count, unique, items: grocery.length, left: grocery.filter((g) => !plan.checked.includes(g.key)).length, checks };
-  }, [plan, prefs]);
+  }, [plan, prefs, profile.sharedLists]);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();

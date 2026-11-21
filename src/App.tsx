@@ -9,6 +9,8 @@ import { RecipeDetailPage } from './pages/RecipeDetailPage';
 import { MatcherPage } from './pages/MatcherPage';
 import { PlannerPage } from './pages/PlannerPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { SharedListPage } from './pages/SharedListPage';
+import { JoinPage } from './pages/JoinPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LanguageProvider } from './i18n/LanguageProvider';
 import { useI18n } from './i18n/context';
@@ -32,6 +34,8 @@ function Gate() {
         <Route path="recipes/:id" element={<RecipeDetailPage />} />
         <Route path="matcher" element={<MatcherPage />} />
         <Route path="planner" element={<PlannerPage />} />
+        <Route path="lists/:listId" element={<SharedListPage />} />
+        <Route path="join" element={<JoinPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
