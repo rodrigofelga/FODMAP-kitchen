@@ -24,13 +24,12 @@ No accounts, no servers, no paid services: everything runs in the browser, and d
 
 Photos come from [Foodiesfeed](https://www.foodiesfeed.com/) under its [licence](https://www.foodiesfeed.com/license) (CC0-equivalent; commercial use allowed, no attribution required). `scripts/fetch-images.mjs` follows Foodiesfeed's robots.txt and photo sitemap, fetches one page per photo at one request per second, downloads only the photo's own asset (never the sponsored Shutterstock or affiliate images on the page), and writes 4:3 WebP files at 480 and 960 px plus metadata (`src/data/images.json`): source page, asset URL, author, an AI-generated flag, licence and retrieval date.
 
-Every candidate photo was reviewed by eye. Of the 81 recipes:
+Every photo was reviewed by eye. All 81 recipes have a photo:
 
-- **45** have a photo of the actual dish;
-- **31** have a photo of a similar dish, labelled "Representative photo";
-- **5** show a placeholder, because no accurate licensed photo was found. Foodiesfeed candidates were also rejected when they showed high-FODMAP foods such as honey, mango, watermelon, apple or red onion.
+- **50** show the actual dish;
+- **31** show a similar dish and are labelled "Representative photo".
 
-22 of these photos were supplied by the app owner (originals in `assets/owner-photos/`, mapped with a `file` entry in `scripts/image-map.json`). Owner photos that show ingredients the recipe leaves out (for example onion, mushrooms or peas) are labelled "Representative photo".
+27 photos were supplied by the app owner (originals in `assets/owner-photos/`, mapped with a `file` entry in `scripts/image-map.json`); the rest are from Foodiesfeed. Foodiesfeed candidates showing high-FODMAP foods such as honey, mango, watermelon, apple or red onion were rejected. A photo that shows ingredients the recipe leaves out (for example onion, mushrooms, peas or grapes) is labelled "Representative photo"; the recipe's ingredient list is always authoritative.
 
 Rebuild the photos with `npm run images` (cached in `.image-cache/`).
 

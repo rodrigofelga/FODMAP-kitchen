@@ -331,9 +331,9 @@ export function SettingsPage() {
           <a href="https://www.foodiesfeed.com/license" target="_blank" rel="noopener noreferrer">
             Foodiesfeed licence
           </a>{' '}
-          (CC0-equivalent; free for commercial use, no attribution required). Sponsored third-party stock images shown on Foodiesfeed were not used. {photoStats.exact} photos show the
-          actual dish, {photoStats.rep} are labelled “Representative photo”, and {photoStats.ph} recipes use a placeholder because no accurate licensed photo was found. Each recipe page links
-          to its photo source. {photoStats.owner} of the dish photos were supplied by the app owner rather than Foodiesfeed.
+          (CC0-equivalent; free for commercial use, no attribution required). Sponsored third-party stock images shown on Foodiesfeed were not used. {photoStats.owner} photos were supplied by the app owner.{' '}
+          {photoStats.exact} photos show the actual dish and {photoStats.rep} are labelled “Representative photo” because they show a similar dish or ingredients the recipe leaves out
+          {photoStats.ph > 0 ? `; ${photoStats.ph} recipes use a placeholder because no accurate photo was found` : ''}. The recipe’s ingredient list is always what counts. Each recipe page credits its photo.
         </p>
       </section>
 

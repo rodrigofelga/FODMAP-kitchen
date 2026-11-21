@@ -155,6 +155,11 @@ describe('recipe images', () => {
     }
   });
 
+  it('every recipe has a photo (no placeholders left)', () => {
+    const missing = Object.entries(IMAGES).filter(([, m]) => m.match === 'placeholder').map(([id]) => id);
+    expect(missing).toEqual([]);
+  });
+
   it('uses each Foodiesfeed photo for only one recipe', () => {
     const pages = Object.values(IMAGES).flatMap((m) => (m.match === 'placeholder' || m.source !== 'Foodiesfeed' ? [] : [m.photoPage]));
     expect(new Set(pages).size).toBe(pages.length);

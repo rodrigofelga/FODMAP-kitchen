@@ -812,8 +812,12 @@
     "retrieved": "2026-11-21"
   },
   "biscoito-arroz-amendoim-banana": {
-    "match": "placeholder",
-    "reason": "Candidate photo includes apple, which the guide lists as AVOID."
+    "match": "exact",
+    "alt": "Two plain rice cakes spread with peanut butter and topped with banana slices and a dusting of cinnamon",
+    "src480": "/images/recipes/biscoito-arroz-amendoim-banana-480.webp",
+    "src960": "/images/recipes/biscoito-arroz-amendoim-banana-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "iogurte-mirtilo": {
     "match": "representative",
@@ -839,8 +843,12 @@
     "license": "Provided by the app owner for use in this app"
   },
   "bolo-de-fuba": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Golden Brazilian cornmeal ring cake with two slices cut to show the soft yellow crumb",
+    "src480": "/images/recipes/bolo-de-fuba-480.webp",
+    "src960": "/images/recipes/bolo-de-fuba-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "pudim-de-leite-sem-lactose": {
     "match": "exact",
@@ -858,8 +866,12 @@
     "retrieved": "2026-11-21"
   },
   "arroz-doce-sem-lactose": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Bowl of creamy rice pudding dusted with ground cinnamon, cinnamon sticks beside it",
+    "src480": "/images/recipes/arroz-doce-sem-lactose-480.webp",
+    "src960": "/images/recipes/arroz-doce-sem-lactose-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "pacoca-caseira": {
     "match": "exact",
@@ -893,8 +905,12 @@
     "license": "Provided by the app owner for use in this app"
   },
   "morango-chocolate-amargo": {
-    "match": "placeholder",
-    "reason": "Candidate photo shows other fruit dipped in chocolate, not strawberries."
+    "match": "exact",
+    "alt": "Plate of fresh strawberries half-dipped in dark chocolate with chocolate drizzle",
+    "src480": "/images/recipes/morango-chocolate-amargo-480.webp",
+    "src960": "/images/recipes/morango-chocolate-amargo-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "chips-batata-doce": {
     "match": "exact",
@@ -1002,7 +1018,11 @@
     "retrieved": "2026-11-21"
   },
   "quindim": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Four glossy yellow quindins (coconut egg custards) on a white plate, with grated coconut behind",
+    "src480": "/images/recipes/quindim-480.webp",
+    "src960": "/images/recipes/quindim-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   }
 }

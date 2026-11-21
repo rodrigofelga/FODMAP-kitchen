@@ -315,8 +315,9 @@
     "alt": "Plain corn tortilla chips"
   },
   "biscoito-arroz-amendoim-banana": {
-    "slug": null,
-    "reason": "Candidate photo includes apple, which the guide lists as AVOID."
+    "file": "assets/owner-photos/biscoito-arroz-amendoim-banana.png",
+    "match": "exact",
+    "alt": "Two plain rice cakes spread with peanut butter and topped with banana slices and a dusting of cinnamon"
   },
   "iogurte-mirtilo": {
     "slug": "delicious-yogurt-parfait-with-fresh-berries",
@@ -329,8 +330,9 @@
     "alt": "Bowl of tropical fruit salad with pineapple, papaya, orange, strawberries, kiwi and red grapes, topped with mint and lime zest"
   },
   "bolo-de-fuba": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/bolo-de-fuba.png",
+    "match": "exact",
+    "alt": "Golden Brazilian cornmeal ring cake with two slices cut to show the soft yellow crumb"
   },
   "pudim-de-leite-sem-lactose": {
     "slug": "brazilian-style-caramel-pudding-dessert",
@@ -338,8 +340,9 @@
     "alt": "Brazilian caramel milk pudding (pudim) on a plate"
   },
   "arroz-doce-sem-lactose": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/arroz-doce-sem-lactose.png",
+    "match": "exact",
+    "alt": "Bowl of creamy rice pudding dusted with ground cinnamon, cinnamon sticks beside it"
   },
   "pacoca-caseira": {
     "slug": "brazilian-homemade-peanut-candies",
@@ -357,8 +360,9 @@
     "alt": "A golden baked coconut square on a small plate, with the baking dish, a halved coconut and grated coconut behind"
   },
   "morango-chocolate-amargo": {
-    "slug": null,
-    "reason": "Candidate photo shows other fruit dipped in chocolate, not strawberries."
+    "file": "assets/owner-photos/morango-chocolate-amargo.png",
+    "match": "exact",
+    "alt": "Plate of fresh strawberries half-dipped in dark chocolate with chocolate drizzle"
   },
   "chips-batata-doce": {
     "slug": "sweet-potato-fries",
@@ -396,7 +400,8 @@
     "alt": "Slices of banana bread with butter"
   },
   "quindim": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/quindim.png",
+    "match": "exact",
+    "alt": "Four glossy yellow quindins (coconut egg custards) on a white plate, with grated coconut behind"
   }
 }
