@@ -10,12 +10,14 @@
     "alt": "White cup of oatmeal topped with fresh strawberries and blueberries"
   },
   "tapioca-ovo-mussarela": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/tapioca-ovo-mussarela.png",
+    "match": "exact",
+    "alt": "Folded tapioca crepe filled with scrambled egg and melted mozzarella, with halved cherry tomatoes and parsley"
   },
   "pao-de-queijo-caseiro": {
-    "slug": null,
-    "reason": "Closest Foodiesfeed photo shows toasted cheese-topped bread slices, not pão de queijo."
+    "file": "assets/owner-photos/pao-de-queijo-caseiro.png",
+    "match": "exact",
+    "alt": "Plate of golden Brazilian cheese bread rolls, one broken open to show the chewy inside"
   },
   "vitamina-banana-amendoim": {
     "slug": "peanut-butter-and-banana-smoothie",
@@ -28,8 +30,9 @@
     "alt": "Folded omelette with cherry tomatoes and fresh greens"
   },
   "cuscuz-nordestino-ovo": {
-    "slug": null,
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "file": "assets/owner-photos/cuscuz-nordestino-ovo.png",
+    "match": "exact",
+    "alt": "Mound of steamed corn couscous (cuscuz) topped with a fried egg, black pepper and chives"
   },
   "panquecas-aveia-banana": {
     "slug": "heavenly-good-pancakes-with-banana-and-roasted-oats",
@@ -42,8 +45,9 @@
     "alt": "Glass jars of layered chia pudding and yogurt topped with raspberries"
   },
   "pudim-chia-coco": {
-    "slug": null,
-    "reason": "Candidate photo did not clearly show chia pudding."
+    "file": "assets/owner-photos/pudim-chia-coco.png",
+    "match": "exact",
+    "alt": "Glass of coconut chia pudding topped with sliced kiwi and toasted coconut flakes"
   },
   "crepioca-mussarela-tomate": {
     "file": "assets/owner-photos/crepioca-mussarela-tomate.png",
@@ -51,8 +55,9 @@
     "alt": "Folded tapioca crepe filled with scrambled egg and melted cheese, served with sliced tomatoes"
   },
   "burrito-cafe-tortilha-milho": {
-    "slug": null,
-    "reason": "Candidate photo showed a salad, not a burrito."
+    "file": "assets/owner-photos/burrito-cafe-tortilha-milho.png",
+    "match": "representative",
+    "alt": "Breakfast wrap cut in half, filled with scrambled egg, melted cheese, zucchini and red pepper"
   },
   "torrada-fermentacao-natural-ovo": {
     "slug": "perfectly-fried-egg-on-whole-grain-toast",
@@ -60,8 +65,9 @@
     "alt": "Fried egg on a slice of toasted wholegrain bread"
   },
   "aveia-dormida-kiwi": {
-    "slug": null,
-    "reason": "No Foodiesfeed photo of overnight oats with kiwi was found."
+    "file": "assets/owner-photos/aveia-dormida-kiwi.png",
+    "match": "representative",
+    "alt": "Jar of overnight oats topped with kiwi slices, rolled oats and chia seeds, half a kiwi beside it"
   },
   "mingau-de-fuba": {
     "file": "assets/owner-photos/mingau-de-fuba.png",

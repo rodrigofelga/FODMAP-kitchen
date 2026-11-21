@@ -30,12 +30,20 @@
     "retrieved": "2026-11-21"
   },
   "tapioca-ovo-mussarela": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Folded tapioca crepe filled with scrambled egg and melted mozzarella, with halved cherry tomatoes and parsley",
+    "src480": "/images/recipes/tapioca-ovo-mussarela-480.webp",
+    "src960": "/images/recipes/tapioca-ovo-mussarela-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "pao-de-queijo-caseiro": {
-    "match": "placeholder",
-    "reason": "Closest Foodiesfeed photo shows toasted cheese-topped bread slices, not pão de queijo."
+    "match": "exact",
+    "alt": "Plate of golden Brazilian cheese bread rolls, one broken open to show the chewy inside",
+    "src480": "/images/recipes/pao-de-queijo-caseiro-480.webp",
+    "src960": "/images/recipes/pao-de-queijo-caseiro-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "vitamina-banana-amendoim": {
     "match": "exact",
@@ -68,8 +76,12 @@
     "retrieved": "2026-11-21"
   },
   "cuscuz-nordestino-ovo": {
-    "match": "placeholder",
-    "reason": "No accurately matching licensed Foodiesfeed photograph was found."
+    "match": "exact",
+    "alt": "Mound of steamed corn couscous (cuscuz) topped with a fried egg, black pepper and chives",
+    "src480": "/images/recipes/cuscuz-nordestino-ovo-480.webp",
+    "src960": "/images/recipes/cuscuz-nordestino-ovo-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "panquecas-aveia-banana": {
     "match": "representative",
@@ -102,8 +114,12 @@
     "retrieved": "2026-11-21"
   },
   "pudim-chia-coco": {
-    "match": "placeholder",
-    "reason": "Candidate photo did not clearly show chia pudding."
+    "match": "exact",
+    "alt": "Glass of coconut chia pudding topped with sliced kiwi and toasted coconut flakes",
+    "src480": "/images/recipes/pudim-chia-coco-480.webp",
+    "src960": "/images/recipes/pudim-chia-coco-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "crepioca-mussarela-tomate": {
     "match": "exact",
@@ -114,8 +130,12 @@
     "license": "Provided by the app owner for use in this app"
   },
   "burrito-cafe-tortilha-milho": {
-    "match": "placeholder",
-    "reason": "Candidate photo showed a salad, not a burrito."
+    "match": "representative",
+    "alt": "Breakfast wrap cut in half, filled with scrambled egg, melted cheese, zucchini and red pepper",
+    "src480": "/images/recipes/burrito-cafe-tortilha-milho-480.webp",
+    "src960": "/images/recipes/burrito-cafe-tortilha-milho-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "torrada-fermentacao-natural-ovo": {
     "match": "representative",
@@ -133,8 +153,12 @@
     "retrieved": "2026-11-21"
   },
   "aveia-dormida-kiwi": {
-    "match": "placeholder",
-    "reason": "No Foodiesfeed photo of overnight oats with kiwi was found."
+    "match": "representative",
+    "alt": "Jar of overnight oats topped with kiwi slices, rolled oats and chia seeds, half a kiwi beside it",
+    "src480": "/images/recipes/aveia-dormida-kiwi-480.webp",
+    "src960": "/images/recipes/aveia-dormida-kiwi-960.webp",
+    "source": "Owner-supplied",
+    "license": "Provided by the app owner for use in this app"
   },
   "mingau-de-fuba": {
     "match": "exact",

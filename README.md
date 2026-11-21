@@ -26,11 +26,11 @@ Photos come from [Foodiesfeed](https://www.foodiesfeed.com/) under its [licence]
 
 Every candidate photo was reviewed by eye. Of the 81 recipes:
 
-- **41** have a photo of the actual dish;
-- **28** have a photo of a similar dish, labelled "Representative photo";
-- **12** show a placeholder, because no accurate licensed photo was found. Foodiesfeed candidates were also rejected when they showed high-FODMAP foods such as honey, mango, watermelon, apple or red onion.
+- **45** have a photo of the actual dish;
+- **30** have a photo of a similar dish, labelled "Representative photo";
+- **6** show a placeholder, because no accurate licensed photo was found. Foodiesfeed candidates were also rejected when they showed high-FODMAP foods such as honey, mango, watermelon, apple or red onion.
 
-15 of these photos were supplied by the app owner (originals in `assets/owner-photos/`, mapped with a `file` entry in `scripts/image-map.json`). Owner photos that show ingredients the recipe leaves out (for example onion, mushrooms or peas) are labelled "Representative photo".
+21 of these photos were supplied by the app owner (originals in `assets/owner-photos/`, mapped with a `file` entry in `scripts/image-map.json`). Owner photos that show ingredients the recipe leaves out (for example onion, mushrooms or peas) are labelled "Representative photo".
 
 Rebuild the photos with `npm run images` (cached in `.image-cache/`).
 
