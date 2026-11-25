@@ -42,15 +42,31 @@ test('main navigation works', async ({ page }) => {
   }
 });
 
-test('food guide shows all 251 foods and searches Portuguese aliases', async ({ page }) => {
+test('food guide shows all 290 foods and searches Portuguese aliases', async ({ page }) => {
   await page.goto('/guide');
-  await expect(page.getByText('Showing 251 of 251 foods')).toBeVisible();
-  await expect(page.locator('li[data-food]')).toHaveCount(251);
+  await expect(page.getByText('Showing 290 of 290 foods')).toBeVisible();
+  await expect(page.locator('li[data-food]')).toHaveCount(290);
   await page.getByPlaceholder(/Search in English or Portuguese/).fill('alho');
   await expect(page.locator('li[data-food="garlic"]')).toBeVisible();
   await expect(page.locator('.food-col.avoid li[data-food="garlic"]')).toBeVisible();
   await page.getByPlaceholder(/Search in English or Portuguese/).fill('café');
   await expect(page.locator('.food-col.eat li[data-food="black-coffee"]')).toBeVisible();
+});
+
+test('dietary audit corrections show in the guide and on recipe pages', async ({ page }) => {
+  await page.goto('/guide');
+  const search = page.getByPlaceholder(/Search in English or Portuguese/);
+  await search.fill('moyashi');
+  await expect(page.locator('.food-col.eat li[data-food="bean-sprouts"]')).toBeVisible();
+  await expect(page.locator('li[data-food="mung-beans-regular"]')).toHaveCount(0);
+  await search.fill('colorau');
+  await expect(page.locator('.food-col.limit li[data-food="colorau"]')).toBeVisible();
+  await expect(page.locator('li[data-food="paprika"]')).toHaveCount(0);
+  await search.fill('mel');
+  await expect(page.locator('.food-col.avoid li[data-food="honey"]')).toBeVisible();
+  await page.goto('/recipes/smoothie-morango');
+  await expect(page.getByText(/Strawberries: 140 g per serving — this amount has not been verified/)).toBeVisible();
+  await expect(page.locator('main').getByText('Portion check').first()).toBeVisible();
 });
 
 test('every recipe photo resolves', async ({ page, request }) => {
@@ -143,7 +159,7 @@ test('works offline after the first visit', async ({ page, context }) => {
     .toBeGreaterThan(60);
   await context.setOffline(true);
   await page.goto('/guide');
-  await expect(page.getByText('Showing 251 of 251 foods')).toBeVisible();
+  await expect(page.getByText('Showing 290 of 290 foods')).toBeVisible();
   await page.goto('/recipes/omelete-tomate-folhas');
   await expect(page.locator('main h1')).toHaveText('Tomato and greens omelette');
   await page.goto('/recipes');
@@ -230,7 +246,7 @@ test('every page renders in Portuguese without errors, English leftovers or hori
 test('Portuguese food guide, recipe page, planner and matcher', async ({ page }) => {
   await usePortuguese(page);
   await page.goto('/guide');
-  await expect(page.getByText('Mostrando 251 de 251 alimentos')).toBeVisible();
+  await expect(page.getByText('Mostrando 290 de 290 alimentos')).toBeVisible();
   await expect(page.locator('.food-col.avoid li[data-food="garlic"]')).toContainText('Alho');
   await expect(page.locator('.food-col.avoid header').first()).toHaveText('EVITAR POR ENQUANTO');
   await expect(page.locator('.food-col.eat header').first()).toHaveText('PODE COMER');
@@ -285,7 +301,7 @@ test('Portuguese works offline', async ({ page, context }) => {
     .toBeGreaterThan(60);
   await context.setOffline(true);
   await page.goto('/guide');
-  await expect(page.getByText('Mostrando 251 de 251 alimentos')).toBeVisible();
+  await expect(page.getByText('Mostrando 290 de 290 alimentos')).toBeVisible();
   await page.goto('/recipes/omelete-tomate-folhas');
   await expect(page.locator('main h1')).toHaveText('Omelete de tomate e espinafre');
   await context.setOffline(false);

@@ -8,6 +8,13 @@
  *
  * `aliases` are search helpers only (mostly Portuguese equivalents) and carry no
  * dietary meaning. `tags` are used to compute diet suitability (vegetarian etc.).
+ *
+ * Dietary accuracy audit (Nov 2026): records marked `audit: 'corrected'` differ
+ * from the PDF, and records marked `audit: 'added'` (page 0) are not in the PDF.
+ * Both rest only on Monash University FODMAP publications (2026 3-step diet
+ * sheet, high/low food list, label-reading guidance) and UpToDate graphic 90186
+ * (Shepherd, Lomer & Gibson 2013). No serving threshold was invented: a food that
+ * is a FODMAP source without a published low serve is LIMIT / CHECK, not AVOID.
  */
 
 export type FoodStatus = 'eat' | 'limit' | 'avoid';
@@ -44,12 +51,14 @@ export interface Food {
   name: string;
   category: FoodCategory;
   status: FoodStatus;
-  /** PDF page the entry appears on (1–5). */
+  /** PDF page the entry appears on (1–5); 0 for audit additions. */
   page: number;
   aliases?: string[];
   tags?: FoodTag[];
   /** The PDF line is visibly cut off; the printed text is kept as-is. */
   sourceTruncated?: boolean;
+  /** Changed ('corrected') or added ('added') by the Nov 2026 dietary accuracy audit. */
+  audit?: 'corrected' | 'added';
 }
 
 export const CATEGORY_LABELS: Record<FoodCategory, string> = {
@@ -86,7 +95,7 @@ export const STATUS_LABELS: Record<FoodStatus, string> = {
   avoid: 'AVOID FOR NOW',
 };
 
-type Row = [id: string, name: string, extra?: Partial<Pick<Food, 'aliases' | 'tags' | 'sourceTruncated'>>];
+type Row = [id: string, name: string, extra?: Partial<Pick<Food, 'aliases' | 'tags' | 'sourceTruncated' | 'audit'>>];
 
 function rows(category: FoodCategory, status: FoodStatus, page: number, list: Row[]): Food[] {
   return list.map(([id, name, extra]) => ({ id, name, category, status, page, ...extra }));
@@ -98,7 +107,7 @@ export const FOODS: Food[] = [
     ['carrots', 'Carrots', { aliases: ['cenoura'] }],
     ['cucumber', 'Cucumber', { aliases: ['pepino'] }],
     ['eggplant', 'Eggplant', { aliases: ['berinjela', 'aubergine'] }],
-    ['kale', 'Kale', { aliases: ['couve', 'couve kale'] }],
+    ['kale', 'Kale', { aliases: ['couve kale', 'couve-crespa'], audit: 'corrected' }],
     ['lettuce', 'Lettuce', { aliases: ['alface'] }],
     ['potatoes-white', 'Potatoes (white)', { aliases: ['batata', 'batata inglesa'] }],
     ['spinach', 'Spinach', { aliases: ['espinafre'] }],
@@ -130,7 +139,7 @@ export const FOODS: Food[] = [
     ['leeks-white', 'Leeks (white part)', { aliases: ['alho-poró', 'alho poro'] }],
     ['mushrooms', 'Mushrooms (button, portobello, shiitake)', { aliases: ['cogumelo', 'champignon'] }],
     ['onions-red', 'Onions (red)', { aliases: ['cebola roxa'] }],
-    ['onions-yellow', 'Onions (yellow)', { aliases: ['cebola'] }],
+    ['onions-yellow', 'Onions (yellow)', { aliases: ['cebola', 'white onion', 'cebola branca'] }],
     ['shallots', 'Shallots', { aliases: ['chalota', 'echalote'] }],
     ['snow-peas-large', 'Snow peas (large portion)', { aliases: ['ervilha-torta'] }],
   ]),
@@ -166,7 +175,7 @@ export const FOODS: Food[] = [
     ['mango', 'Mango', { aliases: ['manga'] }],
     ['nectarines', 'Nectarines', { aliases: ['nectarina'] }],
     ['peaches', 'Peaches', { aliases: ['pêssego', 'pessego'] }],
-    ['pears', 'Pears', { aliases: ['pera', 'pêra'] }],
+    ['pears', 'Pears', { aliases: ['pera', 'pêra', 'nashi', 'nashi pear', 'pera nashi'] }],
     ['plums-large', 'Plums (large portions)', { aliases: ['ameixa'] }],
     ['watermelon', 'Watermelon', { aliases: ['melancia'] }],
   ]),
@@ -189,8 +198,7 @@ export const FOODS: Food[] = [
     ['farinha-de-mandioca', 'Farinha de mandioca', { aliases: ['cassava flour', 'manioc flour'] }],
     ['farofa-yoki', 'Farofa pronta Yoki (ingredient check)', { aliases: ['farofa pronta'] }],
     ['gluten-free-bread', 'Gluten-free bread (ingredient check)', { aliases: ['pão sem glúten'] }],
-    ['gluten-free-pasta', 'Gluten-free pasta', { aliases: ['macarrão sem glúten'] }],
-    ['homemade-bread-white', 'Homemade bread (white flour)', { aliases: ['pão caseiro'], tags: ['gluten'] }],
+    ['gluten-free-pasta', 'Gluten-free pasta', { aliases: ['macarrão sem glúten', 'quinoa pasta', 'corn pasta', 'macarrão de milho', 'macarrão de quinoa'] }],
     ['oats-rolled', 'Oats (rolled)', { aliases: ['aveia', 'aveia em flocos'] }],
     ['pao-de-queijo', 'Pão de queijo (recipe check)', { aliases: ['cheese bread', 'pao de queijo'], tags: ['dairy', 'egg'] }],
     ['plain-crackers-rice-corn', 'Plain crackers (rice/corn)', { aliases: ['biscoito de arroz'] }],
@@ -203,8 +211,9 @@ export const FOODS: Food[] = [
     ['couscous-large', 'Couscous (large portions)', { aliases: ['cuscuz marroquino'], tags: ['gluten'] }],
     ['pasta-wheat-regular', 'Pasta (regular wheat)', { aliases: ['macarrão'], tags: ['gluten'] }],
     ['regular-bread-buns', 'Regular bread buns', { aliases: ['pão de hambúrguer'], tags: ['gluten'] }],
-    ['rye-bread', 'Rye bread', { aliases: ['pão de centeio'], tags: ['gluten'] }],
+    ['rye-bread', 'Rye bread', { aliases: ['pão de centeio', 'rye crispbread', 'torrada de centeio'], tags: ['gluten'] }],
     ['toast-wheat', 'Toast (regular wheat)', { aliases: ['torrada'], tags: ['gluten'] }],
+    ['homemade-bread-white', 'Homemade bread (white wheat flour, not long-fermented)', { aliases: ['pão caseiro'], tags: ['gluten'], audit: 'corrected' }],
     ['wheat-bread-white', 'Wheat bread (white)', { aliases: ['pão francês', 'pão de forma'], tags: ['gluten'] }],
     ['wheat-pasta', 'Wheat pasta', { aliases: ['macarrão de trigo'], tags: ['gluten'] }],
   ]),
@@ -255,7 +264,7 @@ export const FOODS: Food[] = [
     ['greek-yogurt', 'Greek yogurt (lactose varies)', { aliases: ['iogurte grego'], tags: ['dairy'] }],
     ['kefir-lactose-free', 'Kefir (lactose-free only; label check)', { tags: ['dairy'] }],
     ['mozzarella', 'Mozzarella / mussarela cheese', { aliases: ['queijo mussarela', 'muçarela', 'queijo'], tags: ['dairy'] }],
-    ['silk-protein-choc-milk', 'Silk Protein lactose-free chocolate milk (ingredient', { tags: ['dairy'], sourceTruncated: true }],
+    ['silk-protein-choc-milk', 'Silk Protein lactose-free chocolate milk (ingredient check)', { tags: ['dairy'], audit: 'corrected' }],
     ['sour-cream', 'Sour cream (lactose-free preferred)', { aliases: ['creme azedo'], tags: ['dairy'] }],
     ['whey-isolate', 'Whey isolate protein (ingredient check)', { aliases: ['whey'], tags: ['dairy'] }],
   ]),
@@ -289,7 +298,7 @@ export const FOODS: Food[] = [
     ['cashews-regular', 'Cashews (regular servings)', { aliases: ['castanha de caju', 'caju'], tags: ['nuts'] }],
     ['kidney-beans-regular', 'Kidney beans (regular servings)', { aliases: ['feijão vermelho', 'feijão carioca', 'feijao'] }],
     ['lima-beans-regular', 'Lima beans (regular servings)', { aliases: ['feijão-de-lima', 'fava'] }],
-    ['mung-beans-regular', 'Mung beans (regular servings)', { aliases: ['feijão-mungo', 'moyashi'] }],
+    ['mung-beans-regular', 'Mung beans (regular servings)', { aliases: ['feijão-mungo'], audit: 'corrected' }],
     ['soybeans-whole-regular', 'Soybeans (whole, regular servings)', { aliases: ['soja'] }],
     ['split-peas-regular', 'Split peas (regular servings)', { aliases: ['ervilha seca'] }],
   ]),
@@ -304,7 +313,7 @@ export const FOODS: Food[] = [
     ['lime', 'Lime', { aliases: ['limão', 'limão tahiti'] }],
     ['olive-oil', 'Olive oil', { aliases: ['azeite'] }],
     ['olives', 'Olives', { aliases: ['azeitona'] }],
-    ['paprika', 'Paprika', { aliases: ['páprica', 'colorau'] }],
+    ['paprika', 'Paprika', { aliases: ['páprica'], audit: 'corrected' }],
     ['parsley', 'Parsley', { aliases: ['salsinha', 'salsa'] }],
     ['rosemary', 'Rosemary', { aliases: ['alecrim'] }],
     ['salt', 'Salt', { aliases: ['sal'] }],
@@ -337,7 +346,7 @@ export const FOODS: Food[] = [
     ['vinegar-plain', 'Vinegar (plain)', { aliases: ['vinagre'] }],
   ]),
   ...rows('sauces', 'limit', 4, [
-    ['franks-hot-sauce', 'Frank’s Original hot sauce (ingredient and spice', { tags: ['spicy'], sourceTruncated: true }],
+    ['franks-hot-sauce', 'Frank’s Original hot sauce (ingredient and spice check)', { tags: ['spicy'], audit: 'corrected' }],
     ['hellmanns-mayo', 'Hellmann’s Real Mayonnaise (label check)', { aliases: ['maionese hellmanns'], tags: ['egg'] }],
     ['ketchup', 'Ketchup (small amount)'],
     ['molho-ingles', 'Molho inglês / Worcestershire (label check)', { aliases: ['worcestershire'] }],
@@ -375,7 +384,7 @@ export const FOODS: Food[] = [
   ]),
   ...rows('snacks', 'avoid', 4, [
     ['brownies-regular', 'Brownies (regular wheat/dairy)', { aliases: ['brownie'], tags: ['gluten', 'dairy'] }],
-    ['candy-polyols', 'Candy with polyols', { aliases: ['bala diet', 'sorbitol', 'xilitol'] }],
+    ['candy-polyols', 'Candy with polyols', { aliases: ['bala diet', 'sorbitol', 'xilitol', 'sugar-free gum', 'sugar-free mints', 'sugar-free confectionery', 'chiclete sem açúcar', 'bala sem açúcar'] }],
     ['cookies-regular-wheat', 'Cookies (regular wheat)', { aliases: ['biscoito recheado'], tags: ['gluten'] }],
     ['doce-de-leite-regular', 'Doce de leite (regular)', { aliases: ['doce de leite'], tags: ['dairy'] }],
     ['donuts', 'Donuts', { aliases: ['rosquinha', 'sonho'], tags: ['gluten'] }],
@@ -412,7 +421,7 @@ export const FOODS: Food[] = [
 
   // ───────────── Page 5 — Prepared meals & other ─────────────
   ...rows('prepared', 'eat', 5, [
-    ['grilled-chicken-rice', 'Plain grilled chicken and rice Use during the initial', { aliases: ['frango grelhado com arroz'], tags: ['meat', 'poultry'], sourceTruncated: true }],
+    ['grilled-chicken-rice', 'Plain grilled chicken and rice', { aliases: ['frango grelhado com arroz'], tags: ['meat', 'poultry'], audit: 'corrected' }],
   ]),
   ...rows('prepared', 'limit', 5, [
     ['fermented-foods', 'Fermented foods (type and portion)', { aliases: ['fermentados'] }],
@@ -425,7 +434,87 @@ export const FOODS: Food[] = [
   ...rows('prepared', 'avoid', 5, [
     ['pizza-regular', 'Pizza (regular wheat crust with garlic/onion)', { aliases: ['pizza'], tags: ['gluten'] }],
     ['spring-rolls-wheat', 'Spring rolls (wheat wrapper or onion/garlic filling)', { aliases: ['rolinho primavera'], tags: ['gluten'] }],
-    ['sushi-onion-garlic', 'Sushi with onion/garlic sauces or high-FODMAP', { aliases: ['sushi'], tags: ['fish'], sourceTruncated: true }],
+    ['sushi-onion-garlic', 'Sushi with onion/garlic sauces or high-FODMAP ingredients', { aliases: ['sushi'], tags: ['fish'], audit: 'corrected' }],
+  ]),
+
+  // ───────────── Audit additions (Nov 2026) — not in the PDF ─────────────
+  // Sources: [M-2026] Monash 3-step FODMAP diet sheet 2026; [M-LIST] Monash high/low
+  // FODMAP food list; [M-LABEL] Monash label-reading guidance (2021); [UTD] UpToDate
+  // graphic 90186 v2.0. The comment on each record names its sources.
+  ...rows('vegetables', 'eat', 0, [
+    ['green-bell-pepper', 'Bell peppers (green)', { aliases: ['pimentão verde', 'green capsicum'], audit: 'added' }], // M-2026, M-LIST
+    ['bean-sprouts', 'Bean sprouts (moyashi)', { aliases: ['moyashi', 'broto de feijão', 'bean shoots'], audit: 'added' }], // M-2026
+    ['bok-choy', 'Bok choy', { aliases: ['pak choi', 'acelga chinesa'], audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('vegetables', 'limit', 0, [
+    ['fennel', 'Fennel (source of fructans; portion check)', { aliases: ['erva-doce', 'funcho'], audit: 'added' }], // UTD
+    ['sugar-snap-peas', 'Sugar snap peas (source of excess fructose; portion check)', { aliases: ['ervilha-torta americana', 'snap peas'], audit: 'added' }], // UTD
+  ]),
+  ...rows('vegetables', 'avoid', 0, [
+    ['green-peas', 'Green peas', { aliases: ['ervilha', 'ervilha fresca', 'ervilha em lata', 'peas'], audit: 'added' }], // M-2026, M-LIST, UTD
+    ['spring-onion-white', 'Spring onion (white part)', { aliases: ['cebolinha (parte branca)', 'scallion white part'], audit: 'added' }], // M-LIST, UTD
+    ['jerusalem-artichoke', 'Jerusalem artichoke', { aliases: ['tupinambo', 'alcachofra-de-jerusalém'], audit: 'added' }], // M-LABEL
+  ]),
+  ...rows('fruit', 'avoid', 0, [
+    ['figs-fresh', 'Figs (fresh)', { aliases: ['figo fresco'], audit: 'added' }], // M-LIST
+  ]),
+  ...rows('starches', 'eat', 0, [
+    ['quinoa-flakes', 'Quinoa flakes', { aliases: ['flocos de quinoa'], audit: 'added' }], // M-2026, M-LIST
+    ['gf-corn-flakes', 'Corn flakes (gluten-free; label check for honey/fructose syrups)', { aliases: ['corn flakes sem glúten', 'sucrilhos sem glúten'], audit: 'added' }], // M-2026
+    ['spelt-sourdough', 'Spelt sourdough bread', { aliases: ['pão de espelta de fermentação natural'], tags: ['gluten'], audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('starches', 'avoid', 0, [
+    ['wheat-flour', 'Wheat flour', { aliases: ['farinha de trigo'], tags: ['gluten'], audit: 'added' }], // M-LABEL, M-2026, UTD
+    ['wheat-cereals', 'Wheat-based breakfast cereals, muesli and granola', { aliases: ['cereal matinal', 'muesli', 'granola'], tags: ['gluten'], audit: 'added' }], // M-2026, M-LIST, M-LABEL
+    ['legume-flours', 'Legume flours (chickpea, soy, lupin)', { aliases: ['farinha de grão-de-bico', 'farinha de soja', 'farinha de tremoço'], audit: 'added' }], // M-LABEL
+  ]),
+  ...rows('protein', 'eat', 0, [
+    ['tempeh', 'Tempeh', { audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('protein', 'avoid', 0, [
+    ['falafel', 'Falafel', { audit: 'added' }], // M-LIST, UTD (chickpeas)
+    ['vegetarian-mince', 'Vegetarian mince (label check)', { aliases: ['carne vegetal moída', 'proteína vegetal'], audit: 'added' }], // M-LIST
+  ]),
+  ...rows('dairy', 'eat', 0, [
+    ['hard-cheeses', 'Hard cheeses (e.g. cheddar, parmesan)', { aliases: ['parmesão', 'queijo parmesão', 'cheddar', 'queijo duro'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST
+    ['feta', 'Feta cheese', { aliases: ['queijo feta'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST
+    ['brie-camembert', 'Brie / camembert', { aliases: ['brie', 'camembert', 'queijo brie'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST table
+    ['almond-milk', 'Almond milk', { aliases: ['leite de amêndoas', 'bebida de amêndoas'], tags: ['nuts'], audit: 'added' }], // M-2026, M-LIST
+    ['rice-milk', 'Rice milk', { aliases: ['leite de arroz', 'bebida de arroz'], audit: 'added' }], // M-LIST
+  ]),
+  ...rows('dairy', 'limit', 0, [
+    ['soy-milk', 'Soy milk (low if made from soy protein; high if made from whole soybeans)', { aliases: ['leite de soja', 'bebida de soja'], audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('dairy', 'avoid', 0, [
+    ['condensed-milk', 'Sweetened condensed milk (unless lactose-free)', { aliases: ['leite condensado'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST, UTD (milk)
+    ['evaporated-milk', 'Evaporated milk', { aliases: ['leite evaporado'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST
+    ['custard', 'Custard (regular dairy)', { aliases: ['creme de confeiteiro'], tags: ['dairy'], audit: 'added' }], // M-2026, M-LIST, UTD
+  ]),
+  ...rows('legumes', 'eat', 0, [
+    ['macadamias', 'Macadamia nuts', { aliases: ['macadâmia', 'noz macadâmia'], tags: ['nuts'], audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('seasonings', 'limit', 0, [
+    ['colorau', 'Colorau / annatto seasoning (blend check)', { aliases: ['colorífico', 'urucum', 'annatto'], audit: 'added' }], // not paprika; blends vary, not addressed by the sources
+  ]),
+  ...rows('sauces', 'limit', 0, [
+    ['bbq-sauce', 'Barbecue sauce (label check for onion/garlic)', { aliases: ['molho barbecue'], audit: 'added' }], // M-LIST, M-LABEL
+    ['chutney', 'Chutney (label check)', { audit: 'added' }], // M-LIST
+  ]),
+  ...rows('snacks', 'eat', 0, [
+    ['sugar', 'Table sugar (sucrose; low FODMAP, though large amounts of sweets may still cause symptoms)', { aliases: ['açúcar', 'acucar', 'açúcar refinado', 'table sugar'], audit: 'added' }], // M-2026, M-LIST
+    ['rice-malt-syrup', 'Rice malt syrup', { aliases: ['xarope de malte de arroz'], audit: 'added' }], // M-2026, M-LIST
+  ]),
+  ...rows('snacks', 'avoid', 0, [
+    ['honey', 'Honey', { aliases: ['mel'], audit: 'added' }], // M-2026, M-LIST, M-LABEL, UTD
+    ['hfcs', 'High-fructose corn syrup / glucose-fructose syrup', { aliases: ['HFCS', 'glucose-fructose', 'xarope de glicose-frutose', 'xarope de milho rico em frutose'], audit: 'added' }], // M-2026, M-LIST, M-LABEL, UTD
+    ['prebiotic-fibres', 'Prebiotic fibres: inulin, chicory root, FOS / oligofructose, GOS', { aliases: ['inulin', 'inulina', 'chicory root', 'raiz de chicória', 'FOS', 'oligofrutose', 'GOS', 'fibra prebiótica'], audit: 'added' }], // M-LABEL, UTD
+    ['polyol-sweeteners', 'Polyol sweeteners: sorbitol (E420), mannitol (E421), isomalt (E953), maltitol (E965), lactitol (E966), xylitol (E967)', { aliases: ['sorbitol', 'manitol', 'mannitol', 'isomalte', 'maltitol', 'lactitol', 'xilitol', 'xylitol', 'E420', 'E421', 'E953', 'E965', 'E966', 'E967'], audit: 'added' }], // M-LABEL, UTD
+  ]),
+  ...rows('drinks', 'eat', 0, [
+    ['cranberry-juice', 'Cranberry juice (label check for apple/pear concentrate)', { aliases: ['suco de cranberry', 'suco de oxicoco'], audit: 'added' }], // M-LIST
+  ]),
+  ...rows('drinks', 'avoid', 0, [
+    ['apple-pear-juice', 'Apple juice, pear juice and fruit-juice concentrates', { aliases: ['suco de maçã', 'suco de pera', 'suco concentrado', 'concentrado de frutas'], audit: 'added' }], // M-2026, M-LABEL, UTD
   ]),
 ];
 

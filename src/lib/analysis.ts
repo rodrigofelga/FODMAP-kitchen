@@ -1,3 +1,5 @@
+import { FOOD_BY_ID } from '../data/foods';
+import { UNVERIFIED_SERVINGS } from '../data/recipeReviews';
 import type { Recipe, RecipeIngredient } from '../data/types';
 import { getLang } from '../i18n/core';
 import { messages } from '../i18n/content';
@@ -139,6 +141,26 @@ export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
         pendingChecks = true;
       }
     }
+  }
+
+  // Evidence gaps never count as elimination-friendly: they become portion checks.
+  // 1. Required pantry items have no classification in the guide.
+  for (const it of a.unlisted) {
+    if (it.ing.optional || excluded.has(it.ing.id)) continue;
+    checks.push(t.unlistedCheck(it.food.name));
+    pendingChecks = true;
+  }
+  // 2. Two or more different fruits in one serving: the combined serve is unverified.
+  const fruits = a.items.filter((i) => !i.ing.optional && !excluded.has(i.ing.id) && i.food.status !== 'avoid' && FOOD_BY_ID.get(i.ing.id)?.category === 'fruit');
+  if (fruits.length >= 2) {
+    checks.push(t.combinedFruit(fruits.map((i) => i.food.name).join(', ')));
+    pendingChecks = true;
+  }
+  // 3. A serving the audit could not verify against a published low-FODMAP serve.
+  const unverified = a.items.find((i) => i.ing.id === UNVERIFIED_SERVINGS[r.id]);
+  if (unverified && !excluded.has(unverified.ing.id)) {
+    checks.push(t.servingUnverified(unverified.food.name, unverified.perServing));
+    pendingChecks = true;
   }
 
   const d = prefs.diet;

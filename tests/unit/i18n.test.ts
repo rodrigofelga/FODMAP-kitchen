@@ -107,8 +107,8 @@ describe('interface strings', () => {
 });
 
 describe('food and pantry translations', () => {
-  it('names all 251 foods, every pantry item and every category', () => {
-    expect(FOODS).toHaveLength(251);
+  it('names all 290 foods, every pantry item and every category', () => {
+    expect(FOODS).toHaveLength(290);
     for (const f of FOODS) expect(FOOD_NAMES_PT[f.id], f.id).toBeTruthy();
     expect(Object.keys(FOOD_NAMES_PT).sort()).toEqual(FOODS.map((f) => f.id).sort());
     for (const p of PANTRY) expect(PANTRY_PT[p.id]?.name, p.id).toBeTruthy();

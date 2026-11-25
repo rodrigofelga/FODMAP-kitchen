@@ -93,6 +93,9 @@ export const en = {
     allEat: (n: number) => `All ${n} guide ingredients are EAT.`,
     someEat: (eat: number, total: number) => `${eat} of ${total} guide ingredients are EAT; the rest are LIMIT / CHECK at the per-serving amounts shown.`,
     unlisted: (n: number) => `${n} pantry item(s) are not classified in the guide.`,
+    unlistedCheck: (name: string) => `${name} — not classified in the guide, so this recipe can’t be confirmed elimination-friendly. Check your own tolerance.`,
+    combinedFruit: (names: string) => `Several fruits in one serving (${names}) — the combined fruit serve has not been verified.`,
+    servingUnverified: (name: string, amount: string) => `${name}: ${amount} per serving — this amount has not been verified against a published low-FODMAP serve.`,
   },
   update: {
     ready: 'A new version of My FODMAP Kitchen is ready.',
@@ -374,7 +377,7 @@ export const en = {
     disclaimer1a: 'My FODMAP Kitchen is an organiser for a personal food guide. It is ',
     disclaimer1b: 'not medical advice',
     disclaimer1c:
-      ' and does not diagnose or treat IBS or any other condition. The food classifications come from the supplied guide (“IBS low-FODMAP food guide”, 5 pages) and have not been independently verified.',
+      ' and does not diagnose or treat IBS or any other condition. The food classifications come from the supplied guide (“IBS low-FODMAP food guide”, 5 pages), with corrections and additions from a 2026 review against Monash University FODMAP publications and UpToDate; the database as a whole has not been clinically validated.',
     disclaimer2:
       'The low-FODMAP diet is normally followed for a short elimination period (2–6 weeks, per the guide) and then foods are reintroduced — ideally with a registered dietitian. FODMAP content depends on portion size, ripeness, brand and recipe; always read labels for onion, garlic, wheat, lactose and polyols. LIMIT / CHECK foods are never treated as automatically safe. Ingredients marked “Not in guide” are not classified by the source guide.',
     disclaimer3: 'If you have severe, worsening or new symptoms — such as weight loss, bleeding or night-time symptoms — speak to a doctor.',

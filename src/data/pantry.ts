@@ -15,7 +15,6 @@ export interface PantryItem {
 }
 
 export const PANTRY: PantryItem[] = [
-  { id: 'sugar', name: 'Sugar (white or brown)', aliases: ['açúcar', 'acucar'], description: 'Table sugar. The guide lists sugar cane as LIMIT (small amount); check your own tolerance.' },
   { id: 'rice-flour', name: 'Rice flour', aliases: ['farinha de arroz'], description: 'Finely milled rice.' },
   { id: 'tapioca-starch', name: 'Tapioca starch / polvilho / goma de tapioca', aliases: ['polvilho', 'polvilho doce', 'polvilho azedo', 'goma de tapioca', 'tapioca'], description: 'Starch extracted from cassava. Used for tapioca crepes and pão de queijo.' },
   { id: 'cornstarch', name: 'Cornstarch (amido de milho)', aliases: ['amido de milho', 'maisena'], description: 'Starch extracted from corn.' },

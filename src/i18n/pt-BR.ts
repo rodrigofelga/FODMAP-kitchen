@@ -86,6 +86,9 @@ export const ptBR: Messages = {
     allEat: (n: number) => `Todos os ${n} ingredientes do guia são PODE COMER.`,
     someEat: (eat: number, total: number) => `${eat} de ${total} ingredientes do guia são PODE COMER; os demais são LIMITAR / VERIFICAR nas quantidades por porção indicadas.`,
     unlisted: (n: number) => `${n} ${plural(n, 'item da despensa não é classificado', 'itens da despensa não são classificados')} pelo guia.`,
+    unlistedCheck: (name: string) => `${name} — não é classificado pelo guia, então não dá para confirmar que a receita é adequada à eliminação. Confira sua própria tolerância.`,
+    combinedFruit: (names: string) => `Várias frutas na mesma porção (${names}) — a porção combinada de frutas não foi verificada.`,
+    servingUnverified: (name: string, amount: string) => `${name}: ${amount} por porção — essa quantidade não foi verificada em relação a uma porção baixa em FODMAP publicada.`,
   },
   update: {
     ready: 'Uma nova versão do My FODMAP Kitchen está pronta.',
@@ -368,7 +371,7 @@ export const ptBR: Messages = {
     disclaimer1a: 'O My FODMAP Kitchen é um organizador para um guia alimentar pessoal. Ele ',
     disclaimer1b: 'não é orientação médica',
     disclaimer1c:
-      ' e não diagnostica nem trata a SII (síndrome do intestino irritável) ou qualquer outra condição. As classificações dos alimentos vêm do guia fornecido (“IBS low-FODMAP food guide”, 5 páginas) e não foram verificadas de forma independente.',
+      ' e não diagnostica nem trata a SII (síndrome do intestino irritável) ou qualquer outra condição. As classificações dos alimentos vêm do guia fornecido (“IBS low-FODMAP food guide”, 5 páginas), com correções e acréscimos de uma revisão de 2026 baseada nas publicações da Universidade Monash sobre FODMAP e no UpToDate; o banco de dados como um todo não foi validado clinicamente.',
     disclaimer2:
       'A dieta low-FODMAP normalmente é seguida por um curto período de eliminação (2 a 6 semanas, segundo o guia) e depois os alimentos são reintroduzidos — de preferência com um nutricionista. O teor de FODMAP depende do tamanho da porção, do grau de maturação, da marca e da receita; sempre leia os rótulos em busca de cebola, alho, trigo, lactose e polióis. Alimentos LIMITAR / VERIFICAR nunca são considerados seguros automaticamente. Ingredientes marcados como “Fora do guia” não são classificados pelo guia original.',
     disclaimer3: 'Se você tiver sintomas graves, que pioram ou novos — como perda de peso, sangramento ou sintomas noturnos —, procure um médico.',

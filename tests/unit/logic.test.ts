@@ -8,6 +8,8 @@ import { buildGroceryList, generateWeek, newPlan } from '../../src/lib/planner';
 import { defaultData, normalizeData } from '../../src/lib/appData';
 import { idbGet, idbSet, _resetDbForTests } from '../../src/lib/db';
 import { formatAmount, formatQty, resolveIngredient } from '../../src/lib/ingredients';
+import { FOOD_BY_ID } from '../../src/data/foods';
+import { UNVERIFIED_SERVINGS } from '../../src/data/recipeReviews';
 
 const prefs = (over: Partial<Preferences> = {}): Preferences => ({ ...structuredClone(DEFAULT_PREFERENCES), ...over });
 
@@ -35,11 +37,13 @@ describe('evaluateRecipe', () => {
     expect(e.reasons.join(' ')).toMatch(/Garlic.*AVOID FOR NOW/);
   });
 
-  it("never marks a recipe that uses LIMIT foods as plainly suitable", () => {
+  it("never marks a recipe that uses LIMIT foods or unverified ingredients as plainly suitable", () => {
     for (const r of RECIPES) {
       const usesLimit = r.ingredients.some((i) => resolveIngredient(i.id)?.status === "limit");
+      const unlisted = r.ingredients.some((i) => !i.optional && resolveIngredient(i.id)?.status === "unlisted");
+      const fruits = r.ingredients.filter((i) => !i.optional && FOOD_BY_ID.get(i.id)?.category === "fruit").length;
       const e = evaluateRecipe(r, prefs());
-      if (usesLimit) expect(e.verdict, r.id).toBe("check");
+      if (usesLimit || unlisted || fruits >= 2 || UNVERIFIED_SERVINGS[r.id]) expect(e.verdict, r.id).toBe("check");
       else expect(e.verdict, r.id).toBe("suitable");
     }
   });
@@ -59,10 +63,14 @@ describe('evaluateRecipe', () => {
   });
 
   it('treats tolerated LIMIT foods as suitable while still stating the portion', () => {
-    const r = RECIPE_BY_ID.get('mingau-de-aveia-morango')!;
+    const r: Recipe = { ...fakeAvoidRecipe, id: 'test-oats', ingredients: [{ id: 'lactose-free-milk', qty: 400, unit: 'ml' }, { id: 'oats-rolled', qty: 80, unit: 'g' }] };
     const e = evaluateRecipe(r, prefs({ tolerated: ['oats-rolled'] }));
     expect(e.verdict).toBe('suitable');
     expect(e.checks[0]).toMatch(/tolerated.*40 g per serving/);
+    // A tolerated LIMIT food does not clear an unclassified pantry item (cinnamon).
+    const mingau = evaluateRecipe(RECIPE_BY_ID.get('mingau-de-aveia-morango')!, prefs({ tolerated: ['oats-rolled'] }));
+    expect(mingau.verdict).toBe('check');
+    expect(mingau.checks.join(' ')).toMatch(/Cinnamon — not classified in the guide/);
   });
 
   it('respects excluded ingredients and diets', () => {

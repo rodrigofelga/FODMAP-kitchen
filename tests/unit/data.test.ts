@@ -12,15 +12,22 @@ import { resolveIngredient } from '../../src/lib/ingredients';
 const root = join(__dirname, '..', '..');
 
 describe('food guide import', () => {
-  it('imports every bullet from the 5-page PDF (251 entries)', () => {
-    expect(FOODS).toHaveLength(251);
+  const pdf = FOODS.filter((f) => f.audit !== 'added');
+
+  it('imports every bullet from the 5-page PDF (251 entries) plus 39 audit additions', () => {
+    expect(pdf).toHaveLength(251);
+    expect(FOODS).toHaveLength(290);
+    for (const f of pdf) expect(f.page, f.id).toBeGreaterThanOrEqual(1);
+    for (const f of FOODS.filter((x) => x.audit === 'added')) expect(f.page, f.id).toBe(0);
   });
 
   it('has the expected split per classification', () => {
-    const by = (s: string) => FOODS.filter((f) => f.status === s).length;
+    const by = (list: typeof FOODS, s: string) => list.filter((f) => f.status === s).length;
     // Hand-counted from the PDF, section by section:
     // EAT   8+9+7+14+2+1+14+4+1+2+1 = 63; AVOID 11+9+9+4+5+9+3+4+8+6+3 = 71; LIMIT = 251 − 134 = 117.
-    expect({ eat: by('eat'), limit: by('limit'), avoid: by('avoid') }).toEqual({ eat: 63, limit: 117, avoid: 71 });
+    // The 2026 audit moved one PDF record (homemade white-flour bread) from LIMIT to AVOID.
+    expect({ eat: by(pdf, 'eat'), limit: by(pdf, 'limit'), avoid: by(pdf, 'avoid') }).toEqual({ eat: 63, limit: 116, avoid: 72 });
+    expect({ eat: by(FOODS, 'eat'), limit: by(FOODS, 'limit'), avoid: by(FOODS, 'avoid') }).toEqual({ eat: 79, limit: 122, avoid: 89 });
   });
 
   it('has unique ids that do not collide with pantry ids', () => {
