@@ -66,7 +66,7 @@ export const ptBR: Messages = {
   },
   pantryGroup: 'Despensa (fora do guia)',
   analysis: {
-    pieces: 'unidades',
+    pieces: (n: number) => (n === 1 ? 'unidade' : 'unidades'),
     excludedOptional: (name: string) => `${name} (você excluiu)`,
     excludedRequired: (name: string) => `Contém ${name}, que você excluiu nos Ajustes.`,
     avoidRequired: (name: string) => `Contém ${name} — EVITAR durante a eliminação.`,

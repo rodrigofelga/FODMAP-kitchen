@@ -73,7 +73,7 @@ export const en = {
   } as Record<string, [string, string]>,
   pantryGroup: 'Pantry (not in guide)',
   analysis: {
-    pieces: 'pieces',
+    pieces: (n: number): string => (n === 1 ? 'piece' : 'pieces'),
     excludedOptional: (name: string) => `${name} (you excluded it)`,
     excludedRequired: (name: string) => `Contains ${name}, which you excluded in Settings.`,
     avoidRequired: (name: string) => `Contains ${name} — AVOID during elimination.`,

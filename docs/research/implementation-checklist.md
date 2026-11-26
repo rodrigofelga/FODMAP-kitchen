@@ -28,11 +28,11 @@ Resume from here. Evidence and sources: `fodmap-evidence-notes.md` (this folder)
 - [x] Recipe verdicts: 26 EAT (was 11), 55 LIMIT, 0 AVOID.
 
 ## Tests
-- [x] typecheck, ESLint, 287 unit tests (new: tests/unit/expansion.test.ts — integrity, category targets, sources, beverages, vinegar legacy id, bilingual search, serves, stacking, optional logic, terminology, no guide photos).
+- [x] typecheck, ESLint, 288 unit tests (new: tests/unit/expansion.test.ts — integrity, category targets, sources, beverages, vinegar legacy id, bilingual search, serves, stacking, optional logic, terminology, no guide photos).
 - [x] Playwright: 58 passed (29 × mobile + desktop), incl. guide verification notes, sources, no guide images, conditional optional warnings, offline, pt-BR, grocery list, recipe photos.
 
 ## Deployment
-- [ ] Commit, push, `npm run deploy`, verify production.
+- [x] Commit, push, `npm run deploy`, verify production (commits a77d9cd + follow-up; Cloudflare Worker fodmap-kitchen).
 
 ## Known limitations
 - 189 records have no FODMAP data (`unverified`) and 358 rest on food-group guidance only; 111 keep the original guide classification without independent verification.

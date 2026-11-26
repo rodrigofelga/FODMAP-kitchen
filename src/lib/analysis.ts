@@ -128,7 +128,7 @@ export function serveText(food: Food): string {
   const s = food.serve!;
   const src = SOURCE_BY_ID.get(s.src);
   const pieces = messages().analysis.pieces;
-  const fmt = (q: number, u: Unit) => (u === 'unit' ? `${formatAmount(q, u)} ${pieces}` : formatAmount(q, u));
+  const fmt = (q: number, u: Unit) => (u === 'unit' ? `${formatAmount(q, u)} ${pieces(q)}` : formatAmount(q, u));
   const amount = fmt(s.amount, s.unit);
   const alt = s.alt ? ` (${fmt(s.alt.qty, s.alt.unit)})` : '';
   return `${amount}${alt} — ${src ? `${src.org}, ${src.date}` : s.src}`;

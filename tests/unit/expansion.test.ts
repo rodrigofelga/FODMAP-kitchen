@@ -185,3 +185,9 @@ describe('terminology and photography', () => {
     expect(RECIPES).toHaveLength(81);
   });
 });
+
+describe('serve wording', () => {
+  it('uses the singular for one piece', () => {
+    expect(serveText(FOOD_BY_ID.get('carrots')!)).toMatch(/^75 g \(1 piece\) — /);
+  });
+});
