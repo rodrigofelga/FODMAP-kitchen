@@ -42,10 +42,10 @@ test('main navigation works', async ({ page }) => {
   }
 });
 
-test('food guide shows all 290 foods and searches Portuguese aliases', async ({ page }) => {
+test('food guide shows all 913 foods and searches Portuguese aliases', async ({ page }) => {
   await page.goto('/guide');
-  await expect(page.getByText('Showing 290 of 290 foods')).toBeVisible();
-  await expect(page.locator('li[data-food]')).toHaveCount(290);
+  await expect(page.getByText('Showing 913 of 913 foods')).toBeVisible();
+  await expect(page.locator('li[data-food]')).toHaveCount(913);
   await page.getByPlaceholder(/Search in English or Portuguese/).fill('alho');
   await expect(page.locator('li[data-food="garlic"]')).toBeVisible();
   await expect(page.locator('.food-col.avoid li[data-food="garlic"]')).toBeVisible();
@@ -66,7 +66,7 @@ test('dietary audit corrections show in the guide and on recipe pages', async ({
   await expect(page.locator('.food-col.avoid li[data-food="honey"]')).toBeVisible();
   await page.goto('/recipes/smoothie-morango');
   await expect(page.getByText(/Strawberries: 140 g per serving — this amount has not been verified/)).toBeVisible();
-  await expect(page.locator('main').getByText('Portion check').first()).toBeVisible();
+  await expect(page.locator('main .badge.check').first()).toHaveText('LIMIT');
 });
 
 test('every recipe photo resolves', async ({ page, request }) => {
@@ -84,7 +84,7 @@ test('every recipe photo resolves', async ({ page, request }) => {
 test('recipe page shows suitability, portions and photo credit', async ({ page }) => {
   await page.goto('/recipes/arroz-com-lentilha');
   await expect(page.getByRole('heading', { name: 'Dietary suitability' })).toBeVisible();
-  await expect(page.getByText('Canned lentils (rinsed, small portions) — LIMIT / CHECK: 40 g per serving.')).toBeVisible();
+  await expect(page.getByText('Canned lentils (rinsed, small portions) — LIMIT: 40 g per serving.')).toBeVisible();
   await page.goto('/recipes/salmao-batata-verdes');
   await expect(page.getByText('Photo of this dish')).toBeVisible();
   const img = page.locator('.detail-hero img');
@@ -159,7 +159,7 @@ test('works offline after the first visit', async ({ page, context }) => {
     .toBeGreaterThan(60);
   await context.setOffline(true);
   await page.goto('/guide');
-  await expect(page.getByText('Showing 290 of 290 foods')).toBeVisible();
+  await expect(page.getByText('Showing 913 of 913 foods')).toBeVisible();
   await page.goto('/recipes/omelete-tomate-folhas');
   await expect(page.locator('main h1')).toHaveText('Tomato and greens omelette');
   await page.goto('/recipes');
@@ -230,7 +230,7 @@ test('every page renders in Portuguese without errors, English leftovers or hori
   await usePortuguese(page);
   const errors = trackErrors(page);
   const englishUi =
-    /\b(Home|Food Guide|Meal Planner|Settings|Ingredients|Method|Substitutions|Grocery list|Breakfast|Lunch|Dinner|Snack|servings?|minutes|AVOID FOR NOW|LIMIT \/ CHECK|EAT|Representative photo|Not in guide)\b/;
+    /\b(Home|Food Guide|Meal Planner|Settings|Ingredients|Method|Substitutions|Grocery list|Breakfast|Lunch|Dinner|Snack|servings?|minutes|AVOID|LIMIT|EAT|Representative photo|pieces|Original guide|Not in guide)\b/;
   for (const path of PAGES) {
     await page.goto(path);
     await expect(page.locator('main h1').first()).toBeVisible();
@@ -246,16 +246,16 @@ test('every page renders in Portuguese without errors, English leftovers or hori
 test('Portuguese food guide, recipe page, planner and matcher', async ({ page }) => {
   await usePortuguese(page);
   await page.goto('/guide');
-  await expect(page.getByText('Mostrando 290 de 290 alimentos')).toBeVisible();
+  await expect(page.getByText('Mostrando 913 de 913 alimentos')).toBeVisible();
   await expect(page.locator('.food-col.avoid li[data-food="garlic"]')).toContainText('Alho');
-  await expect(page.locator('.food-col.avoid header').first()).toHaveText('EVITAR POR ENQUANTO');
-  await expect(page.locator('.food-col.eat header').first()).toHaveText('PODE COMER');
-  await expect(page.locator('.food-col.limit header').first()).toHaveText('LIMITAR / VERIFICAR');
+  await expect(page.locator('.food-col.avoid header').first()).toHaveText('EVITAR');
+  await expect(page.locator('.food-col.eat header').first()).toHaveText('COMER');
+  await expect(page.locator('.food-col.limit header').first()).toHaveText('LIMITAR');
 
   await page.goto('/recipes/arroz-com-lentilha');
   await expect(page.locator('main h1')).toHaveText('Arroz com lentilha');
   await expect(page.getByText('Adequação à dieta')).toBeVisible();
-  await expect(page.getByText(/LIMITAR \/ VERIFICAR: 40 g por porção/)).toBeVisible();
+  await expect(page.getByText(/LIMITAR: 40 g por porção/)).toBeVisible();
 
   await page.goto('/planner');
   await page.getByRole('button', { name: 'Gerar uma semana' }).click();
@@ -301,32 +301,32 @@ test('Portuguese works offline', async ({ page, context }) => {
     .toBeGreaterThan(60);
   await context.setOffline(true);
   await page.goto('/guide');
-  await expect(page.getByText('Mostrando 290 de 290 alimentos')).toBeVisible();
+  await expect(page.getByText('Mostrando 913 de 913 alimentos')).toBeVisible();
   await page.goto('/recipes/omelete-tomate-folhas');
   await expect(page.locator('main h1')).toHaveText('Omelete de tomate e espinafre');
   await context.setOffline(false);
 });
 
-test('recipes can be filtered to elimination-friendly only', async ({ page }) => {
+test('recipes can be filtered to EAT only', async ({ page }) => {
   await page.goto('/recipes');
   const cards = page.locator('.grid > *');
   await expect(page.getByText('81 recipes')).toBeVisible();
   const all = await cards.count();
-  const chip = page.getByRole('button', { name: 'Elimination-friendly only' });
+  const chip = page.getByRole('button', { name: 'EAT only' });
   await chip.click();
   await expect(chip).toHaveAttribute('aria-pressed', 'true');
   await expect(page).toHaveURL(/elim=1/);
   const n = await cards.count();
   expect(n).toBeGreaterThan(0);
   expect(n).toBeLessThan(all);
-  await expect(page.locator('.grid').getByText('Portion check')).toHaveCount(0);
+  await expect(page.locator('.grid').getByText('LIMIT', { exact: true })).toHaveCount(0);
   await expect(page.locator('main p.small.muted').first()).toHaveText(`${n} ${n === 1 ? 'recipe' : 'recipes'}`);
   // Works together with the meal filter, and in Portuguese.
   await page.getByRole('button', { name: 'Lunch' }).click();
   expect(await cards.count()).toBeLessThanOrEqual(n);
   await page.evaluate(() => localStorage.setItem('fodmap-kitchen:lang', 'pt-BR'));
   await page.reload();
-  await expect(page.getByRole('button', { name: 'Só adequadas à eliminação' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Só COMER' })).toHaveAttribute('aria-pressed', 'true');
   await page.evaluate(() => localStorage.removeItem('fodmap-kitchen:lang'));
 });
 
@@ -339,4 +339,27 @@ test('English pages show no Portuguese recipe names (one language at a time)', a
     const text = await page.locator('main').innerText();
     for (const name of ptOnly) expect(text, `${path} shows "${name}"`).not.toContain(name);
   }
+});
+
+test('food guide shows serves, triggers, verification and sources — and no photographs', async ({ page }) => {
+  await page.goto('/guide');
+  const search = page.getByPlaceholder(/Search in English or Portuguese/);
+  await search.fill('red wine');
+  const wine = page.locator('.food-col.limit li[data-food="red-wine"]');
+  await expect(wine).toContainText('150 ml');
+  await expect(wine).toContainText(/not a maximum/);
+  await expect(wine).toContainText(/alcohol/);
+  await search.fill('flocão');
+  await expect(page.locator('li[data-food="flocao-milho"]')).toContainText(/No FODMAP data found/);
+  await search.fill('picanha');
+  await expect(page.locator('.food-col.eat li[data-food="beef-picanha"]')).toBeVisible();
+  await search.fill('');
+  await expect(page.locator('li[data-source]').first()).toBeVisible();
+  await expect(page.locator('main img')).toHaveCount(0);
+});
+
+test('optional ingredients add a conditional warning without changing the verdict', async ({ page }) => {
+  await page.goto('/recipes/omelete-tomate-folhas');
+  await expect(page.locator('main .badge.suitable').first()).toHaveText('EAT');
+  await expect(page.getByTestId('conditional')).toContainText(/Optional Mozzarella/);
 });

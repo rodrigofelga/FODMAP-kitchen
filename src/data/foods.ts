@@ -14,8 +14,12 @@
  * Both rest only on Monash University FODMAP publications (2026 3-step diet
  * sheet, high/low food list, label-reading guidance) and UpToDate graphic 90186
  * (Shepherd, Lomer & Gibson 2013). No serving threshold was invented: a food that
- * is a FODMAP source without a published low serve is LIMIT / CHECK, not AVOID.
+ * is a FODMAP source without a published low serve is LIMIT, not AVOID.
  */
+
+import { EXPANSION } from './expansion';
+import type { SourceId } from './sources';
+import type { Unit } from './types';
 
 export type FoodStatus = 'eat' | 'limit' | 'avoid';
 
@@ -23,6 +27,8 @@ export type FoodCategory =
   | 'vegetables'
   | 'fruit'
   | 'starches'
+  | 'meat'
+  | 'seafood'
   | 'protein'
   | 'dairy'
   | 'legumes'
@@ -46,6 +52,31 @@ export type FoodTag =
   | 'alcohol'
   | 'spicy';
 
+/**
+ * How a classification is supported (see src/data/expansion/helper.ts):
+ * serve > listed > clinical > secondary > group > unverified; 'guide' means the
+ * original guide's classification, not independently verified.
+ */
+export type Verification = 'serve' | 'listed' | 'clinical' | 'secondary' | 'group' | 'unverified' | 'guide';
+
+/** Non-FODMAP reasons a food or drink may cause symptoms. */
+export type Trigger = 'caffeine' | 'alcohol' | 'carbonation' | 'acidity' | 'fat' | 'spicy';
+
+/** Ingredients to look for on the label. */
+export type LabelWarn = 'hfcs' | 'honey' | 'fruitJuice' | 'polyols' | 'inulin' | 'lactose' | 'garlicOnion' | 'wheat' | 'sweeteners';
+
+/**
+ * A published low-FODMAP reference serve. It is the amount the source reports as
+ * low ("green"), not a maximum safe amount. `alt` is the same serve in the
+ * household unit the source printed (never a conversion made by this app).
+ */
+export interface Serve {
+  amount: number;
+  unit: Unit;
+  alt?: { qty: number; unit: Unit };
+  src: SourceId;
+}
+
 export interface Food {
   id: string;
   name: string;
@@ -59,13 +90,22 @@ export interface Food {
   sourceTruncated?: boolean;
   /** Changed ('corrected') or added ('added') by the Nov 2026 dietary accuracy audit. */
   audit?: 'corrected' | 'added';
+  verification: Verification;
+  sources?: SourceId[];
+  serve?: Serve;
+  /** A practical portion (a can, a glass) — not a tested threshold. */
+  portion?: { amount: number; unit: 'g' | 'ml' };
+  triggers?: Trigger[];
+  warn?: LabelWarn[];
 }
 
 export const CATEGORY_LABELS: Record<FoodCategory, string> = {
   vegetables: 'Vegetables & herbs',
   fruit: 'Fruit',
   starches: 'Rice, bread & starches',
-  protein: 'Meat, fish & eggs',
+  meat: 'Meat, poultry & game',
+  seafood: 'Fish & seafood',
+  protein: 'Eggs, tofu & other proteins',
   dairy: 'Dairy & alternatives',
   legumes: 'Beans, legumes & nuts',
   seasonings: 'Oils, herbs & seasonings',
@@ -79,6 +119,8 @@ export const CATEGORY_ORDER: FoodCategory[] = [
   'vegetables',
   'fruit',
   'starches',
+  'meat',
+  'seafood',
   'protein',
   'dairy',
   'legumes',
@@ -91,17 +133,17 @@ export const CATEGORY_ORDER: FoodCategory[] = [
 
 export const STATUS_LABELS: Record<FoodStatus, string> = {
   eat: 'EAT',
-  limit: 'LIMIT / CHECK',
-  avoid: 'AVOID FOR NOW',
+  limit: 'LIMIT',
+  avoid: 'AVOID',
 };
 
 type Row = [id: string, name: string, extra?: Partial<Pick<Food, 'aliases' | 'tags' | 'sourceTruncated' | 'audit'>>];
 
 function rows(category: FoodCategory, status: FoodStatus, page: number, list: Row[]): Food[] {
-  return list.map(([id, name, extra]) => ({ id, name, category, status, page, ...extra }));
+  return list.map(([id, name, extra]) => ({ id, name, category, status, page, verification: 'guide' as Verification, ...extra }));
 }
 
-export const FOODS: Food[] = [
+const GUIDE_FOODS: Food[] = [
   // ───────────── Page 1 — Vegetables & herbs ─────────────
   ...rows('vegetables', 'eat', 1, [
     ['carrots', 'Carrots', { aliases: ['cenoura'] }],
@@ -518,6 +560,293 @@ export const FOODS: Food[] = [
   ]),
 ];
 
+// ───────────── Nov 2026 evidence review ─────────────
+// Classification corrections approved in the Nov 2026 review (sources in
+// src/data/sources.ts; notes in docs/research/fodmap-evidence-notes.md).
+const CORRECTIONS: Record<string, Partial<Food>> = {
+  rum: { status: 'avoid', name: 'Rum (tested high in FODMAPs)' },
+  beer: { status: 'limit', name: 'Beer, regular (reported low FODMAP; alcohol, carbonation and gluten still matter)' },
+  cilantro: { status: 'eat' },
+  ginger: { status: 'eat' },
+  turmeric: { status: 'eat' },
+  'green-onion-tops': { status: 'eat' },
+  vinegar: { name: 'Vinegar (white, wine, rice or cider)' },
+  'butternut-squash': { aliases: ['abóbora-pescoço', 'abóbora paulista', 'butternut'] },
+};
+
+type Meta = [Verification, SourceId[], Serve?];
+const s = (amount: number, unit: Unit, src: SourceId, alt?: [number, Unit]): Serve =>
+  alt ? { amount, unit, src, alt: { qty: alt[0], unit: alt[1] } } : { amount, unit, src };
+const PLAIN: Meta = ['group', ['SL25', 'MLIST']];
+
+/** Verification metadata for records from the original guide and the first audit. */
+const META: Record<string, Meta> = {
+  // Vegetables — SL25 lists these "low at 1 standard serve (75 g)"; FIB21 gives gram serves.
+  carrots: ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21', [1, 'unit'])],
+  cucumber: ['serve', ['SL25'], s(75, 'g', 'SL25')],
+  eggplant: ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21', [1, 'cup'])],
+  kale: ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21', [0.5, 'cup'])],
+  lettuce: ['serve', ['SL25'], s(75, 'g', 'SL25')],
+  'potatoes-white': ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21')],
+  potatoes: ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21')],
+  spinach: ['listed', ['SL25']],
+  'green-bell-pepper': ['serve', ['SL25', 'M2026'], s(75, 'g', 'SL25')],
+  'bok-choy': ['serve', ['SL25', 'M2026'], s(75, 'g', 'SL25')],
+  'bean-sprouts': ['listed', ['M2026']],
+  'bell-peppers-red': ['serve', ['FIB21'], s(75, 'g', 'FIB21')],
+  'broccoli-heads': ['serve', ['SL25'], s(75, 'g', 'SL25')],
+  cabbage: ['listed', ['SL25', 'ST16']],
+  'green-beans': ['serve', ['SL25', 'FIB21'], s(75, 'g', 'FIB21', [15, 'unit'])],
+  'green-onion-tops': ['listed', ['FAQ', 'FLAV15']],
+  'sweet-corn': ['serve', ['SL25'], s(75, 'g', 'SL25')],
+  'sweet-potatoes': ['serve', ['SL25', 'ST16'], s(75, 'g', 'ST16', [0.5, 'cup'])],
+  zucchini: ['serve', ['M2026'], s(65, 'g', 'M2026')],
+  'snow-peas-large': ['listed', ['SL25']],
+  fennel: ['clinical', ['UTD']],
+  'sugar-snap-peas': ['clinical', ['UTD']],
+  beets: ['clinical', ['UTD']],
+  cauliflower: ['clinical', ['UTD', 'MLIST']],
+  shallots: ['clinical', ['UTD']],
+  garlic: ['listed', ['M2026', 'MLIST', 'UTD']],
+  'onions-red': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'onions-yellow': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'leeks-white': ['clinical', ['UTD']],
+  'spring-onion-white': ['listed', ['MLIST', 'UTD']],
+  mushrooms: ['listed', ['MLIST', 'UTD']],
+  asparagus: ['listed', ['MLIST', 'UTD']],
+  artichokes: ['clinical', ['UTD']],
+  'green-peas': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'jerusalem-artichoke': ['listed', ['LABEL']],
+  // Fruit
+  'banana-firm': ['serve', ['SL25', 'FIB21'], s(100, 'g', 'FIB21', [1, 'unit'])],
+  cantaloupe: ['serve', ['M2026'], s(120, 'g', 'M2026', [0.75, 'cup'])],
+  kiwi: ['serve', ['SL25', 'FIB21'], s(150, 'g', 'FIB21', [2, 'unit'])],
+  'mandarins-moderate': ['serve', ['SL25', 'FIB21'], s(125, 'g', 'FIB21', [2, 'unit'])],
+  'mandarins-large': ['listed', ['SL25']],
+  oranges: ['serve', ['SL25', 'FIB21'], s(130, 'g', 'FIB21', [1, 'unit'])],
+  papaya: ['listed', ['SL25']],
+  pineapple: ['serve', ['SL25', 'FIB21'], s(140, 'g', 'FIB21', [1, 'cup'])],
+  strawberries: ['serve', ['SL25', 'M2026'], s(5, 'unit', 'M2026')],
+  blueberries: ['listed', ['SL25']],
+  raspberries: ['serve', ['SL25', 'FIB21'], s(60, 'g', 'FIB21', [30, 'unit'])],
+  apricots: ['clinical', ['UTD']],
+  'apples-gala': ['listed', ['M2026', 'MLIST', 'UTD']],
+  cherries: ['listed', ['MLIST', 'UTD']],
+  'dried-fruit': ['listed', ['MLIST', 'M2026']],
+  mango: ['listed', ['MLIST', 'UTD']],
+  nectarines: ['listed', ['MLIST', 'UTD']],
+  peaches: ['listed', ['MLIST', 'UTD']],
+  pears: ['listed', ['MLIST', 'UTD']],
+  watermelon: ['listed', ['MLIST', 'UTD']],
+  'figs-fresh': ['listed', ['MLIST']],
+  // Starches
+  quinoa: ['serve', ['SL25', 'FIB21'], s(155, 'g', 'FIB21', [1, 'cup'])],
+  'brown-rice': ['serve', ['SL25', 'FIB21'], s(180, 'g', 'FIB21', [1, 'cup'])],
+  'rice-white': ['listed', ['SL25']],
+  'rice-basmati': ['listed', ['SL25']],
+  'rice-noodles': ['listed', ['SL25']],
+  polenta: ['listed', ['GR']],
+  sourdough: ['listed', ['SL25']],
+  'gluten-free-bread': ['listed', ['SL25']],
+  'gluten-free-pasta': ['listed', ['SL25']],
+  'oats-rolled': ['serve', ['SL25', 'FIB21'], s(52, 'g', 'FIB21', [0.5, 'cup'])],
+  'plain-crackers-rice-corn': ['group', ['MLIST']],
+  'quinoa-flakes': ['listed', ['M2026', 'MLIST']],
+  'gf-corn-flakes': ['listed', ['M2026', 'SL25']],
+  'spelt-sourdough': ['listed', ['M2026', 'MLIST']],
+  'wheat-flour': ['listed', ['LABEL', 'M2026', 'UTD']],
+  'wheat-cereals': ['listed', ['M2026', 'MLIST', 'LABEL']],
+  'legume-flours': ['listed', ['LABEL']],
+  'wheat-bread-white': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'wheat-pasta': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'pasta-wheat-regular': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'rye-bread': ['listed', ['MLIST', 'UTD']],
+  'homemade-bread-white': ['listed', ['M2026', 'MLIST', 'UTD']],
+  // Meat, fish, eggs, plant proteins
+  'beef-lean': PLAIN,
+  'chicken-breast': PLAIN,
+  'chicken-legs': PLAIN,
+  'chicken-thighs': PLAIN,
+  'chicken-wings': PLAIN,
+  'ground-beef': PLAIN,
+  'pork-plain': PLAIN,
+  rabbit: PLAIN,
+  turkey: PLAIN,
+  crab: PLAIN,
+  'fish-plain': PLAIN,
+  salmon: PLAIN,
+  shrimp: PLAIN,
+  eggs: ['listed', ['SL25']],
+  tempeh: ['listed', ['M2026', 'MLIST']],
+  'firm-tofu': ['serve', ['SL25', 'FIB21'], s(160, 'g', 'FIB21', [0.67, 'cup'])],
+  falafel: ['clinical', ['MLIST', 'UTD']],
+  'vegetarian-mince': ['listed', ['MLIST']],
+  // Dairy
+  'lactose-free-milk': ['listed', ['SL25']],
+  'lactose-free-yogurt': ['listed', ['SL25']],
+  'hard-cheeses': ['listed', ['M2026', 'MLIST']],
+  feta: ['listed', ['M2026', 'MLIST']],
+  'brie-camembert': ['listed', ['M2026', 'MLIST']],
+  'almond-milk': ['listed', ['M2026', 'MLIST', 'DA24']],
+  'rice-milk': ['listed', ['MLIST']],
+  'soy-milk': ['listed', ['M2026', 'MLIST', 'DA24']],
+  'milk-regular': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'yogurt-regular': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'ice-cream-regular-dairy': ['listed', ['MLIST', 'UTD']],
+  'condensed-milk': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'evaporated-milk': ['listed', ['M2026', 'MLIST']],
+  custard: ['listed', ['M2026', 'MLIST', 'UTD']],
+  // Legumes, nuts, seeds
+  macadamias: ['serve', ['SL25', 'FIB21'], s(40, 'g', 'FIB21', [20, 'unit'])],
+  peanuts: ['serve', ['SL25', 'FIB21'], s(28, 'g', 'FIB21', [32, 'unit'])],
+  walnuts: ['serve', ['SL25', 'FIB21'], s(30, 'g', 'FIB21', [10, 'unit'])],
+  'almonds-small': ['serve', ['FIB21'], s(12, 'g', 'FIB21', [10, 'unit'])],
+  'chia-seeds': ['serve', ['SL25', 'FIB21'], s(24, 'g', 'FIB21', [2, 'tbsp'])],
+  'pumpkin-seeds': ['listed', ['SL25']],
+  'peanut-butter': ['listed', ['SL25']],
+  'chickpeas-canned': ['serve', ['FIB21', 'UTD'], s(42, 'g', 'FIB21', [0.25, 'cup'])],
+  'lentils-canned': ['clinical', ['UTD']],
+  'cashews-regular': ['listed', ['M2026', 'MLIST', 'UTD']],
+  pistachios: ['listed', ['M2026', 'MLIST', 'UTD']],
+  'kidney-beans-regular': ['listed', ['M2026', 'MLIST', 'UTD']],
+  'baked-beans': ['listed', ['MLIST', 'UTD']],
+  // Seasonings and oils
+  'canola-oil': ['group', ['SL25']],
+  evoo: ['group', ['SL25']],
+  'olive-oil': ['group', ['SL25']],
+  butter: ['group', ['SL25']],
+  margarine: ['group', ['SL25']],
+  parsley: ['listed', ['FLAV15']],
+  rosemary: ['listed', ['FLAV15']],
+  thyme: ['listed', ['FLAV15']],
+  cilantro: ['listed', ['FLAV15']],
+  ginger: ['listed', ['FLAV15']],
+  turmeric: ['listed', ['FLAV15']],
+  dill: ['group', ['SL25']],
+  oregano: ['group', ['SL25']],
+  paprika: ['group', ['SL25']],
+  'black-pepper': ['listed', ['FLAV15']],
+  salt: ['listed', ['FLAV15']],
+  lemon: ['listed', ['FLAV15']],
+  lime: ['listed', ['FLAV15']],
+  'hot-pepper': ['listed', ['FLAV15']],
+  malagueta: ['listed', ['FLAV15']],
+  vinegar: ['listed', ['SL25']],
+  'garlic-powder': ['listed', ['LABEL', 'UTD']],
+  'onion-powder': ['listed', ['LABEL', 'UTD']],
+  'seasoning-mixes-garlic-onion': ['listed', ['FLAV15', 'LABEL']],
+  colorau: ['unverified', []],
+  // Sauces
+  'maple-syrup': ['listed', ['FLAV15']],
+  'soy-sauce': ['listed', ['MLIST']],
+  'mayonnaise-plain': ['listed', ['SL25', 'MLIST']],
+  mustard: ['listed', ['SL25']],
+  'bbq-sauce': ['listed', ['MLIST', 'LABEL']],
+  chutney: ['listed', ['MLIST']],
+  'jam-lf': ['listed', ['SL25']],
+  'tomato-sauce-plain': ['listed', ['SL25']],
+  // Snacks and sweeteners
+  popcorn: ['serve', ['GR', 'FIB21'], s(60, 'g', 'FIB21', [3.5, 'cup'])],
+  'plain-rice-cakes': ['group', ['MLIST']],
+  sugar: ['listed', ['M2026', 'MLIST']],
+  'rice-malt-syrup': ['listed', ['M2026', 'MLIST']],
+  honey: ['listed', ['M2026', 'MLIST', 'LABEL', 'UTD']],
+  hfcs: ['listed', ['M2026', 'MLIST', 'LABEL', 'UTD']],
+  'prebiotic-fibres': ['listed', ['LABEL', 'UTD']],
+  'polyol-sweeteners': ['listed', ['LABEL', 'UTD']],
+  'candy-polyols': ['listed', ['LABEL', 'UTD']],
+  // Drinks
+  'still-water': ['group', ['ALC22']],
+  'black-coffee': ['secondary', ['KS17']],
+  'green-tea': ['listed', ['COVID']],
+  'carbonated-water': ['listed', ['ALC22']],
+  cabernet: ['secondary', ['ALC22', 'ALBY'], s(150, 'ml', 'ALBY')],
+  merlot: ['secondary', ['ALC22', 'ALBY'], s(150, 'ml', 'ALBY')],
+  gin: ['secondary', ['ALBY'], s(30, 'ml', 'ALBY')],
+  whiskey: ['secondary', ['ALBY'], s(30, 'ml', 'ALBY')],
+  rum: ['listed', ['ALC22', 'ALBY']],
+  beer: ['secondary', ['ALBY']],
+  cachaca: ['unverified', []],
+  'cranberry-juice': ['listed', ['MLIST']],
+  'apple-pear-juice': ['listed', ['M2026', 'LABEL', 'UTD']],
+  'grilled-chicken-rice': ['group', ['SL25']],
+};
+
+const TRIGGERS: Record<string, Trigger[]> = {
+  'black-coffee': ['caffeine'],
+  'green-tea': ['caffeine'],
+  'carbonated-water': ['carbonation'],
+  'soft-drinks': ['carbonation', 'caffeine'],
+  'tonic-water': ['carbonation'],
+  beer: ['alcohol', 'carbonation'],
+  cabernet: ['alcohol'],
+  merlot: ['alcohol'],
+  gin: ['alcohol'],
+  whiskey: ['alcohol'],
+  rum: ['alcohol'],
+  cachaca: ['alcohol'],
+  'wine-spirits-trial': ['alcohol'],
+  'caesar-cocktail': ['alcohol'],
+  'orange-juice-small': ['acidity'],
+  'hot-pepper': ['spicy'],
+  malagueta: ['spicy'],
+  'pimenta-biquinho': ['spicy'],
+  'franks-hot-sauce': ['spicy'],
+};
+
+const PORTIONS: Record<string, [number, 'g' | 'ml']> = {
+  beer: [355, 'ml'],
+  cabernet: [150, 'ml'],
+  merlot: [150, 'ml'],
+  gin: [30, 'ml'],
+  whiskey: [30, 'ml'],
+  rum: [30, 'ml'],
+  cachaca: [50, 'ml'],
+  'soft-drinks': [355, 'ml'],
+  'tonic-water': [200, 'ml'],
+  'orange-juice-small': [125, 'ml'],
+  'cranberry-juice': [200, 'ml'],
+  'black-coffee': [250, 'ml'],
+  'green-tea': [250, 'ml'],
+  'still-water': [250, 'ml'],
+  'carbonated-water': [355, 'ml'],
+};
+
+const MEAT_IDS = new Set([
+  'beef-lean', 'chicken-breast', 'chicken-legs', 'chicken-thighs', 'chicken-wings', 'ground-beef', 'pork-plain', 'rabbit', 'turkey',
+  'bacon', 'burger-plain-patty', 'cold-cuts-ham', 'ham', 'hot-dog-sausages', 'linguica', 'meatballs-safe', 'pepperoni', 'chourico',
+  'breaded-chicken', 'meatballs-onion-garlic', 'processed-meats-garlic-onion',
+]);
+const SEAFOOD_IDS = new Set(['crab', 'fish-plain', 'salmon', 'shrimp', 'canned-sardines', 'canned-tuna-oil']);
+
+function review(f: Food): Food {
+  const fix = CORRECTIONS[f.id];
+  const out: Food = { ...f, ...fix };
+  if (fix && (fix.status || fix.name) && !out.audit) out.audit = 'corrected';
+  const meta = META[f.id];
+  if (meta) {
+    out.verification = meta[0];
+    if (meta[1].length) out.sources = meta[1];
+    if (meta[2]) out.serve = meta[2];
+  } else if (f.audit === 'added') {
+    out.verification = 'listed';
+  }
+  if (TRIGGERS[f.id]) out.triggers = TRIGGERS[f.id];
+  if (PORTIONS[f.id]) out.portion = { amount: PORTIONS[f.id][0], unit: PORTIONS[f.id][1] };
+  if (MEAT_IDS.has(f.id)) out.category = 'meat';
+  if (SEAFOOD_IDS.has(f.id)) out.category = 'seafood';
+  return out;
+}
+
+/**
+ * Ids kept only so existing recipes, favourites, meal plans and saved lists keep
+ * resolving; they are not shown in the Food Guide. 'vinegar-plain' duplicated
+ * 'vinegar' (both EAT) and now mirrors that record.
+ */
+export const LEGACY_IDS: Record<string, string> = { 'vinegar-plain': 'vinegar' };
+
+export const FOODS: Food[] = [...GUIDE_FOODS.filter((f) => !LEGACY_IDS[f.id]).map(review), ...EXPANSION];
+
 /** Text printed at the bottom of every page of the PDF. */
 export const GUIDE_FOOTER =
   'Initial elimination: 2–6 weeks, then reintroduce. Portion size, ingredients and tolerance matter.';
@@ -532,4 +861,8 @@ export const GUIDE_MEAL_IDEAS: { slot: string; text: string }[] = [
   { slot: 'Evening snack', text: 'Plain popcorn or homemade corn-chip nachos with mozzarella' },
 ];
 
-export const FOOD_BY_ID: Map<string, Food> = new Map(FOODS.map((f) => [f.id, f]));
+const BY_ID: Map<string, Food> = new Map(FOODS.map((f) => [f.id, f]));
+for (const [legacy, target] of Object.entries(LEGACY_IDS)) BY_ID.set(legacy, { ...BY_ID.get(target)!, id: legacy });
+
+/** Every record by id, including legacy ids that mirror their replacement. */
+export const FOOD_BY_ID: Map<string, Food> = BY_ID;

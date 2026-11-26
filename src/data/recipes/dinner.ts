@@ -123,7 +123,7 @@ export const DINNER: Recipe[] = [
       'Mix the tomato with vinegar and salt for a quick vinagrete and serve.',
     ],
     substitutions: ['Use chicken breast (EAT) cubes.', 'Serve with white rice instead of farofa to avoid LIMIT foods.'],
-    tips: ['Farinha de mandioca is LIMIT / CHECK — 20 g per serving.'],
+    tips: ['Farinha de mandioca is LIMIT — 20 g per serving.'],
   },
   {
     id: 'espetinho-de-carne',
@@ -328,7 +328,7 @@ export const DINNER: Recipe[] = [
       'Serve with a swirl of sour cream and toasted pumpkin seeds.',
     ],
     substitutions: ['Use more carrot instead of squash to keep the soup free of LIMIT vegetables.', 'Add shredded chicken for a heartier meal.'],
-    tips: ['Butternut squash is LIMIT / CHECK — 45 g per serving here; carrots and potatoes make up the bulk.'],
+    tips: ['Butternut squash is LIMIT — 45 g per serving here; carrots and potatoes make up the bulk.'],
   },
   {
     id: 'hamburguer-caseiro-batata',
@@ -420,7 +420,7 @@ export const DINNER: Recipe[] = [
       'Season and serve with parsley.',
     ],
     substitutions: ['Use spinach instead of zucchini.', 'Top with grilled shrimp.'],
-    tips: ['Zucchini is LIMIT / CHECK — 40 g per serving.'],
+    tips: ['Zucchini is LIMIT — 40 g per serving.'],
   },
   {
     id: 'sushi-caseiro-salmao',
@@ -602,6 +602,6 @@ export const DINNER: Recipe[] = [
       'Serve the pasta with meatballs, sauce and a little mozzarella.',
     ],
     substitutions: ['Use rice noodles instead of gluten-free pasta.', 'Use ground turkey for the meatballs.'],
-    tips: ['These are “meatballs (no wheat/onion/garlic)”, which the guide lists as LIMIT / CHECK; gluten-free pasta and tomato sauce are LIMIT too.'],
+    tips: ['These are “meatballs (no wheat/onion/garlic)”, which the guide lists as LIMIT; gluten-free pasta and tomato sauce are LIMIT too.'],
   },
 ];

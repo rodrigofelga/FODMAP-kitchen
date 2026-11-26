@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { FOODS, CATEGORY_ORDER } from '../../src/data/foods';
+import { FOODS, CATEGORY_ORDER, LEGACY_IDS } from '../../src/data/foods';
 import { PANTRY } from '../../src/data/pantry';
 import { RECIPES, RECIPE_BY_ID } from '../../src/data/recipes';
 import { MEALS } from '../../src/data/types';
@@ -100,17 +100,18 @@ describe('interface strings', () => {
   });
 
   it('uses the required Brazilian status labels', () => {
-    expect(ptBR.status).toMatchObject({ eat: 'PODE COMER', limit: 'LIMITAR / VERIFICAR', avoid: 'EVITAR POR ENQUANTO' });
+    expect(ptBR.status).toMatchObject({ eat: 'COMER', limit: 'LIMITAR', avoid: 'EVITAR' });
     expect(ptBR.langName).toBe('Português (Brasil)');
     expect(en.langName).toBe('English');
   });
 });
 
 describe('food and pantry translations', () => {
-  it('names all 290 foods, every pantry item and every category', () => {
-    expect(FOODS).toHaveLength(290);
+  it('names all 913 foods, every pantry item and every category', () => {
+    expect(FOODS).toHaveLength(913);
+    // Legacy ids (e.g. vinegar-plain → vinegar) keep a name so saved data still renders.
     for (const f of FOODS) expect(FOOD_NAMES_PT[f.id], f.id).toBeTruthy();
-    expect(Object.keys(FOOD_NAMES_PT).sort()).toEqual(FOODS.map((f) => f.id).sort());
+    expect(Object.keys(FOOD_NAMES_PT).sort()).toEqual([...FOODS.map((f) => f.id), ...Object.keys(LEGACY_IDS)].sort());
     for (const p of PANTRY) expect(PANTRY_PT[p.id]?.name, p.id).toBeTruthy();
     for (const c of CATEGORY_ORDER) expect(CATEGORY_LABELS_PT[c]).toBeTruthy();
   });
@@ -209,7 +210,7 @@ describe('logic is identical in both languages', () => {
     const r = RECIPE_BY_ID.get('arroz-com-lentilha')!;
     const e = evaluateRecipe(r, prefs());
     expect(e.verdict).toBe('check');
-    expect(e.checks.join(' ')).toMatch(/LIMITAR \/ VERIFICAR: 40 g por porção/);
+    expect(e.checks.join(' ')).toMatch(/LIMITAR: 40 g por porção/);
     const tolerated = evaluateRecipe(r, prefs({ tolerated: ['lentils-canned'] }));
     expect(tolerated.checks.find((c) => c.includes('tolerado'))).toMatch(/40 g por porção/);
     // A tolerated-food reminder alone does not require a portion check in either language.

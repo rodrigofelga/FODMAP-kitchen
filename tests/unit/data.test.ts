@@ -14,9 +14,9 @@ const root = join(__dirname, '..', '..');
 describe('food guide import', () => {
   const pdf = FOODS.filter((f) => f.audit !== 'added');
 
-  it('imports every bullet from the 5-page PDF (251 entries) plus 39 audit additions', () => {
-    expect(pdf).toHaveLength(251);
-    expect(FOODS).toHaveLength(290);
+  it('imports every bullet from the 5-page PDF (251 entries, vinegar merged into one record) plus the audit additions', () => {
+    expect(pdf).toHaveLength(250);
+    expect(FOODS).toHaveLength(913);
     for (const f of pdf) expect(f.page, f.id).toBeGreaterThanOrEqual(1);
     for (const f of FOODS.filter((x) => x.audit === 'added')) expect(f.page, f.id).toBe(0);
   });
@@ -26,8 +26,10 @@ describe('food guide import', () => {
     // Hand-counted from the PDF, section by section:
     // EAT   8+9+7+14+2+1+14+4+1+2+1 = 63; AVOID 11+9+9+4+5+9+3+4+8+6+3 = 71; LIMIT = 251 − 134 = 117.
     // The 2026 audit moved one PDF record (homemade white-flour bread) from LIMIT to AVOID.
-    expect({ eat: by(pdf, 'eat'), limit: by(pdf, 'limit'), avoid: by(pdf, 'avoid') }).toEqual({ eat: 63, limit: 116, avoid: 72 });
-    expect({ eat: by(FOODS, 'eat'), limit: by(FOODS, 'limit'), avoid: by(FOODS, 'avoid') }).toEqual({ eat: 79, limit: 122, avoid: 89 });
+    // Nov 2026: cilantro, ginger, turmeric and green onion tops LIMIT → EAT (Monash); the two vinegar
+    // records (both EAT) were merged.
+    expect({ eat: by(pdf, 'eat'), limit: by(pdf, 'limit'), avoid: by(pdf, 'avoid') }).toEqual({ eat: 66, limit: 112, avoid: 72 });
+    expect({ eat: by(FOODS, 'eat'), limit: by(FOODS, 'limit'), avoid: by(FOODS, 'avoid') }).toEqual({ eat: 289, limit: 431, avoid: 193 });
   });
 
   it('has unique ids that do not collide with pantry ids', () => {
@@ -94,7 +96,7 @@ describe('recipe library', () => {
     }
   });
 
-  it('never uses an AVOID FOR NOW food', () => {
+  it('never uses an AVOID food', () => {
     const offenders = RECIPES.flatMap((r) => analyzeRecipe(r).avoid.map((a) => `${r.id}:${a.ing.id}`));
     expect(offenders).toEqual([]);
   });

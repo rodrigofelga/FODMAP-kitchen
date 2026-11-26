@@ -127,6 +127,16 @@ export function RecipeDetailPage() {
               </div>
             )}
             {ev.omit.length > 0 && <p className="small">{d.leaveOut(ev.omit.join(', '))}</p>}
+            {ev.conditional.length > 0 && (
+              <div className="small" data-testid="conditional">
+                <strong>{d.conditionalTitle}</strong>
+                <ul>
+                  {ev.conditional.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </section>
         </div>
       </div>

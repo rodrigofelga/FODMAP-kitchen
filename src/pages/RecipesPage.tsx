@@ -21,7 +21,7 @@ export function RecipesPage() {
   const brazilian = params.get('brazilian') === '1';
   const favOnly = params.get('fav') === '1';
   const showExcluded = params.get('all') === '1';
-  /** Only recipes rated Elimination-friendly for these settings (no AVOID foods, no portion checks). */
+  /** Only recipes rated EAT for these settings (no AVOID foods, no LIMIT checks). */
   const eliminationOnly = params.get('elim') === '1';
 
   const set = (k: string, v: string | null) => {

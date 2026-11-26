@@ -58,7 +58,7 @@ export const BREAKFAST: Recipe[] = [
       'Use kiwi or orange segments instead of strawberries.',
       'Replace part of the milk with water for a lighter porridge.',
     ],
-    tips: ['Rolled oats are LIMIT / CHECK in the guide — keep to the 40 g portion.'],
+    tips: ['Rolled oats are LIMIT in the guide — keep to the 40 g portion.'],
   },
   {
     id: 'tapioca-ovo-mussarela',
@@ -153,7 +153,7 @@ export const BREAKFAST: Recipe[] = [
       'Use lactose-free yogurt plus a little water instead of milk for a thicker vitamina.',
       'Replace peanut butter with a few strawberries for a nut-free version.',
     ],
-    tips: ['Ripe, spotted bananas are LIMIT / CHECK in the guide — use a firm banana.'],
+    tips: ['Ripe, spotted bananas are LIMIT in the guide — use a firm banana.'],
   },
   {
     id: 'omelete-tomate-folhas',
@@ -211,7 +211,7 @@ export const BREAKFAST: Recipe[] = [
     ],
     substitutions: [
       'No cuscuzeira? Steam in a sieve set over a saucepan, covered with a lid.',
-      'Add 40 g grated mozzarella per serving on top of the hot cuscuz (LIMIT / CHECK).',
+      'Add 40 g grated mozzarella per serving on top of the hot cuscuz (LIMIT).',
     ],
     tips: ['Flocão is not classified in the guide — check the label for added onion or garlic seasoning.'],
   },
@@ -269,7 +269,7 @@ export const BREAKFAST: Recipe[] = [
       'Top with raspberries and a drizzle of maple syrup.',
     ],
     substitutions: ['Use strawberries (EAT) instead of raspberries.', 'Skip the chia and add 1 tbsp pumpkin seeds for crunch.'],
-    tips: ['Raspberries and chia are both LIMIT / CHECK — keep to the amounts shown.'],
+    tips: ['Raspberries and chia are both LIMIT — keep to the amounts shown.'],
   },
   {
     id: 'pudim-chia-coco',
@@ -353,7 +353,7 @@ export const BREAKFAST: Recipe[] = [
       'Divide the filling between the tortillas, add the mozzarella and salsa, and roll up tightly.',
       'Toast seam-side down in the pan for 1 minute to seal.',
     ],
-    substitutions: ['Add 1 rasher of diced bacon per serving (LIMIT / CHECK).', 'Use rice-based wraps checked for ingredients.'],
+    substitutions: ['Add 1 rasher of diced bacon per serving (LIMIT).', 'Use rice-based wraps checked for ingredients.'],
     tips: ['Corn tortillas are LIMIT — 2 small tortillas per serving.'],
   },
   {
@@ -382,7 +382,7 @@ export const BREAKFAST: Recipe[] = [
       'Top with the egg and parsley.',
     ],
     substitutions: ['Use gluten-free bread (check ingredients) instead of sourdough.', 'Swap the tomato for cucumber slices.'],
-    tips: ['Only true long-fermented sourdough is LIMIT / CHECK; regular wheat toast is AVOID in the guide.'],
+    tips: ['Only true long-fermented sourdough is LIMIT; regular wheat toast is AVOID in the guide.'],
   },
   {
     id: 'aveia-dormida-kiwi',
@@ -463,7 +463,7 @@ export const BREAKFAST: Recipe[] = [
       'Serve with the bacon and tomato.',
     ],
     substitutions: ['Use plain turkey breast slices instead of bacon.', 'Leave out the cheese to reduce LIMIT foods.'],
-    tips: ['Bacon is LIMIT / CHECK — choose one without onion or garlic powder.'],
+    tips: ['Bacon is LIMIT — choose one without onion or garlic powder.'],
   },
   {
     id: 'smoothie-morango',
@@ -532,7 +532,7 @@ export const BREAKFAST: Recipe[] = [
       'Fry the eggs in the remaining oil.',
       'Cut the rösti in half, top each with an egg and the green onion tops.',
     ],
-    substitutions: ['Fill the rösti with 40 g mozzarella between two thin layers (LIMIT / CHECK).', 'Use parsley instead of green onion tops.'],
+    substitutions: ['Fill the rösti with 40 g mozzarella between two thin layers (LIMIT).', 'Use parsley instead of green onion tops.'],
   },
   {
     id: 'bowl-iogurte-frutas-vermelhas',

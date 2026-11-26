@@ -8,6 +8,10 @@ import { recogniseIngredient, shopCategory } from '../../src/lib/grocery';
 import { foodMatches } from '../../src/lib/search';
 import { setLang } from '../../src/i18n/core';
 import { FOOD_NAMES_PT } from '../../src/i18n/data/foods.pt-BR';
+import { EXPANSION } from '../../src/data/expansion';
+import { serveFit } from '../../src/lib/analysis';
+
+const EXPANDED = new Set(EXPANSION.map((f) => f.id));
 
 /**
  * Regression tests for the Nov 2026 dietary accuracy audit (Monash University
@@ -131,7 +135,8 @@ describe('audit additions', () => {
   };
 
   it('adds exactly the 39 audited foods with the expected classifications', () => {
-    const added = FOODS.filter((f) => f.audit === 'added');
+    // The first audit's additions; the Nov 2026 expansion records are tested in expansion.test.ts.
+    const added = FOODS.filter((f) => f.audit === 'added' && !EXPANDED.has(f.id));
     expect(added.map((f) => f.id).sort()).toEqual(Object.keys(expected).sort());
     for (const f of added) expect(f.status, f.id).toBe(expected[f.id]);
   });
@@ -160,7 +165,7 @@ describe('audit additions', () => {
     for (const id of sources) expect(['limit', 'avoid'], id).toContain(status(id));
   });
 
-  it('keeps the existing portion-dependent LIMIT / CHECK records', () => {
+  it('keeps the existing portion-dependent LIMIT records', () => {
     for (const id of ['bell-peppers-red', 'celery-stalks', 'plums-small', 'barley-small', 'pistachios', 'greek-yogurt', 'zucchini', 'beets', 'apricots'])
       expect(status(id), id).toBe('limit');
   });
@@ -176,8 +181,8 @@ describe('recipe suitability after the audit', () => {
     expect(e.checks.join(' ')).toMatch(/Strawberries: 140 g per serving — this amount has not been verified/);
   });
 
-  it('does not let unclassified pantry ingredients qualify a recipe as elimination-friendly', () => {
-    for (const id of ['cuscuz-nordestino-ovo', 'sushi-caseiro-salmao', 'bolo-de-fuba', 'pudim-de-leite-sem-lactose', 'arroz-doce-sem-lactose', 'mingau-de-fuba']) {
+  it('does not let unclassified pantry ingredients qualify a recipe as EAT', () => {
+    for (const id of ['sushi-caseiro-salmao', 'bolo-de-fuba', 'pudim-de-leite-sem-lactose', 'panquecas-aveia-banana', 'muffin-mirtilo-sem-gluten']) {
       const e = evaluateRecipe(RECIPE_BY_ID.get(id)!, prefs);
       expect(e.verdict, id).toBe('check');
       expect(e.checks.join(' '), id).toMatch(/not classified in the guide/);
@@ -195,21 +200,35 @@ describe('recipe suitability after the audit', () => {
   it('ignores optional and user-excluded pantry items', () => {
     const r = RECIPE_BY_ID.get('cuscuz-nordestino-ovo')!;
     expect(evaluateRecipe(r, { ...prefs, excluded: ['flocao-milho'] }).verdict).toBe('excluded');
+    // Flocão is now a LIMIT food record (no FODMAP data found), so cuscuz stays LIMIT.
+    expect(evaluateRecipe(r, prefs).verdict).toBe('check');
+    expect(evaluateRecipe(r, prefs).checks.join(' ')).toMatch(/Flocão de milho.*LIMIT/);
     // Mint is optional in the green smoothie, so it adds no pantry check.
     expect(evaluateRecipe(RECIPE_BY_ID.get('smoothie-verde-kiwi')!, prefs).checks.join(' ')).not.toMatch(/Mint/);
   });
 
-  it('keeps exactly 11 recipes elimination-friendly, all made only of EAT guide foods', () => {
+  it('rates exactly 26 recipes EAT: every required ingredient is EAT or within its published reference serve', () => {
     const suitable = RECIPES.filter((r) => evaluateRecipe(r, prefs).verdict === 'suitable').map((r) => r.id);
     expect(suitable.sort()).toEqual(
       [
         'ovos-mexidos-espinafre-tomate', 'prato-feito-frango-grelhado', 'arroz-carreteiro', 'salada-quinoa-frango', 'tilapia-grelhada-vinagrete',
         'peixe-grelhado-batata-salada', 'bife-grelhado-arroz-salada', 'espetinho-de-carne', 'costelinha-assada-batatas', 'frango-assado-limao-alecrim',
         'salmao-quinoa-legumes',
+        // Nov 2026: optional ingredients no longer set the verdict, reclassified herbs, and published serves.
+        'omelete-tomate-folhas', 'parfait-chia-framboesa', 'aveia-dormida-kiwi', 'batata-rosti-ovo', 'salada-bife-batata-doce', 'chips-batata-doce',
+        'arroz-ovo-couve', 'bowl-carne-moida-arroz', 'macarrao-arroz-camarao', 'bisteca-porco-legumes', 'hamburguer-caseiro-batata',
+        'tofu-salteado-legumes', 'arroz-frito-ovo', 'pipoca-de-panela', 'pacoca-caseira',
       ].sort(),
     );
-    for (const id of suitable)
-      for (const i of RECIPE_BY_ID.get(id)!.ingredients.filter((x) => !x.optional)) expect(status(i.id), `${id}/${i.id}`).toBe('eat');
+    for (const id of suitable) {
+      const r = RECIPE_BY_ID.get(id)!;
+      for (const i of r.ingredients.filter((x) => !x.optional)) {
+        const s = status(i.id);
+        if (s === 'eat') continue;
+        expect(s, `${id}/${i.id}`).toBe('limit');
+        expect(serveFit(FOOD_BY_ID.get(i.id), i, r.servings), `${id}/${i.id}`).toBe('within');
+      }
+    }
     // No recipe became excluded: nothing in the audit introduced an AVOID ingredient.
     expect(RECIPES.filter((r) => evaluateRecipe(r, prefs).verdict === 'excluded')).toHaveLength(0);
   });

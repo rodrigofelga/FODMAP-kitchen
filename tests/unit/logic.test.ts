@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { describe, expect, it } from 'vitest';
 import { RECIPES, RECIPE_BY_ID } from '../../src/data/recipes';
 import { MEALS, type Recipe } from '../../src/data/types';
-import { DEFAULT_PREFERENCES, evaluateRecipe, type Preferences } from '../../src/lib/analysis';
+import { DEFAULT_PREFERENCES, evaluateRecipe, serveFit, type Preferences } from '../../src/lib/analysis';
 import { matchRecipes } from '../../src/lib/matcher';
 import { buildGroceryList, generateWeek, newPlan } from '../../src/lib/planner';
 import { defaultData, normalizeData } from '../../src/lib/appData';
@@ -34,12 +34,15 @@ describe('evaluateRecipe', () => {
   it('excludes recipes with AVOID foods during elimination', () => {
     const e = evaluateRecipe(fakeAvoidRecipe, prefs());
     expect(e.verdict).toBe('excluded');
-    expect(e.reasons.join(' ')).toMatch(/Garlic.*AVOID FOR NOW/);
+    expect(e.reasons.join(' ')).toMatch(/Garlic.*AVOID/);
   });
 
   it("never marks a recipe that uses LIMIT foods or unverified ingredients as plainly suitable", () => {
     for (const r of RECIPES) {
-      const usesLimit = r.ingredients.some((i) => resolveIngredient(i.id)?.status === "limit");
+      // Optional ingredients never set the verdict; LIMIT foods within a published serve do not need a check.
+      const usesLimit = r.ingredients.some(
+        (i) => !i.optional && resolveIngredient(i.id)?.status === "limit" && serveFit(FOOD_BY_ID.get(i.id), i, r.servings) !== "within",
+      );
       const unlisted = r.ingredients.some((i) => !i.optional && resolveIngredient(i.id)?.status === "unlisted");
       const fruits = r.ingredients.filter((i) => !i.optional && FOOD_BY_ID.get(i.id)?.category === "fruit").length;
       const e = evaluateRecipe(r, prefs());
@@ -54,12 +57,12 @@ describe('evaluateRecipe', () => {
     expect(e.checks.find((c) => c.startsWith('Canned lentils'))).toMatch(/40 g per serving/);
   });
 
-  it('hides LIMIT recipes in strict mode but drops only optional LIMIT items', () => {
+  it('hides LIMIT recipes in strict mode; optional LIMIT items only add a conditional warning', () => {
     const strict = prefs({ limitHandling: 'exclude' });
     expect(evaluateRecipe(RECIPE_BY_ID.get('arroz-com-lentilha')!, strict).verdict).toBe('excluded');
     const omelette = evaluateRecipe(RECIPE_BY_ID.get('omelete-tomate-folhas')!, strict);
     expect(omelette.verdict).toBe('suitable');
-    expect(omelette.omit.join()).toMatch(/Mozzarella/);
+    expect(omelette.conditional.join()).toMatch(/Optional Mozzarella.*LIMIT/);
   });
 
   it('treats tolerated LIMIT foods as suitable while still stating the portion', () => {
@@ -67,10 +70,10 @@ describe('evaluateRecipe', () => {
     const e = evaluateRecipe(r, prefs({ tolerated: ['oats-rolled'] }));
     expect(e.verdict).toBe('suitable');
     expect(e.checks[0]).toMatch(/tolerated.*40 g per serving/);
-    // A tolerated LIMIT food does not clear an unclassified pantry item (cinnamon).
+    // A tolerated LIMIT food does not clear another LIMIT food (cinnamon: group guidance only).
     const mingau = evaluateRecipe(RECIPE_BY_ID.get('mingau-de-aveia-morango')!, prefs({ tolerated: ['oats-rolled'] }));
     expect(mingau.verdict).toBe('check');
-    expect(mingau.checks.join(' ')).toMatch(/Cinnamon — not classified in the guide/);
+    expect(mingau.checks.join(' ')).toMatch(/Cinnamon.*LIMIT/);
   });
 
   it('respects excluded ingredients and diets', () => {

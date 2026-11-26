@@ -1,9 +1,10 @@
-import { FOOD_BY_ID } from '../data/foods';
+import { FOOD_BY_ID, type Food } from '../data/foods';
+import { SOURCE_BY_ID } from '../data/sources';
 import { UNVERIFIED_SERVINGS } from '../data/recipeReviews';
-import type { Recipe, RecipeIngredient } from '../data/types';
+import type { Recipe, RecipeIngredient, Unit } from '../data/types';
 import { getLang } from '../i18n/core';
 import { messages } from '../i18n/content';
-import { mustResolve, perServing, type ResolvedIngredient } from './ingredients';
+import { formatAmount, mustResolve, perServing, type ResolvedIngredient } from './ingredients';
 
 export interface DietPrefs {
   vegetarian: boolean;
@@ -97,8 +98,40 @@ export interface Evaluation {
   checks: string[];
   /** Positive explanation of why it qualifies. */
   qualifies: string[];
-  /** Optional ingredients to leave out for this user. */
+  /** Optional ingredients the user excluded in Settings — leave them out. */
   omit: string[];
+  /**
+   * Optional ingredients that would change the classification if included.
+   * The verdict itself reflects required ingredients only.
+   */
+  conditional: string[];
+}
+
+export type ServeFit = 'within' | 'above' | 'unknown';
+
+/**
+ * Compares one serving of an ingredient with the food's published low-FODMAP
+ * reference serve. Only the same unit (or the household unit the source
+ * printed) is compared — no unit conversions are invented.
+ */
+export function serveFit(food: Food | undefined, ing: RecipeIngredient, servings: number): ServeFit {
+  const s = food?.serve;
+  if (!s) return 'unknown';
+  const q = ing.qty / servings;
+  if (ing.unit === s.unit) return q <= s.amount + 1e-9 ? 'within' : 'above';
+  if (s.alt && ing.unit === s.alt.unit) return q <= s.alt.qty + 1e-9 ? 'within' : 'above';
+  return 'unknown';
+}
+
+/** "52 g — Monash University, 14 Jan 2021" */
+export function serveText(food: Food): string {
+  const s = food.serve!;
+  const src = SOURCE_BY_ID.get(s.src);
+  const pieces = messages().analysis.pieces;
+  const fmt = (q: number, u: Unit) => (u === 'unit' ? `${formatAmount(q, u)} ${pieces}` : formatAmount(q, u));
+  const amount = fmt(s.amount, s.unit);
+  const alt = s.alt ? ` (${fmt(s.alt.qty, s.alt.unit)})` : '';
+  return `${amount}${alt} — ${src ? `${src.org}, ${src.date}` : s.src}`;
 }
 
 export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
@@ -107,24 +140,33 @@ export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
   const checks: string[] = [];
   const qualifies: string[] = [];
   const omit: string[] = [];
+  const conditional: string[] = [];
   const excluded = new Set(prefs.excluded);
   const tolerated = new Set(prefs.tolerated);
   const t = messages().analysis;
+  const status = messages().status;
   // True when a check still needs the user's attention (anything other than a tolerated-food reminder).
   let pendingChecks = false;
 
   for (const it of a.items) {
     const { ing, food } = it;
+    const record = FOOD_BY_ID.get(ing.id);
     if (excluded.has(ing.id)) {
       if (ing.optional) omit.push(t.excludedOptional(food.name));
       else reasons.push(t.excludedRequired(food.name));
       continue;
     }
+    const fit = serveFit(record, ing, r.servings);
+    // Optional ingredients never change the verdict; a concern becomes a conditional warning.
+    if (ing.optional) {
+      if (food.status === 'avoid') conditional.push(t.optionalAvoid(food.name, status.avoid));
+      else if (food.status === 'limit' && !tolerated.has(ing.id) && fit !== 'within') conditional.push(t.optionalLimit(food.name, it.perServing, status.limit));
+      else if (food.status === 'unlisted') conditional.push(t.optionalUnlisted(food.name));
+      continue;
+    }
     if (food.status === 'avoid') {
-      if (prefs.phase === 'elimination') {
-        if (ing.optional) omit.push(t.avoidOptional(food.name));
-        else reasons.push(t.avoidRequired(food.name));
-      } else {
+      if (prefs.phase === 'elimination') reasons.push(t.avoidRequired(food.name));
+      else {
         checks.push(t.avoidReintro(food.name));
         pendingChecks = true;
       }
@@ -133,30 +175,38 @@ export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
     if (food.status === 'limit') {
       if (tolerated.has(ing.id)) {
         checks.push(t.tolerated(food.name, it.perServing));
+      } else if (fit === 'within') {
+        qualifies.push(t.withinServe(food.name, it.perServing, serveText(record!)));
       } else if (prefs.limitHandling === 'exclude') {
-        if (ing.optional) omit.push(t.limitOptionalHidden(food.name));
-        else reasons.push(t.limitHidden(food.name));
+        reasons.push(t.limitHidden(food.name));
       } else {
-        checks.push(t.limitCheck(food.name, it.perServing, !!ing.optional));
+        checks.push(fit === 'above' ? t.aboveServe(food.name, it.perServing, serveText(record!)) : t.limitCheck(food.name, it.perServing, false));
         pendingChecks = true;
       }
     }
   }
 
-  // Evidence gaps never count as elimination-friendly: they become portion checks.
-  // 1. Required pantry items have no classification in the guide.
+  // Evidence gaps never count as EAT: they become checks.
+  // 1. Required pantry items have no classification.
   for (const it of a.unlisted) {
     if (it.ing.optional || excluded.has(it.ing.id)) continue;
     checks.push(t.unlistedCheck(it.food.name));
     pendingChecks = true;
   }
-  // 2. Two or more different fruits in one serving: the combined serve is unverified.
+  // 2. Two or more different fruits in one serving. Each fruit is compared with its
+  // own published serve, but published data do not establish the cumulative
+  // exposure of several fruits eaten together, so the recipe stays LIMIT.
   const fruits = a.items.filter((i) => !i.ing.optional && !excluded.has(i.ing.id) && i.food.status !== 'avoid' && FOOD_BY_ID.get(i.ing.id)?.category === 'fruit');
   if (fruits.length >= 2) {
     checks.push(t.combinedFruit(fruits.map((i) => i.food.name).join(', ')));
+    for (const i of fruits) {
+      const rec = FOOD_BY_ID.get(i.ing.id)!;
+      const fit = serveFit(rec, i.ing, r.servings);
+      checks.push(fit === 'unknown' ? t.fruitNoServe(i.food.name, i.perServing) : t.fruitServe(i.food.name, i.perServing, serveText(rec), fit === 'within'));
+    }
     pendingChecks = true;
   }
-  // 3. A serving the audit could not verify against a published low-FODMAP serve.
+  // 3. A serving the audit could not compare with a published low-FODMAP serve.
   const unverified = a.items.find((i) => i.ing.id === UNVERIFIED_SERVINGS[r.id]);
   if (unverified && !excluded.has(unverified.ing.id)) {
     checks.push(t.servingUnverified(unverified.food.name, unverified.perServing));
@@ -172,16 +222,18 @@ export function evaluateRecipe(r: Recipe, prefs: Preferences): Evaluation {
   if (d.nutFree && !a.diets.nutFree) reasons.push(t.dietNut);
   if (d.noSpicy && a.diets.spicy) reasons.push(t.dietSpicy);
 
-  if (reasons.length) return { verdict: 'excluded', reasons, checks, qualifies, omit };
+  if (reasons.length) return { verdict: 'excluded', reasons, checks, qualifies, omit, conditional };
 
   const guideItems = a.items.filter((i) => i.food.kind === 'food' && !i.ing.optional);
   const eatCount = guideItems.filter((i) => i.food.status === 'eat').length;
-  qualifies.push(t.noAvoid(prefs.phase === 'elimination'));
-  if (eatCount === guideItems.length) qualifies.push(t.allEat(guideItems.length));
-  else qualifies.push(t.someEat(eatCount, guideItems.length));
-  if (a.unlisted.length) qualifies.push(t.unlisted(a.unlisted.length));
+  qualifies.unshift(t.noAvoid(prefs.phase === 'elimination'));
+  if (eatCount === guideItems.length) qualifies.splice(1, 0, t.allEat(guideItems.length));
+  else qualifies.splice(1, 0, t.someEat(eatCount, guideItems.length));
+  // Reflect uncertainty: EAT records that rest only on the original guide.
+  const guideOnly = guideItems.filter((i) => i.food.status === 'eat' && FOOD_BY_ID.get(i.ing.id)?.verification === 'guide');
+  if (guideOnly.length) qualifies.push(t.guideOnly(guideOnly.map((i) => i.food.name).join(', ')));
 
-  return { verdict: pendingChecks ? 'check' : 'suitable', reasons, checks, qualifies, omit };
+  return { verdict: pendingChecks ? 'check' : 'suitable', reasons, checks, qualifies, omit, conditional };
 }
 
 export function dietLabels(r: Recipe): string[] {

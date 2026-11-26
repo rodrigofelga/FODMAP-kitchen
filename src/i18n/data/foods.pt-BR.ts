@@ -1,4 +1,5 @@
 import type { FoodCategory } from '../../data/foods';
+import { EXPANSION_PT } from '../../data/expansion';
 
 /**
  * Brazilian Portuguese names for every food in src/data/foods.ts, keyed by the
@@ -7,7 +8,7 @@ import type { FoodCategory } from '../../data/foods';
  * the source PDF cuts off stay cut off.
  */
 export const FOOD_NAMES_PT: Record<string, string> = {
-  // Verduras, legumes e ervas — PODE COMER
+  // Verduras, legumes e ervas — COMER
   carrots: 'Cenoura',
   cucumber: 'Pepino',
   eggplant: 'Berinjela',
@@ -16,7 +17,7 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   'potatoes-white': 'Batata (inglesa, branca)',
   spinach: 'Espinafre',
   tomatoes: 'Tomate',
-  // LIMITAR / VERIFICAR
+  // LIMITAR
   'avocado-small': 'Abacate (porção pequena)',
   beets: 'Beterraba',
   'bell-peppers-red': 'Pimentão (vermelho)',
@@ -32,7 +33,7 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   'sweet-corn': 'Milho verde',
   'sweet-potatoes': 'Batata-doce',
   zucchini: 'Abobrinha',
-  // EVITAR POR ENQUANTO
+  // EVITAR
   artichokes: 'Alcachofra',
   asparagus: 'Aspargo',
   'broccoli-stalks-large': 'Talos de brócolis (porção grande)',
@@ -190,7 +191,7 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   rosemary: 'Alecrim',
   salt: 'Sal',
   thyme: 'Tomilho',
-  vinegar: 'Vinagre',
+  vinegar: 'Vinagre (branco, de vinho, de arroz ou de maçã)',
   cilantro: 'Coentro',
   'curry-powder': 'Curry em pó (conferir ingredientes)',
   dill: 'Endro (dill)',
@@ -209,7 +210,7 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   'maple-syrup': 'Xarope de bordo (maple syrup)',
   'mayonnaise-plain': 'Maionese (simples; conferir rótulo)',
   'soy-sauce': 'Shoyu (pequena quantidade)',
-  'vinegar-plain': 'Vinagre (simples)',
+  'vinegar-plain': 'Vinagre (branco, de vinho, de arroz ou de maçã)',
   'franks-hot-sauce': 'Molho de pimenta Frank’s Original (conferir ingredientes e picância)',
   'hellmanns-mayo': 'Maionese Hellmann’s Real (conferir rótulo)',
   ketchup: 'Ketchup (pequena quantidade)',
@@ -260,10 +261,10 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   'green-tea': 'Chá verde',
   merlot: 'Merlot (seco; após a eliminação)',
   'orange-juice-small': 'Suco de laranja (copo pequeno)',
-  rum: 'Rum (após a eliminação)',
+  rum: 'Rum (testado alto em FODMAPs)',
   'suco-de-caju': 'Suco de caju (conferir receita/porção)',
   whiskey: 'Uísque (após a eliminação)',
-  beer: 'Cerveja / IPA (durante o teste)',
+  beer: 'Cerveja comum (relatada baixa em FODMAP; álcool, gás e glúten ainda importam)',
   'caesar-cocktail': 'Coquetel Caesar (durante o teste)',
   clamato: 'Suco Clamato (conferir ingredientes; evitar durante o teste)',
   'soft-drinks': 'Refrigerantes (durante o teste de sintomas)',
@@ -322,33 +323,22 @@ export const FOOD_NAMES_PT: Record<string, string> = {
   'polyol-sweeteners': 'Adoçantes polióis: sorbitol (E420), manitol (E421), isomalte (E953), maltitol (E965), lactitol (E966), xilitol (E967)',
   'cranberry-juice': 'Suco de cranberry (conferir no rótulo se há concentrado de maçã/pera)',
   'apple-pear-juice': 'Suco de maçã, suco de pera e concentrados de suco de fruta',
+  ...EXPANSION_PT,
 };
 
 export const PANTRY_PT: Record<string, { name: string; description: string }> = {
-  'rice-flour': { name: 'Farinha de arroz', description: 'Arroz moído fino.' },
-  'tapioca-starch': { name: 'Polvilho / goma de tapioca', description: 'Amido extraído da mandioca. Usado na tapioca e no pão de queijo.' },
-  cornstarch: { name: 'Amido de milho (maisena)', description: 'Amido extraído do milho.' },
-  'flocao-milho': {
-    name: 'Flocão de milho (para cuscuz)',
-    description: 'Milho flocado pré-cozido usado no cuscuz nordestino. A polenta (simples) é PODE COMER no guia; confira no rótulo do flocão se há ingredientes adicionados.',
-  },
   'baking-powder': { name: 'Fermento químico em pó', description: 'Agente de crescimento químico.' },
-  cinnamon: { name: 'Canela', description: 'Canela em pó ou em pau.' },
-  cloves: { name: 'Cravo-da-índia', description: 'Botões de cravo secos e inteiros.' },
   'vanilla-extract': { name: 'Essência de baunilha', description: 'Extrato puro de baunilha.' },
-  'bay-leaf': { name: 'Folha de louro', description: 'Folhas de louro secas.' },
-  cumin: { name: 'Cominho em pó', description: 'Semente de cominho moída.' },
-  basil: { name: 'Manjericão fresco', description: 'Folhas frescas de manjericão.' },
-  mint: { name: 'Hortelã fresca', description: 'Folhas frescas de hortelã.' },
   nori: { name: 'Folhas de alga nori', description: 'Folhas de alga desidratadas para sushi.' },
-  'sesame-seeds': { name: 'Gergelim', description: 'Sementes de gergelim descascadas.' },
 };
 
 export const CATEGORY_LABELS_PT: Record<FoodCategory, string> = {
   vegetables: 'Verduras, legumes e ervas',
   fruit: 'Frutas',
   starches: 'Arroz, pães e amidos',
-  protein: 'Carnes, peixes e ovos',
+  meat: 'Carnes, aves e caça',
+  seafood: 'Peixes e frutos do mar',
+  protein: 'Ovos, tofu e outras proteínas',
   dairy: 'Laticínios e alternativas',
   legumes: 'Feijões, leguminosas e oleaginosas',
   seasonings: 'Óleos, ervas e temperos',

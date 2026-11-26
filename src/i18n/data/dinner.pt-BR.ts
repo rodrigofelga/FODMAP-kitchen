@@ -54,8 +54,8 @@ export const DINNER_PT: Record<string, RecipeText> = {
       'Para a farofa, toste a farinha na manteiga com uma pitada de sal por 5 minutos, até dourar; misture a salsinha.',
       'Misture o tomate com vinagre e sal para um vinagrete rápido e sirva.',
     ],
-    substitutions: ['Use cubos de peito de frango (PODE COMER).', 'Sirva com arroz branco no lugar da farofa para evitar alimentos LIMITAR.'],
-    tips: ['A farinha de mandioca é LIMITAR / VERIFICAR — 20 g por porção.'],
+    substitutions: ['Use cubos de peito de frango (COMER).', 'Sirva com arroz branco no lugar da farofa para evitar alimentos LIMITAR.'],
+    tips: ['A farinha de mandioca é LIMITAR — 20 g por porção.'],
     alt: 'Imagem gerada por IA de pedaços de frango grelhado com limão',
   },
   'espetinho-de-carne': {
@@ -97,7 +97,7 @@ export const DINNER_PT: Record<string, RecipeText> = {
       'Esprema o limão por cima e deixe descansar 3 minutos.',
       'Sirva com os legumes.',
     ],
-    substitutions: ['Use sobrecoxa no lugar do porco.', 'Troque a abobrinha por berinjela (PODE COMER).'],
+    substitutions: ['Use sobrecoxa no lugar do porco.', 'Troque a abobrinha por berinjela (COMER).'],
     alt: 'Bisteca de porco selada sobre legumes assados',
   },
   'costelinha-assada-batatas': {
@@ -158,7 +158,7 @@ export const DINNER_PT: Record<string, RecipeText> = {
       'Sirva com um fio de creme azedo e as sementes de abóbora torradas.',
     ],
     substitutions: ['Use mais cenoura no lugar da abóbora para deixar a sopa sem legumes LIMITAR.', 'Junte frango desfiado para uma refeição mais substanciosa.'],
-    tips: ['A abóbora-pescoço é LIMITAR / VERIFICAR — 45 g por porção aqui; a cenoura e a batata formam a maior parte.'],
+    tips: ['A abóbora-pescoço é LIMITAR — 45 g por porção aqui; a cenoura e a batata formam a maior parte.'],
     alt: 'Tigela de sopa lisa de abóbora alaranjada com um fio de creme',
   },
   'hamburguer-caseiro-batata': {
@@ -177,15 +177,15 @@ export const DINNER_PT: Record<string, RecipeText> = {
   },
   'tofu-salteado-legumes': {
     title: 'Tofu salteado com legumes',
-    description: 'Tofu firme dourado na frigideira, salteado com cenoura, couve e um glaceado de shoyu e gengibre.',
+    description: 'Tofu firme dourado na frigideira, salteado com cenoura, couve kale e um glaceado de shoyu e gengibre.',
     notes: { 'firm-tofu': 'prensado, em cubos', carrots: 'fatiada', kale: 'em tiras', ginger: 'ralado', 'rice-white': 'cozido' },
     steps: [
       'Envolva o tofu no amido de milho e frite no óleo em fogo médio-alto até dourar por todos os lados, 8 minutos.',
-      'Afaste para o lado, junte a cenoura e a couve e salteie por 3 minutos.',
+      'Afaste para o lado, junte a cenoura e a couve kale e salteie por 3 minutos.',
       'Misture o shoyu, o xarope de bordo e o gengibre; despeje por cima e mexa até ficar brilhante.',
       'Sirva sobre o arroz com gergelim.',
     ],
-    substitutions: ['Use peito de frango no lugar do tofu.', 'Use espinafre no lugar da couve.'],
+    substitutions: ['Use peito de frango no lugar do tofu.', 'Use espinafre no lugar da couve kale.'],
     alt: 'Cubos de tofu simples em um prato',
   },
   'risoto-abobrinha': {
@@ -200,7 +200,7 @@ export const DINNER_PT: Record<string, RecipeText> = {
       'Acerte o tempero e sirva com salsinha.',
     ],
     substitutions: ['Use espinafre no lugar da abobrinha.', 'Cubra com camarão grelhado.'],
-    tips: ['A abobrinha é LIMITAR / VERIFICAR — 40 g por porção.'],
+    tips: ['A abobrinha é LIMITAR — 40 g por porção.'],
     alt: 'Risoto cremoso servido de dentro de uma peça de queijo',
   },
   'sushi-caseiro-salmao': {
@@ -289,7 +289,7 @@ export const DINNER_PT: Record<string, RecipeText> = {
       'Sirva o macarrão com as almôndegas, o molho e um pouco de mussarela.',
     ],
     substitutions: ['Use macarrão de arroz no lugar do macarrão sem glúten.', 'Use carne moída de peru nas almôndegas.'],
-    tips: ['Estas são “almôndegas (sem trigo/cebola/alho)”, que o guia lista como LIMITAR / VERIFICAR; o macarrão sem glúten e o molho de tomate também são LIMITAR.'],
+    tips: ['Estas são “almôndegas (sem trigo/cebola/alho)”, que o guia lista como LIMITAR; o macarrão sem glúten e o molho de tomate também são LIMITAR.'],
     alt: 'Almôndegas ao molho de tomate com manjericão',
   },
 };

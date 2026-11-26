@@ -2,7 +2,7 @@
  * Recipe-level portion reviews from the Nov 2026 dietary accuracy audit.
  *
  * A listed recipe keeps its ingredients, quantities and steps unchanged, but it
- * cannot be shown as Elimination-friendly until the listed ingredient's serving
+ * cannot be shown as EAT until the listed ingredient's serving
  * has been verified against a published low-FODMAP serve. The value is the
  * ingredient id whose per-serving amount is unverified.
  *

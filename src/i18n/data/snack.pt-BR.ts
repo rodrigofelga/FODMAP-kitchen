@@ -12,7 +12,7 @@ export const SNACK_PT: Record<string, RecipeText> = {
       'Misture com o sal (e a manteiga derretida, se for usar).',
     ],
     substitutions: ['Polvilhe páprica no lugar da manteiga.', 'Faça pipoca doce juntando 1 colher (chá) de açúcar com os grãos.'],
-    tips: ['A pipoca é LIMITAR / VERIFICAR — fique em cerca de 30 g de grãos (uma tigela grande) por porção.'],
+    tips: ['A pipoca é LIMITAR — fique em cerca de 30 g de grãos (uma tigela grande) por porção.'],
     alt: 'Close de pipoca fresquinha',
   },
   'nachos-caseiros-mussarela': {
@@ -40,8 +40,8 @@ export const SNACK_PT: Record<string, RecipeText> = {
     description: 'O lanche da tarde do guia: iogurte sem lactose com um punhadinho de mirtilos e sementes de abóbora torradas.',
     notes: { 'pumpkin-seeds': 'torradas' },
     steps: ['Coloque o iogurte em uma tigela.', 'Cubra com os mirtilos e as sementes de abóbora.', 'Regue com xarope de bordo, se quiser.'],
-    substitutions: ['Use morangos ou kiwi (PODE COMER) no lugar dos mirtilos.'],
-    tips: ['O mirtilo é LIMITAR / VERIFICAR — cerca de 30 g é um punhadinho.'],
+    substitutions: ['Use morangos ou kiwi (COMER) no lugar dos mirtilos.'],
+    tips: ['O mirtilo é LIMITAR — cerca de 30 g é um punhadinho.'],
     alt: 'Parfait de iogurte com mirtilos e frutas vermelhas',
   },
   'salada-de-frutas-tropical': {
@@ -49,7 +49,7 @@ export const SNACK_PT: Record<string, RecipeText> = {
     description: 'Mamão, abacaxi, kiwi, laranja e morangos misturados com suco de limão e hortelã fresca.',
     notes: { papaya: 'em cubos', pineapple: 'em cubos', kiwi: 'fatiado', oranges: 'em gomos sem pele', strawberries: 'cortados ao meio', lime: 'espremido', mint: 'em tiras' },
     steps: ['Junte todas as frutas em uma tigela grande.', 'Despeje o suco de limão e misture delicadamente.', 'Espalhe a hortelã e leve à geladeira por 15 minutos antes de servir.'],
-    substitutions: ['Junte uvas (PODE COMER) ou melão cantalupo.', 'Sirva com uma colher de iogurte sem lactose.'],
+    substitutions: ['Junte uvas (COMER) ou melão cantalupo.', 'Sirva com uma colher de iogurte sem lactose.'],
     alt: 'Tigela de salada de frutas tropical com abacaxi, mamão, laranja, morangos, kiwi e uvas roxas, coberta com hortelã e raspas de limão',
   },
   'bolo-de-fuba': {
@@ -153,8 +153,8 @@ export const SNACK_PT: Record<string, RecipeText> = {
       'Envolva no amido de milho e depois no azeite, na páprica e no sal.',
       'Espalhe em uma única camada e asse a 220 °C por 25 a 30 minutos, virando na metade do tempo.',
     ],
-    substitutions: ['Use batata inglesa (PODE COMER) para uma versão sem limite de porção.'],
-    tips: ['A batata-doce é LIMITAR / VERIFICAR — 75 g por porção.'],
+    substitutions: ['Use batata inglesa (COMER) para uma versão sem limite de porção.'],
+    tips: ['A batata-doce é LIMITAR — 75 g por porção.'],
     alt: 'Palitos de batata-doce assados com ervas',
   },
   'batata-frita-airfryer': {
@@ -225,7 +225,7 @@ export const SNACK_PT: Record<string, RecipeText> = {
       'Deixe esfriar 10 minutos na fôrma e depois sobre uma grade.',
     ],
     substitutions: ['Cubra com rodelas de banana antes de assar.'],
-    tips: ['Use bananas firmes: bananas maduras, com pintinhas, são LIMITAR / VERIFICAR no guia. Uma fatia por porção.'],
+    tips: ['Use bananas firmes: bananas maduras, com pintinhas, são LIMITAR no guia. Uma fatia por porção.'],
     alt: 'Fatias de bolo de banana com manteiga',
   },
   quindim: {

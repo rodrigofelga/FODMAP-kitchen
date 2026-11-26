@@ -66,7 +66,7 @@ export const LUNCH: Recipe[] = [
       'Rest 5 minutes, then fold in the parsley and green onion tops.',
     ],
     substitutions: ['Use chicken breast for a leaner version.', 'Leave out the red pepper to reduce LIMIT foods.'],
-    tips: ['Turmeric, red pepper and green onion tops are LIMIT / CHECK — the amounts are small per serving.'],
+    tips: ['Red pepper is LIMIT — the amount per serving is small. Turmeric and green onion tops are EAT.'],
   },
   {
     id: 'strogonoff-frango-sem-lactose',
@@ -99,7 +99,7 @@ export const LUNCH: Recipe[] = [
       'Simmer 2 minutes, adjust the salt and serve with rice and potato sticks.',
     ],
     substitutions: ['Use lean beef strips for strogonoff de carne.', 'Replace sour cream with lactose-free yogurt stirred in off the heat.'],
-    tips: ['Ketchup, mustard, tomato paste and sour cream are all LIMIT / CHECK — check labels for onion and garlic.'],
+    tips: ['Ketchup, mustard, tomato paste and sour cream are all LIMIT — check labels for onion and garlic.'],
   },
   {
     id: 'moqueca-de-peixe-leve',
@@ -132,7 +132,7 @@ export const LUNCH: Recipe[] = [
       'Scatter with cilantro and green onion tops and serve with white rice.',
     ],
     substitutions: ['Use shrimp instead of fish (cook 6–8 minutes only).', 'Use parsley instead of cilantro.'],
-    tips: ['Coconut milk, red pepper and cilantro are LIMIT / CHECK; 30 ml coconut milk per serving.'],
+    tips: ['Coconut milk and red pepper are LIMIT; 30 ml coconut milk per serving.'],
   },
   {
     id: 'arroz-carreteiro',
@@ -194,7 +194,7 @@ export const LUNCH: Recipe[] = [
       'Top with sweet potato and steak, and drizzle with the rest of the dressing.',
     ],
     substitutions: ['Use white potatoes (EAT) instead of sweet potato.', 'Use grilled chicken breast instead of beef.'],
-    tips: ['Sweet potato is LIMIT / CHECK — 75 g per serving.'],
+    tips: ['Sweet potato is LIMIT — 75 g per serving.'],
   },
   {
     id: 'picadinho-de-carne',
@@ -259,7 +259,7 @@ export const LUNCH: Recipe[] = [
       'Top with the potato sticks just before serving.',
     ],
     substitutions: ['Use canned tuna in oil (LIMIT) instead of chicken.', 'Swap sweet corn for diced cucumber to remove a LIMIT food.'],
-    tips: ['Sweet corn and celery are LIMIT / CHECK — about 15 g corn and 5 g celery per serving.'],
+    tips: ['Sweet corn and celery are LIMIT — about 15 g corn and 5 g celery per serving.'],
   },
   {
     id: 'escondidinho-carne-moida',
@@ -322,7 +322,7 @@ export const LUNCH: Recipe[] = [
       'Toss the quinoa with the cucumber, tomato, olives, parsley and dressing.',
       'Top with the chicken.',
     ],
-    substitutions: ['Add 40 g rinsed canned chickpeas per serving (LIMIT / CHECK).', 'Use firm tofu instead of chicken.'],
+    substitutions: ['Add 40 g rinsed canned chickpeas per serving (LIMIT).', 'Use firm tofu instead of chicken.'],
   },
   {
     id: 'caldo-verde-sem-cebola',
@@ -384,7 +384,7 @@ export const LUNCH: Recipe[] = [
       'Finish with peanuts and green onion tops; serve with rice.',
     ],
     substitutions: ['Use firm tofu instead of chicken.', 'Replace zucchini with carrots (EAT).'],
-    tips: ['Soy sauce is EAT in a small amount; peanuts, red pepper, zucchini and ginger are LIMIT — keep to these quantities.'],
+    tips: ['Soy sauce is EAT in a small amount; peanuts, red pepper and zucchini are LIMIT — keep to these quantities.'],
   },
   {
     id: 'tilapia-grelhada-vinagrete',
@@ -447,12 +447,12 @@ export const LUNCH: Recipe[] = [
       'Serve the polenta in bowls topped with the ragù, torn basil and mozzarella.',
     ],
     substitutions: ['Use chicken thighs, shredded, in the ragù.', 'Use lactose-free milk for half the water for a richer polenta.'],
-    tips: ['Plain tomato sauce is LIMIT / CHECK — about 100 ml per serving.'],
+    tips: ['Plain tomato sauce is LIMIT — about 100 ml per serving.'],
   },
   {
     id: 'arroz-ovo-couve',
     title: 'Rice bowl with fried egg and sautéed kale',
-    titlePt: 'Arroz com ovo e couve refogada',
+    titlePt: 'Arroz com ovo e couve kale refogada',
     meal: 'lunch',
     description: 'An everyday Brazilian plate: rice, a crisp-edged fried egg, olive-oil kale and tomato salad.',
     servings: 1,

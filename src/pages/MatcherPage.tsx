@@ -61,7 +61,7 @@ function ResultCard({ m }: { m: MatchResult }) {
           {ev.verdict === 'excluded' ? t.whyExcluded : t.whyQualifies}
         </summary>
         <ul className="small" style={{ margin: '6px 0 0', paddingLeft: '1.2em' }}>
-          {[...ev.reasons, ...ev.qualifies, ...ev.checks].map((t) => (
+          {[...ev.reasons, ...ev.qualifies, ...ev.checks, ...ev.conditional].map((t) => (
             <li key={t}>{t}</li>
           ))}
           {ev.omit.length > 0 && <li>{t.leaveOut(ev.omit.join(', '))}</li>}

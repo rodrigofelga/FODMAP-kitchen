@@ -32,6 +32,8 @@ const BY_FOOD_CATEGORY: Record<FoodCategory, ShopCategory> = {
   vegetables: 'produce',
   fruit: 'produce',
   starches: 'grains',
+  meat: 'meat',
+  seafood: 'meat',
   protein: 'meat',
   dairy: 'dairy',
   legumes: 'other',

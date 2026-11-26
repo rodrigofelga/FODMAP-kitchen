@@ -19,7 +19,7 @@ export const SNACK: Recipe[] = [
       'Toss with salt (and melted butter, if using).',
     ],
     substitutions: ['Sprinkle with paprika instead of butter.', 'Make it sweet with 1 tsp sugar added with the kernels (pipoca doce).'],
-    tips: ['Popcorn is LIMIT / CHECK — keep to about 30 g kernels (a large bowl) per serving.'],
+    tips: ['Popcorn is LIMIT — keep to about 30 g kernels (a large bowl) per serving.'],
   },
   {
     id: 'nachos-caseiros-mussarela',
@@ -83,7 +83,7 @@ export const SNACK: Recipe[] = [
     ],
     steps: ['Spoon the yogurt into a bowl.', 'Top with the blueberries and pumpkin seeds.', 'Drizzle with maple syrup if you like.'],
     substitutions: ['Use strawberries or kiwi (EAT) instead of blueberries.'],
-    tips: ['Blueberries are LIMIT / CHECK — about 30 g is a small handful.'],
+    tips: ['Blueberries are LIMIT — about 30 g is a small handful.'],
   },
   {
     id: 'salada-de-frutas-tropical',
@@ -294,7 +294,7 @@ export const SNACK: Recipe[] = [
       'Spread in a single layer and bake at 220 °C for 25–30 minutes, turning halfway.',
     ],
     substitutions: ['Use white potatoes (EAT) for a portion-free version.'],
-    tips: ['Sweet potato is LIMIT / CHECK — 75 g per serving.'],
+    tips: ['Sweet potato is LIMIT — 75 g per serving.'],
   },
   {
     id: 'batata-frita-airfryer',
@@ -423,7 +423,7 @@ export const SNACK: Recipe[] = [
       'Cool in the tin for 10 minutes, then on a rack.',
     ],
     substitutions: ['Top with sliced banana before baking.'],
-    tips: ['Use firm bananas: ripe, spotted bananas are LIMIT / CHECK in the guide. One slice per serving.'],
+    tips: ['Use firm bananas: ripe, spotted bananas are LIMIT in the guide. One slice per serving.'],
   },
   {
     id: 'quindim',

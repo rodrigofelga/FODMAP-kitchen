@@ -6,6 +6,11 @@ import { useStore } from '../lib/store';
 import { IconSearch } from '../components/Icons';
 import { useI18n } from '../i18n/context';
 import { categoryLabel, ingredientName } from '../i18n/content';
+import { SOURCES } from '../data/sources';
+import { serveText } from '../lib/analysis';
+import { formatAmount } from '../lib/ingredients';
+
+const QUIET = new Set(['listed', 'serve']);
 
 const STATUSES: FoodStatus[] = ['eat', 'limit', 'avoid'];
 const collator = new Intl.Collator('pt-BR', { sensitivity: 'base' });
@@ -93,6 +98,11 @@ export function FoodGuidePage() {
                         <li key={f.id} data-food={f.id}>
                           {ingredientName(f.id)}
                           {f.sourceTruncated && <small>{g.truncated}</small>}
+                          {f.serve && <small>{g.serve(serveText(f))}</small>}
+                          {f.portion && <small>{g.portion(formatAmount(f.portion.amount, f.portion.unit))}</small>}
+                          {f.triggers && <small>{g.triggers(f.triggers.map((x) => g.triggerNames[x]).join(', '))}</small>}
+                          {f.warn && f.warn.length > 0 && <small>{g.labelCheck(f.warn.map((x) => g.warnNames[x]).join(', '))}</small>}
+                          {!QUIET.has(f.verification) && <small data-verification={f.verification}>{g.verification[f.verification]}</small>}
                           {excluded.has(f.id) && <small>{g.youExcluded}</small>}
                           {tolerated.has(f.id) && <small>{g.youTolerate}</small>}
                           {(usage.get(f.id) ?? 0) > 0 && (
@@ -110,6 +120,18 @@ export function FoodGuidePage() {
       })}
 
       {!filtered.length && <p className="empty">{g.noMatch(q)}</p>}
+
+      <section className="section card" aria-labelledby="guide-sources">
+        <h2 id="guide-sources">{g.sourcesTitle}</h2>
+        <p className="small muted">{g.sourcesIntro}</p>
+        <ul className="small">
+          {SOURCES.map((src) => (
+            <li key={src.id} data-source={src.id}>
+              <strong>{src.id}</strong> — {'url' in src ? <a href={src.url} target="_blank" rel="noreferrer">{src.title}</a> : src.kind === 'guide' ? g.guideSource.title : src.title}. {src.kind === 'guide' ? g.guideSource.org : src.org}, {src.date}. <em>{g.sourceKinds[src.kind]}</em>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="section card">
         <h2>{g.ideasTitle}</h2>

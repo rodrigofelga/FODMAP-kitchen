@@ -12,7 +12,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Quando os ovos estiverem quase firmes, junte o tomate em cubos e cozinhe por mais 30 segundos.',
       'Sirva imediatamente, ainda macios.',
     ],
-    substitutions: ['Troque o espinafre por couve picada (também PODE COMER); cozinhe 1 minuto a mais.', 'Use azeite em vez de manteiga para uma versão sem laticínios.'],
+    substitutions: ['Troque o espinafre por couve kale picada (também COMER); cozinhe 1 minuto a mais.', 'Use azeite em vez de manteiga para uma versão sem laticínios.'],
     alt: 'Prato de ovos mexidos macios com espinafre murcho e tomates-cereja',
   },
   'mingau-de-aveia-morango': {
@@ -26,7 +26,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Despeje em uma tigela, cubra com os morangos e regue com o xarope de bordo, se for usar.',
     ],
     substitutions: ['Use kiwi ou gomos de laranja no lugar dos morangos.', 'Substitua parte do leite por água para um mingau mais leve.'],
-    tips: ['A aveia em flocos é LIMITAR / VERIFICAR no guia — mantenha a porção de 40 g.'],
+    tips: ['A aveia em flocos é LIMITAR no guia — mantenha a porção de 40 g.'],
     alt: 'Xícara branca de mingau de aveia coberto com morangos frescos e mirtilos',
   },
   'tapioca-ovo-mussarela': {
@@ -69,7 +69,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
     notes: { 'banana-firm': 'firme, sem pintas (cerca de 100 g)', 'lactose-free-milk': 'gelado' },
     steps: ['Descasque e fatie a banana.', 'Coloque todos os ingredientes no liquidificador.', 'Bata por 30 a 45 segundos, até ficar totalmente liso.', 'Sirva imediatamente em um copo alto.'],
     substitutions: ['Use iogurte sem lactose com um pouco de água no lugar do leite para uma vitamina mais grossa.', 'Troque a pasta de amendoim por alguns morangos para uma versão sem oleaginosas.'],
-    tips: ['Bananas maduras, com pintas, são LIMITAR / VERIFICAR no guia — use banana firme.'],
+    tips: ['Bananas maduras, com pintas, são LIMITAR no guia — use banana firme.'],
     alt: 'Dois copos de vitamina cremosa de banana com pasta de amendoim ao lado de uma colher de pasta de amendoim',
   },
   'omelete-tomate-folhas': {
@@ -96,7 +96,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Enquanto isso, frite os ovos no azeite.',
       'Desenforme o cuscuz, coloque a manteiga por cima e sirva cada porção com um ovo frito.',
     ],
-    substitutions: ['Não tem cuscuzeira? Cozinhe no vapor em uma peneira sobre uma panela, tampada.', 'Acrescente 40 g de mussarela ralada por porção sobre o cuscuz quente (LIMITAR / VERIFICAR).'],
+    substitutions: ['Não tem cuscuzeira? Cozinhe no vapor em uma peneira sobre uma panela, tampada.', 'Acrescente 40 g de mussarela ralada por porção sobre o cuscuz quente (LIMITAR).'],
     tips: ['O flocão não é classificado no guia — confira no rótulo se há tempero com cebola ou alho.'],
     alt: 'Cuscuz de milho cozido no vapor coberto com ovo frito, pimenta-do-reino e cebolinha',
   },
@@ -123,8 +123,8 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Coloque metade do iogurte em um copo, junte a chia e depois o restante do iogurte.',
       'Finalize com as framboesas e um fio de xarope de bordo.',
     ],
-    substitutions: ['Use morangos (PODE COMER) no lugar das framboesas.', 'Dispense a chia e acrescente 1 colher (sopa) de semente de abóbora para dar crocância.'],
-    tips: ['Framboesa e chia são LIMITAR / VERIFICAR — respeite as quantidades indicadas.'],
+    substitutions: ['Use morangos (COMER) no lugar das framboesas.', 'Dispense a chia e acrescente 1 colher (sopa) de semente de abóbora para dar crocância.'],
+    tips: ['Framboesa e chia são LIMITAR — respeite as quantidades indicadas.'],
     alt: 'Potes de vidro com camadas de pudim de chia e iogurte cobertos com framboesas',
   },
   'pudim-chia-coco': {
@@ -165,7 +165,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Divida o recheio entre as tortilhas, junte a mussarela e o molho salsa e enrole bem firme.',
       'Toste com a emenda para baixo na frigideira por 1 minuto para selar.',
     ],
-    substitutions: ['Acrescente 1 fatia de bacon em cubos por porção (LIMITAR / VERIFICAR).', 'Use wraps à base de arroz, com os ingredientes conferidos.'],
+    substitutions: ['Acrescente 1 fatia de bacon em cubos por porção (LIMITAR).', 'Use wraps à base de arroz, com os ingredientes conferidos.'],
     tips: ['A tortilha de milho é LIMITAR — 2 tortilhas pequenas por porção.'],
     alt: 'Wrap de café da manhã cortado ao meio, recheado com ovo mexido, queijo derretido, abobrinha e pimentão vermelho',
   },
@@ -180,7 +180,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Cubra com o ovo e a salsinha.',
     ],
     substitutions: ['Use pão sem glúten (confira os ingredientes) no lugar do pão de fermentação natural.', 'Troque o tomate por rodelas de pepino.'],
-    tips: ['Só o pão de fermentação natural de longa fermentação de verdade é LIMITAR / VERIFICAR; a torrada de trigo comum é EVITAR no guia.'],
+    tips: ['Só o pão de fermentação natural de longa fermentação de verdade é LIMITAR; a torrada de trigo comum é EVITAR no guia.'],
     alt: 'Ovo frito sobre uma fatia de pão integral torrado',
   },
   'aveia-dormida-kiwi': {
@@ -221,7 +221,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Sirva com o bacon e o tomate.',
     ],
     substitutions: ['Use fatias de peito de peru simples no lugar do bacon.', 'Dispense o queijo para reduzir os alimentos LIMITAR.'],
-    tips: ['O bacon é LIMITAR / VERIFICAR — escolha um sem cebola ou alho em pó.'],
+    tips: ['O bacon é LIMITAR — escolha um sem cebola ou alho em pó.'],
     alt: 'Ovos mexidos com queijo, bacon crocante e torrada',
   },
   'smoothie-morango': {
@@ -241,7 +241,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Junte o kiwi, o abacaxi, o suco de limão e a hortelã.',
       'Bata de novo até ficar sedoso e sirva com gelo.',
     ],
-    substitutions: ['Use couve no lugar do espinafre (tire os talos).', 'Troque a água por leite sem lactose para uma bebida mais cremosa.'],
+    substitutions: ['Use couve kale no lugar do espinafre (tire os talos).', 'Troque a água por leite sem lactose para uma bebida mais cremosa.'],
     alt: 'Vitamina verde de espinafre e kiwi em um copo, com metades de kiwi',
   },
   'batata-rosti-ovo': {
@@ -256,7 +256,7 @@ export const BREAKFAST_PT: Record<string, RecipeText> = {
       'Frite os ovos no restante do azeite.',
       'Corte a rösti ao meio e cubra cada metade com um ovo e a cebolinha.',
     ],
-    substitutions: ['Recheie a rösti com 40 g de mussarela entre duas camadas finas (LIMITAR / VERIFICAR).', 'Use salsinha no lugar da cebolinha.'],
+    substitutions: ['Recheie a rösti com 40 g de mussarela entre duas camadas finas (LIMITAR).', 'Use salsinha no lugar da cebolinha.'],
     alt: 'Panquecas crocantes de batata cobertas com ovos em um prato branco',
   },
   'bowl-iogurte-frutas-vermelhas': {
